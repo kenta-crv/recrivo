@@ -1,0 +1,24 @@
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# Sitemap のホストは本番の APP_HOST / RAILS_ALLOWED_HOST に合わせて更新すること。
+# デフォルトは config/environments/production.rb の RAILS_ALLOWED_HOST と同じ。
+
+User-agent: *
+Allow: /
+
+# 認証・管理・受験トークン・API はクロール対象外
+Disallow: /dashboard
+Disallow: /situations
+Disallow: /admin
+Disallow: /admins
+Disallow: /sidekiq
+Disallow: /checkout
+Disallow: /plans
+Disallow: /api/
+Disallow: /i/
+Disallow: /clients/password
+Disallow: /clients/edit
+Disallow: /users
+Disallow: /webhooks
+
+Sitemap: https://hirevo.com/sitemap.xml

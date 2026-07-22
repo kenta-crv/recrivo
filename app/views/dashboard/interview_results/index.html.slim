@@ -1,0 +1,62 @@
+.db-v2-header
+  .db-v2-header__left
+    h1.db-v2-header__title 面接結果
+    p.db-v2-header__subtitle 候補者の評価・合否・スコアを確認できます（録音の再生は詳細画面）
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title 結果一覧
+    span.db-v2-deals-count = "#{@results.size} 件"
+  .db-v2-bottom-card__body
+    - if @results.blank?
+      .db-v2-empty-state
+        .db-v2-empty-state__icon
+          i.fa-solid.fa-clipboard-list aria-hidden="true"
+        p.db-v2-empty-state__text まだ面接結果がありません
+        = link_to situations_path, class: "db-v2-btn db-v2-btn--primary" do
+          span シナリオ管理へ
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table.db-v2-deals-table.db-v2-results-table
+          thead
+            tr
+              th.db-v2-results-table__col-id ID
+              th.db-v2-results-table__col-candidate 受験者
+              th.db-v2-results-table__col-scenario シナリオ
+              th.db-v2-results-table__col-status 判定
+              th.db-v2-results-table__col-score 平均点
+              th.db-v2-results-table__col-date 日時
+              th.db-v2-results-table__col-actions 通知 / 操作
+          tbody
+            - @results.each do |result|
+              tr
+                td.db-v2-deals-table__id.db-v2-results-table__col-id = result.id
+                td.db-v2-results-table__col-candidate
+                  - user = result.interview.user
+                  - if user
+                    .db-v2-result-candidate
+                      span.db-v2-result-candidate__name = user.name.presence || "—"
+                      span.db-v2-result-candidate__meta = [user.email, user.tel.presence].compact.join(" / ")
+                  - else
+                    | —
+                td.db-v2-results-table__col-scenario = result.interview.situation&.title
+                td.db-v2-results-table__col-status
+                  - case result.final_status
+                  - when "passed"
+                    span.db-v2-status-badge.db-v2-status-badge--live 合格
+                  - when "failed"
+                    span.db-v2-status-badge.db-v2-status-badge--fail 不合格
+                  - when "pending_review"
+                    span.db-v2-status-badge 確認待ち
+                  - else
+                    span.db-v2-status-badge = result.final_status
+                td.db-v2-results-table__col-score = result.average_score
+                td.db-v2-results-table__col-date = l(result.created_at, format: :short)
+                td.db-v2-deals-table__actions.db-v2-results-table__col-actions
+                  .db-v2-result-actions
+                    = button_to "採用", notify_hire_dashboard_interview_result_path(result), method: :post, form: { class: "db-v2-inline-form" }, class: "db-v2-btn db-v2-btn--primary db-v2-btn--xs", data: { confirm: "採用通知メールを送信しますか？" }
+                    = button_to "不採用", notify_reject_dashboard_interview_result_path(result), method: :post, form: { class: "db-v2-inline-form" }, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", data: { confirm: "不採用通知メールを送信しますか？" }
+                    = link_to dashboard_interview_result_path(result), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
+                      span 詳細

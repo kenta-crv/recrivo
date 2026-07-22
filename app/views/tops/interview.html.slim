@@ -1,0 +1,144 @@
+- set_meta_tags title: "#{@situation.title}｜AI面接", description: "招待リンクからのAI面接受験ページです。", noindex: true, nofollow: true
+
+javascript:
+  var accessToken = null;
+
+.interview-room data-situation-id=@situation.id data-invite-token=@invite_token data-language=(@situation.language.presence || "ja") data-situation-title=@situation.title
+  #interview-error.interview-room__error role="alert" hidden=true
+
+  /! ===== 身元入力 =====
+  #phase-identity.interview-room__phase.is-active
+    .interview-room__shell
+      .interview-room__identity-hero
+        = image_tag "avatar_3.png", class: "interview-room__identity-avatar", alt: "AIインタビュアー"
+        p.interview-room__eyebrow AI Interview
+        h1.interview-room__title = @situation.title
+        p.interview-room__lead 氏名・連絡先を入力して、面接室に入場してください。
+
+      .interview-room__panel
+        .interview-room__field
+          label.interview-room__label for="candidate_name" お名前
+          input#candidate_name.interview-room__input type="text" required=true autocomplete="name" placeholder="山田 太郎"
+        .interview-room__field
+          label.interview-room__label for="candidate_email" メールアドレス
+          input#candidate_email.interview-room__input type="email" required=true autocomplete="email" placeholder="you@example.com"
+        .interview-room__field
+          label.interview-room__label for="candidate_tel" 電話番号
+          input#candidate_tel.interview-room__input type="tel" required=true autocomplete="tel" placeholder="090-1234-5678"
+        .interview-room__field
+          label.interview-room__label for="candidate_address" 住所
+          input#candidate_address.interview-room__input type="text" required=true autocomplete="street-address" placeholder="東京都渋谷区…"
+        .interview-room__field
+          label.interview-room__label for="language" 回答言語
+          select#language.interview-room__input
+            - selected_lang = @situation.language.presence || "ja"
+            option value="ja" selected=(selected_lang == "ja") 日本語
+            option value="en" selected=(selected_lang == "en") English
+
+        button#enter_room.interview-room__primary type="button" 面接室に入る
+
+  /! ===== 開始オーバーレイ =====
+  #phase-overlay.interview-room__overlay hidden=true role="dialog" aria-modal="true" aria-labelledby="start-overlay-title"
+    button#start_interview.interview-room__start-card type="button"
+      = image_tag "avatar_3.png", class: "interview-room__start-avatar", alt: ""
+      p#start-overlay-title.interview-room__start-title 面接を開始
+      p.interview-room__start-desc タップしてAIインタビュアーとの面接を始めます
+
+  /! ===== 面接ルーム（アバター中心） =====
+  #phase-room.interview-room__phase.interview-room__phase--cinema hidden=true
+    .interview-cinema
+      .interview-cinema__bg aria-hidden="true"
+        = image_tag "presentation_room_bg.png", alt: ""
+        .interview-cinema__vignette
+      .interview-cinema__top
+        .interview-cinema__brand
+          span AI Interview
+          strong = @situation.title
+        .interview-cinema__meta
+          span#interview_status.interview-room__status 準備中
+          span#question_count.interview-room__count 0 / 0 問
+      .interview-cinema__progress aria-hidden="true"
+        span#progress_bar.interview-room__progress-bar
+
+      .interview-cinema__stage
+        #avatar_stage.interview-cinema__avatar.is-idle
+          .interview-cinema__halo aria-hidden="true"
+          .interview-cinema__ring aria-hidden="true"
+          = image_tag "avatar_3.png", class: "interview-cinema__portrait", alt: "AIインタビュアー"
+          .interview-cinema__wave aria-hidden="true"
+            span
+            span
+            span
+            span
+            span
+          p.interview-cinema__avatar-label
+            span#avatar_state_label 待機中
+            |  · AIインタビュアー
+
+        .interview-cinema__caption
+          p#question_text.interview-room__question 面接を開始すると質問が表示されます。
+          #mcq_options.interview-room__mcq
+          .interview-cinema__audio-row
+            audio#question_audio.interview-room__audio controls=true preload="auto"
+            button#replay_question.interview-cinema__replay type="button" 🔊 音声を再生
+
+      .interview-cinema__dock
+        label.interview-room__label for="text_answer" あなたの回答
+        textarea#text_answer.interview-room__textarea rows="3" placeholder="テキスト入力、または下のボタンで音声回答"
+        .interview-room__voice-tools
+          button#voice_answer_start.interview-room__secondary type="button" 🎤 音声で回答
+          button#voice_answer_stop.interview-room__secondary type="button" disabled=true 録音を止める
+          span#voice_answer_status.interview-room__hint
+        .interview-room__actions
+          button#submit_answer.interview-room__primary type="button" 回答を送信
+        p#answer_action_hint.interview-room__hint
+
+  /! ===== 面接情報送信モーダル =====
+  #phase-complete-modal.interview-room__overlay hidden=true role="dialog" aria-modal="true" aria-labelledby="complete-modal-title"
+    .interview-room__start-card style="cursor:default"
+      = image_tag "avatar_3.png", class: "interview-room__start-avatar", alt: ""
+      p#complete-modal-title.interview-room__start-title 面接情報を送信する
+      p#complete-modal-desc.interview-room__start-desc 面接結果はご登録のメールアドレス宛にお送りします。内容を送信して面接を完了してください。
+      .interview-room__actions style="margin-top:20px;justify-content:center"
+        button#confirm_complete.interview-room__primary type="button" 面接情報を送信する
+
+  /! ===== 結果 =====
+  #phase-result.interview-room__phase hidden=true
+    .interview-room__shell
+      .interview-room__identity-hero
+        = image_tag "avatar_3.png", class: "interview-room__identity-avatar", alt: ""
+        p.interview-room__eyebrow 面接結果
+        h1.interview-room__title = @situation.title
+        p#result_status.interview-room__lead 結果を読み込み中...
+
+      #result_details
+        .interview-room__scoreboard
+          .interview-room__score
+            span.interview-room__score-label 判定
+            strong#result_final_status.interview-room__score-value -
+          .interview-room__score
+            span.interview-room__score-label 平均スコア
+            strong#result_avg_score.interview-room__score-value -
+          .interview-room__score
+            span.interview-room__score-label 回答数
+            strong#result_qs.interview-room__score-value -
+
+        #result_failure_panel.interview-room__panel hidden=true
+          h2.interview-room__section-title 不合格の理由
+          p#result_failure_reason -
+
+        .interview-room__panel
+          h2.interview-room__section-title 総評
+          p#result_summary -
+        .interview-room__panel
+          h2.interview-room__section-title 強み
+          ul#result_strengths.interview-room__list
+        .interview-room__panel
+          h2.interview-room__section-title 改善点
+          ul#result_weaknesses.interview-room__list
+        .interview-room__panel
+          h2.interview-room__section-title 推薦コメント
+          p#result_recommendation -
+
+      .interview-room__actions
+        a.interview-room__secondary href="/" トップへ戻る

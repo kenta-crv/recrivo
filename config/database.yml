@@ -1,0 +1,44 @@
+# development: DATABASE_URL があれば PostgreSQL、なければ SQLite3
+# test: SQLite3
+# production: PostgreSQL
+
+default: &default
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 30000
+
+development:
+  <<: *default
+  <% if ENV["DATABASE_URL"].present? %>
+  url: <%= ENV["DATABASE_URL"] %>
+  adapter: postgresql
+  encoding: unicode
+  <% else %>
+  adapter: sqlite3
+  database: <%= Rails.root.join('db', 'development.sqlite3').to_s %>
+  # SQLite 専用（PostgreSQL に journal_mode を渡さない）
+  variables:
+    journal_mode: WAL
+    synchronous: NORMAL
+  <% end %>
+
+test:
+  <<: *default
+  adapter: sqlite3
+  database: db/test.sqlite3
+
+# DATABASE_URL があれば優先（Render / Heroku / マネージドDB向け）
+# 未設定時は DB_HOST / DB_NAME / DB_USERNAME / DB_PASSWORD を使う
+production:
+  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+  <% if ENV["DATABASE_URL"].present? %>
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
+  port: <%= ENV.fetch("DB_PORT", "5432") %>
+  database: <%= ENV.fetch("DB_NAME", "meetia_production") %>
+  username: <%= ENV.fetch("DB_USERNAME", "meetia") %>
+  password: <%= ENV["DB_PASSWORD"] %>
+  <% end %>

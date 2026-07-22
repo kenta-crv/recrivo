@@ -1,0 +1,54 @@
+.db-v2-header
+  .db-v2-header__left
+    h1.db-v2-header__title お支払い内容の確認
+    p.db-v2-header__subtitle 選択したプラン内容をご確認のうえ、お手続きへ進んでください
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    = link_to plans_path, class: "db-v2-btn db-v2-btn--ghost" do
+      i.fa-solid.fa-arrow-left aria-hidden="true"
+      span プラン選択へ戻る
+
+- if @plan_type.to_s == "trial"
+  .db-v2-alert.db-v2-alert--info
+    i.fa-solid.fa-circle-info aria-hidden="true"
+    div
+      p
+        strong 無料トライアル
+        | の期間は費用は発生しません。
+      p.db-v2-checkout-alert-note
+        | #{Subscription::TRIAL_DAYS}日間・シナリオ#{Subscription.format_limit(@plan_config[:situation_limit])}・月間面接#{Subscription.format_limit(@plan_config[:monthly_interview_limit])}まで。終了後はスタンダードプランへ自動移行します。
+      p.db-v2-checkout-alert-note
+        | クレジットカードの登録が必要です（トライアル期間中は課金されません）。
+
+.db-v2-bottom-card.db-v2-checkout-card data-turbo="false"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title
+      i.fa-solid.fa-shield-halved aria-hidden="true"
+      |  プラン内容
+  .db-v2-bottom-card__body
+    .db-v2-checkout-summary
+      .db-v2-checkout-summary__row
+        span.db-v2-checkout-summary__label 選択プラン
+        span.db-v2-checkout-summary__value = @plan_config[:name]
+      .db-v2-checkout-summary__row.db-v2-checkout-summary__row--price
+        span.db-v2-checkout-summary__label お支払い金額
+        .db-v2-checkout-summary__price
+          span.db-v2-checkout-summary__amount
+            = @plan_type.to_s == "trial" ? "¥0" : "¥#{number_with_delimiter(@amount)}"
+          span.db-v2-checkout-summary__tax （税込）
+
+    ul.db-v2-checkout-features
+      li
+        i.fa-solid.fa-circle-check aria-hidden="true"
+        span シナリオ #{Subscription.format_limit(@plan_config[:situation_limit])}
+      li
+        i.fa-solid.fa-circle-check aria-hidden="true"
+        span 月間面接 #{Subscription.format_limit(@plan_config[:monthly_interview_limit])}
+
+    = form_with url: checkout_create_path, method: :post, local: true, class: "db-v2-checkout-form" do |f|
+      = hidden_field_tag :plan_type, @plan_type
+      .db-v2-checkout-form__actions
+        - if @plan_type.to_s == "trial"
+          = f.submit "クレジットカードを登録してトライアル開始", class: "db-v2-btn db-v2-btn--primary db-v2-btn--block"
+        - else
+          = f.submit "Stripeで決済へ進む", class: "db-v2-btn db-v2-btn--primary db-v2-btn--block"

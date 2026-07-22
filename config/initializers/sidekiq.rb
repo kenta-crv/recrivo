@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+redis_url = ENV.fetch('REDIS_URL', 'redis://localhost:6379/0')
+
+Sidekiq.configure_server do |config|
+  config.redis = { url: redis_url }
+
+  config.on(:startup) do
+    # Sidekiq 起動直後は Zeitwerk の遅延読み込み前に cron ジョブが走ることがある
+    Rails.application.eager_load!
+  end
+
+  # SQLite 開発環境では DB ロックを避けるため並列度を 1 に制限
+  if Rails.env.development?
+    config.concurrency = ENV.fetch('SIDEKIQ_CONCURRENCY', 1).to_i
+  end
+
+  # sidekiq-cron による定期ジョブのロード（serverプロセスでのみ）
+  schedule_file = Rails.root.join('config/sidekiq_schedule.yml')
+  if File.exist?(schedule_file)
+    require 'sidekiq/cron/job'
+    schedule = YAML.safe_load_file(schedule_file, permitted_classes: [Symbol], aliases: true)
+    Sidekiq::Cron::Job.load_from_hash(schedule)
+  end
+end
+
+Sidekiq.configure_client do |config|
+  config.redis = { url: redis_url }
+end

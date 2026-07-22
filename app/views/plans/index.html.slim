@@ -1,0 +1,22 @@
+.db-v2-header
+  .db-v2-header__left
+    h1.db-v2-header__title プラン選択
+    p.db-v2-header__subtitle ご利用プランをお選びください
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    - unless @is_new_account
+      = link_to dashboard_subscription_path, class: "db-v2-btn db-v2-btn--ghost" do
+        i.fa-solid.fa-arrow-left aria-hidden="true"
+        span 契約情報へ戻る
+
+- trial_config = Subscription.plan_config(:trial)
+- if @is_new_account
+  .db-v2-alert.db-v2-alert--info
+    i.fa-solid.fa-circle-info aria-hidden="true"
+    div
+      p
+        | 新規アカウントは
+        strong = "#{Subscription::TRIAL_DAYS}日間の無料トライアル"
+        | が利用できます（シナリオ#{Subscription.format_limit(trial_config[:situation_limit])}・月間面接#{Subscription.format_limit(trial_config[:monthly_interview_limit])}まで）。
+
+= render "plans/pricing_slider"

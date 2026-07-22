@@ -1,0 +1,160 @@
+.db-v2-header
+  .db-v2-header__left
+    h1.db-v2-header__title こんにちは、#{@display_name} さん
+    p.db-v2-header__subtitle AI面接の運用サマリー
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    - unless admin_signed_in?
+      = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
+        i.fa-solid.fa-plus aria-hidden="true"
+        span シナリオを作成
+
+.db-v2-summary-grid class=(admin_signed_in? ? "db-v2-summary-grid--2" : "db-v2-summary-grid--3")
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
+      i.fa-solid.fa-list-check aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label シナリオ
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value = @situations_count
+      .db-v2-summary-card__trend
+        span.db-v2-summary-card__trend-label 有効 #{@active_situations_count} 件
+
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--green
+      i.fa-solid.fa-clipboard-check aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 面接結果
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value = @results_count
+      .db-v2-summary-card__trend
+        span.db-v2-summary-card__trend-label 累計の評価済み面接
+
+  - unless admin_signed_in?
+    .db-v2-summary-card
+      .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--purple
+        i.fa-solid.fa-calendar-check aria-hidden="true"
+      .db-v2-summary-card__content
+        .db-v2-summary-card__label 今月の面接
+        .db-v2-summary-card__value-row
+          span.db-v2-summary-card__value = @interviews_this_month
+        .db-v2-summary-card__trend
+          span.db-v2-summary-card__trend-label
+            - if @monthly_limit
+              | 上限 #{@monthly_limit} 件
+            - else
+              | 上限なし
+
+.db-v2-summary-grid.db-v2-summary-grid--secondary
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--gold
+      i.fa-solid.fa-star aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 平均点
+      .db-v2-summary-card__value-row
+        - if @average_score
+          span.db-v2-summary-card__value = @average_score
+          span.db-v2-summary-card__unit 点
+        - else
+          span.db-v2-summary-card__value —
+      .db-v2-summary-card__trend
+        span.db-v2-summary-card__trend-label 評価済み面接の平均（満点100）
+
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--rose
+      i.fa-solid.fa-person-walking-arrow-right aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 離脱率
+      .db-v2-summary-card__value-row
+        - if @abandon_rate.nil?
+          span.db-v2-summary-card__value —
+        - else
+          span.db-v2-summary-card__value = @abandon_rate
+          span.db-v2-summary-card__unit ％
+      .db-v2-summary-card__trend
+        span.db-v2-summary-card__trend-label
+          - if @decided_interview_count.to_i.zero?
+            | まだ終了した面接がありません
+          - else
+            = "途中離脱 #{@abandoned_count}／終了 #{@decided_interview_count}"
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title 最近の面接結果
+    = link_to "すべて見る", dashboard_interview_results_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+  .db-v2-bottom-card__body
+    - if @recent_results.blank?
+      .db-v2-empty-state
+        .db-v2-empty-state__icon
+          i.fa-solid.fa-clipboard-list aria-hidden="true"
+        p.db-v2-empty-state__text まだ面接結果がありません
+        p.db-v2-muted シナリオを作成し、招待リンクを候補者へ共有してください。
+        - unless admin_signed_in?
+          = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
+            span シナリオを作成
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table.db-v2-deals-table
+          thead
+            tr
+              th ID
+              th 受験者
+              th シナリオ
+              th 判定
+              th 平均点
+              th 日時
+              th
+          tbody
+            - @recent_results.each do |result|
+              tr
+                td.db-v2-deals-table__id = result.id
+                td = result.interview.user&.email
+                td = result.interview.situation&.title
+                td
+                  - case result.final_status
+                  - when "passed"
+                    span.db-v2-status-badge.db-v2-status-badge--live 合格
+                  - when "failed"
+                    span.db-v2-status-badge.db-v2-status-badge--fail 不合格
+                  - else
+                    span.db-v2-status-badge = result.final_status
+                td = result.average_score
+                td = l(result.created_at, format: :short)
+                td
+                  = link_to dashboard_interview_result_path(result), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
+                    span 詳細
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title シナリオ
+    = link_to "シナリオ管理", situations_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+  .db-v2-bottom-card__body
+    - if @recent_situations.blank?
+      .db-v2-empty-state
+        .db-v2-empty-state__icon
+          i.fa-solid.fa-list-check aria-hidden="true"
+        p.db-v2-empty-state__text まだシナリオがありません
+        - unless admin_signed_in?
+          = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
+            span 最初のシナリオを作成
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table.db-v2-deals-table
+          thead
+            tr
+              th タイトル
+              th 質問数
+              th 言語
+              th 更新
+              th
+          tbody
+            - @recent_situations.each do |situation|
+              tr
+                td.db-v2-deals-table__title
+                  = link_to situation.title, situation_path(situation), class: "db-v2-deals-table__link"
+                td = situation.questions.size
+                td = situation.language.to_s.upcase
+                td = l(situation.updated_at, format: :short)
+                td
+                  = link_to situation_path(situation), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
+                    span 開く

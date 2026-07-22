@@ -1,0 +1,16 @@
+- set_meta_tags title: "面接受験について", description: "AI Interviewの受験は、企業から送られた招待リンクからのみ開始できます。", noindex: true, nofollow: true
+
+.section-interview
+  .interview-container
+    .interview-card.interview-card--hero
+      h1 招待リンクが必要です
+      p 候補者の方は、企業から送られた招待URLから面接を開始してください。
+      p 公開一覧からシナリオを選ぶ導線はありません。招待リンク（ /i/トークン ）のみが受験入口です。
+
+      .interview-actions style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;"
+        = link_to "トップへ戻る", root_path, class: "btn-start"
+        - if client_signed_in?
+          = link_to "シナリオ管理へ", situations_path, class: "btn-resume"
+        - else
+          = link_to "企業ログイン", new_client_session_path, class: "btn-resume"
+          = link_to "無料トライアル", new_client_registration_path, class: "btn-resume"

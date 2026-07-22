@@ -1,0 +1,15 @@
+doctype html
+html lang="ja"
+  head
+    = render "layouts/head"
+
+  body class=(@hide_site_chrome ? "interview-room-body" : nil)
+    - unless @hide_site_chrome
+      = render "layouts/header"
+      = render "shared/breadcrumbs" if breadcrumbs.any?
+    = yield
+    - if @hide_site_chrome
+      / 面接室はダッシュボード/LP用 application.js を読まない
+      = javascript_include_tag "interview", "data-turbo-track": "reload"
+    - else
+      = javascript_include_tag "application", "data-turbolinks-track": "reload"

@@ -1,0 +1,58 @@
+.db-v2-sidebar
+  button.db-v2-sidebar__close type="button" aria-label="メニューを閉じる" data-dashboard-sidebar-close=""
+    i.fa-solid.fa-xmark
+
+  .db-v2-sidebar__inner
+    = link_to dashboard_index_path, class: "db-v2-sidebar__logo-area" do
+      = image_tag "meetia_logo.png", alt: "AI Interview", class: "db-v2-sidebar__logo-image"
+
+    nav.db-v2-sidebar__nav aria-label="メインメニュー"
+      .db-v2-sidebar__section
+        p.db-v2-sidebar__section-label 概要
+        = link_to dashboard_index_path, class: sidebar_link_class(:dashboard) do
+          i.fa-solid.fa-gauge-high aria-hidden="true"
+          span ダッシュボード
+
+      .db-v2-sidebar__section
+        p.db-v2-sidebar__section-label 面接
+        = link_to situations_path, class: sidebar_link_class(:situations) do
+          i.fa-solid.fa-list-check aria-hidden="true"
+          span シナリオ管理
+        = link_to dashboard_interview_results_path, class: sidebar_link_class(:interview_results) do
+          i.fa-solid.fa-clipboard-check aria-hidden="true"
+          span 面接結果
+
+      .db-v2-sidebar__section
+        p.db-v2-sidebar__section-label アカウント
+        - if client_signed_in? && !admin_signed_in?
+          = link_to dashboard_account_path, class: sidebar_link_class(:account) do
+            i.fa-solid.fa-building aria-hidden="true"
+            span 企業情報
+          = link_to dashboard_subscription_path, class: sidebar_link_class(:subscription) do
+            i.fa-solid.fa-credit-card aria-hidden="true"
+            span プラン・契約
+        - if admin_signed_in?
+          = link_to dashboard_management_path, class: sidebar_link_class(:management) do
+            i.fa-solid.fa-building-columns aria-hidden="true"
+            span 契約企業
+          = link_to admin_interview_results_path, class: sidebar_link_class(:admin_interview_results) do
+            i.fa-solid.fa-clipboard-list aria-hidden="true"
+            span 全面接結果
+
+    .db-v2-sidebar__footer
+      .db-v2-sidebar__user
+        .db-v2-sidebar__user-avatar
+          - avatar_name = admin_signed_in? ? current_admin.email : sidebar_user_display_name
+          img src="https://ui-avatars.com/api/?name=#{CGI.escape(avatar_name)}&background=0f766e&color=fff&size=64" alt=""
+        .db-v2-sidebar__user-meta
+          - if admin_signed_in?
+            span.db-v2-sidebar__user-name = current_admin.email
+            span.db-v2-sidebar__user-role Admin
+          - else
+            span.db-v2-sidebar__user-name = sidebar_user_display_name
+            span.db-v2-sidebar__user-role = sidebar_plan_label
+
+      - if admin_signed_in?
+        = render "shared/sign_out_button", path: destroy_admin_session_path, variant: :sidebar
+      - else
+        = render "shared/sign_out_button", path: destroy_client_session_path, variant: :sidebar

@@ -1,0 +1,751 @@
+- set_meta_tags \
+    title: "AI面接システム｜採用の一次面接を自動化", \
+    description: "面接シナリオを作成して招待リンクを送るだけ。AIが音声・選択式の回答を評価し、合否判定まで自動化。採用の一次面接工数を削減します。", \
+    og: { title: "AI Interview｜採用の一次面接を自動化", type: "website" }
+
+
+.meetia-modern-lp
+  header.meetia-nav
+    .meetia-nav__inner
+      = link_to root_path, class: "meetia-nav__logo" do
+        = image_tag "meetia_logo.png", alt: "AI Interview", class: "meetia-nav__logo-image"
+      button.meetia-nav__toggle type="button" aria-label="メニュー" data-lp-nav-toggle=""
+        span
+        span
+        span
+      nav.meetia-nav__menu data-lp-nav-menu=""
+        - TopsHelper::LP_NAV_ITEMS.each do |item|
+          = link_to item[:label], item[:href], class: "meetia-nav__item"
+        .meetia-nav__menu-actions
+          = link_to lp_login_label, lp_login_path, class: "meetia-btn meetia-btn--ghost meetia-btn--sm"
+          = link_to "無料トライアル", lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--sm"
+
+  section#top.meetia-hero.meetia-hero--diagonal
+    .meetia-hero__diagonal-bg aria-hidden="true"
+    .meetia-hero__inner
+      .meetia-hero__content
+        .meetia-hero__badge
+          i.fa-solid.fa-user-tie aria-hidden="true"
+          span AI Interview Agent
+        h1.meetia-hero__title
+          | AIによる本格面接
+          br
+          | 採用面接へようこそ
+        p.meetia-hero__lead シナリオを作ってリンクを送るだけ。候補者はいつでも受験でき、AIが評価・合否まで進めます。
+        .meetia-hero__actions
+          = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--cta-play") do
+            span 無料トライアル
+            span.meetia-btn__play-icon aria-hidden="true"
+              i.fa-solid.fa-play
+          = link_to "機能を見る", "#features", class: "meetia-btn meetia-btn--outline meetia-btn--lg"
+
+      .meetia-hero__visual aria-hidden="true"
+        .meetia-hero-portal
+          = image_tag "top_hero.png", class: "meetia-hero-portal__scene", alt: "AI Interview 面接ルームのイメージ"
+
+    .meetia-hero__features
+      - TopsHelper::HERO_FEATURE_CARDS.each do |icon, title, body|
+        .meetia-hero__feature-card
+          .meetia-hero__feature-icon
+            i.fa-solid class=icon aria-hidden="true"
+          h3.meetia-hero__feature-title = title
+          p.meetia-hero__feature-body = body
+
+  /.meetia-logos
+    p.meetia-logos__title 多くの企業様にご利用いただいています
+    .meetia-logos__wrapper
+      - %w[TechCorp NextVision CloudScale DataBridge InnovateX GlobalNet FutureWorks SmartBiz].each do |name|
+        span.meetia-logos__item = name
+
+        
+
+  section.meetia-whats
+    .meetia-whats__inner
+      span.meetia-section__eyebrow What's AI Interview?
+
+      /-- 背景枠カード --/
+      .meetia-whats__container-card
+        
+        /-- 完全に右側背景としてなじませるアバター（左側のテキスト領域に干渉させない） --/
+        .meetia-whats__backdrop-visual
+          .meetia-whats__glow-effect
+          = image_tag "whats.png", class: "meetia-whats__avatar-backdrop", alt: ""
+
+        /-- 枠内コンテンツ（z-indexでアバターより必ず前面に表示） --/
+        .meetia-whats__card-body
+          
+          /-- 上半分のテキスト ＋ 実績エリア --/
+          .meetia-whats__hero-block
+            .meetia-whats__text-group
+              h2.meetia-whats__main-title
+                = image_tag "meetia_logo.png", class: "meetia-whats__logo-graphics", alt: "AI Interview"
+                span とは？
+              p.meetia-whats__catch AIが変える採用面接の未来
+              p.meetia-whats__description
+                | AI Interviewは、最先端のAI技術を活用した採用面接エージェントです。
+                span.meetia-whats__description-more
+                  br
+                  | 質問設計に沿って、24時間365日、候補者との一次面接を自動で行います。
+                  br
+                  | シナリオ作成から評価・合否判定まで、すべてAIにお任せいただけます。
+
+            /-- 実績数値メーター --/
+            .meetia-whats__metrics-row
+              .meetia-whats__metric-item
+                .meetia-whats__metric-icon-wrap
+                  i.fa-solid.fa-clock-rotate-left
+                  span 24h
+                .meetia-whats__metric-texts
+                  span.meetia-whats__metric-label 24時間365日
+                  span.meetia-whats__metric-value いつでも稼働
+              .meetia-whats__metric-item
+                .meetia-whats__metric-icon-wrap
+                  i.fa-solid.fa-users
+                .meetia-whats__metric-texts
+                  span.meetia-whats__metric-label 候補者対応力
+                  span.meetia-whats__metric-value 300%向上
+              .meetia-whats__metric-item
+                .meetia-whats__metric-icon-wrap
+                  i.fa-solid.fa-chart-line
+                .meetia-whats__metric-texts
+                  span.meetia-whats__metric-label 一次面接スループット
+                  span.meetia-whats__metric-value 250%向上
+
+          /-- 魅力カードグリッド（等幅・等高で枠の中に綺麗に収める） --/
+          .meetia-whats__features-grid
+            .meetia-whats__feature-box
+              .meetia-whats__feature-icon-circle
+                i.fa-solid.fa-comments
+              h4.meetia-whats__feature-box-title 一貫した評価基準
+              p.meetia-whats__feature-box-desc 同じシナリオ・同じ基準で、候補者を公平に評価します。
+
+            .meetia-whats__feature-box
+              .meetia-whats__feature-icon-circle
+                i.fa-solid.fa-clock
+              h4.meetia-whats__feature-box-title 24時間稼働
+              p.meetia-whats__feature-box-desc 時間や場所を問わず、候補者が都合の良いタイミングで受験可能。
+
+            .meetia-whats__feature-box
+              .meetia-whats__feature-icon-circle
+                i.fa-solid.fa-bullseye
+              h4.meetia-whats__feature-box-title 高精度な採点
+              p.meetia-whats__feature-box-desc AIが回答内容を分析し、スコアと合否を自動判定。
+
+            .meetia-whats__feature-box
+              .meetia-whats__feature-icon-circle
+                i.fa-solid.fa-chart-column
+              h4.meetia-whats__feature-box-title 選考の可視化
+              p.meetia-whats__feature-box-desc 結果・スコア・回答ログを可視化し、採用改善に活用できます。
+
+
+
+  section#problems.meetia-section.meetia-problems
+    .meetia-section__inner
+      .meetia-section__head
+        span.meetia-section__eyebrow こんなお悩みありませんか？
+        h2.meetia-section__title
+          | 採用面接で、こんな
+          span.meetia-text-gradient 壁
+          | にぶつかっていませんか？
+      .meetia-problems__scroll-wrap
+        button.meetia-problems__scroll-btn.meetia-problems__scroll-btn--prev type="button" aria-label="前へ" data-lp-scroll-prev=".meetia-problems__grid"
+          i.fa-solid.fa-chevron-left aria-hidden="true"
+        .meetia-problems__grid
+          - TopsHelper::PROBLEM_ITEMS.each do |item|
+            .meetia-problems__card
+              .meetia-problems__icon
+                i.fa-solid class=item[:icon] aria-hidden="true"
+              .meetia-problems__content
+                .meetia-problems__check-line
+                  span.meetia-problems__check aria-hidden="true"
+                  p.meetia-problems__title == item[:text]
+                p.meetia-problems__desc = item[:desc]
+        button.meetia-problems__scroll-btn.meetia-problems__scroll-btn--next type="button" aria-label="次へ" data-lp-scroll-next=".meetia-problems__grid"
+          i.fa-solid.fa-chevron-right aria-hidden="true"
+      .meetia-problems__arrow aria-hidden="true"
+        i.fa-solid.fa-caret-down
+      .meetia-problems__solution
+        .meetia-problems__solution-copy
+          .meetia-problems__solution-lead
+            span そのお悩み、
+            span.meetia-text-gradient AI面接の一気通貫
+          .meetia-problems__solution-brand
+            span.meetia-problems__solution-mark aria-hidden="true"
+              i.fa-solid.fa-headset
+            strong.meetia-problems__solution-name AI Interview
+            span.meetia-problems__solution-suffix がすべて
+            span.meetia-text-gradient 解決
+            span.meetia-problems__solution-suffix します。
+        .meetia-problems__solution-visual aria-hidden="true"
+          .meetia-problems__solution-mock
+            .meetia-problems__solution-mock-head
+              span
+              span
+              span
+            .meetia-problems__solution-mock-row
+              i.fa-solid.fa-file-lines
+              span シナリオ提示
+            .meetia-problems__solution-mock-row
+              i.fa-solid.fa-microphone-lines
+              span 音声回答
+            .meetia-problems__solution-mock-row
+              i.fa-solid.fa-chart-line
+              span 自動分析
+          .meetia-problems__solution-deco.meetia-problems__solution-deco--sparkle
+            i.fa-solid.fa-sparkles
+          .meetia-problems__solution-deco.meetia-problems__solution-deco--chat
+            i.fa-solid.fa-comments
+          .meetia-problems__solution-deco.meetia-problems__solution-deco--chart
+            i.fa-solid.fa-chart-column
+
+
+
+
+
+
+  section#whats.meetia-section.meetia-section--strip
+    .meetia-section__inner.meetia-section__inner--wide
+      section.meetia-ai-deal-flow
+        .meetia-ai-deal-flow__inner
+          .meetia-ai-deal-flow__head
+            span.meetia-section__eyebrow AI INTERVIEW FLOW
+            h2.meetia-ai-deal-flow__title これがAI Interviewの流れ
+            p.meetia-ai-deal-flow__subtitle
+              span シナリオ提示
+              span.meetia-ai-deal-flow__subtitle-x ×
+              span 音声回答
+              span.meetia-ai-deal-flow__subtitle-x ×
+              span 自動分析
+
+
+          .meetia-ai-deal-flow__scroll-wrap
+            button.meetia-ai-deal-flow__scroll-btn.meetia-ai-deal-flow__scroll-btn--prev type="button" aria-label="前へ" data-lp-scroll-prev=".meetia-ai-deal-flow__steps"
+              i.fa-solid.fa-chevron-left aria-hidden="true"
+            .meetia-ai-deal-flow__steps
+              .meetia-ai-deal-flow__step
+                .meetia-ai-deal-flow__step-label
+                  span.meetia-ai-deal-flow__step-num 1
+                  p 招待リンクから「面接を始める」をクリック
+                .meetia-ai-deal-flow__panel.meetia-ai-deal-flow__panel--entry
+                  .meetia-ai-deal-flow__phone
+                    .meetia-ai-deal-flow__phone-notch aria-hidden="true"
+                    .meetia-ai-deal-flow__phone-screen
+                      .meetia-ai-deal-flow__phone-logo
+                        span.meetia-ai-deal-flow__phone-logo-mark aria-hidden="true"
+                        | AI Interview
+                      h3.meetia-ai-deal-flow__phone-title
+                        | AIが、面接を
+                        br
+                        | もっと成果に。
+                      p.meetia-ai-deal-flow__phone-lead AI Interviewは、AIが面接を代行するワンストッププラットフォームです。
+                      .meetia-ai-deal-flow__phone-cta
+                        | 面接を始める
+                        i.fa-solid.fa-arrow-pointer.meetia-ai-deal-flow__phone-cursor aria-hidden="true"
+                      ul.meetia-ai-deal-flow__phone-list
+                        li
+                          i.fa-solid.fa-file-lines aria-hidden="true"
+                          | 質問シナリオを提示
+                        li
+                          i.fa-solid.fa-microphone-lines aria-hidden="true"
+                          | AIが音声で質問
+                        li
+                          i.fa-solid.fa-chart-line aria-hidden="true"
+                          | 自動で採点・記録
+
+              span.meetia-ai-deal-flow__arrow aria-hidden="true"
+                i.fa-solid.fa-chevron-right
+
+              .meetia-ai-deal-flow__step.meetia-ai-deal-flow__step--room
+                .meetia-ai-deal-flow__step-label
+                  span.meetia-ai-deal-flow__step-num 2
+                  p AI Interviewの面接ルームで、AIとリアルタイムに面接
+                .meetia-ai-deal-flow__panel.meetia-ai-deal-flow__panel--room
+                  .meetia-flow-room aria-hidden="true"
+                    header.meetia-flow-room__header
+                      .meetia-flow-room__status
+                        span.meetia-flow-room__status-dot
+                        span AI面接中
+                        span.meetia-flow-room__timer 00:08:42
+                      button.meetia-flow-room__exit type="button" tabindex="-1"
+                        span ↗
+                        span 退出する
+
+                    .meetia-flow-room__body
+                      .meetia-flow-room__deck
+                        .meetia-flow-room__deck-label 面接資料
+                        .meetia-flow-room__slide
+                          span.meetia-flow-room__slide-company 株式会社 AI Interview
+                          strong.meetia-flow-room__slide-title サービス紹介資料
+                          h3 AIが、面接を変える。
+                        .meetia-flow-room__deck-foot
+                          .meetia-flow-room__pager
+                            button type="button" tabindex="-1" ‹
+                            span 1 / 24
+                            button type="button" tabindex="-1" ›
+                          .meetia-flow-room__deck-actions
+                            button type="button" tabindex="-1"
+                              i.fa-solid.fa-magnifying-glass-plus aria-hidden="true"
+                              | 拡大
+                            button type="button" tabindex="-1"
+                              i.fa-solid.fa-download aria-hidden="true"
+                              | ダウンロード
+
+                      aside.meetia-flow-room__agent
+                        = image_tag "avatar_3.png", alt: "", class: "meetia-flow-room__avatar"
+                        .meetia-flow-room__chat
+                          .meetia-flow-room__chat-head
+                            i.fa-solid.fa-robot aria-hidden="true"
+                            span AIアシスタント（AI Interview）
+                          .meetia-flow-room__messages
+                            .meetia-flow-room__message.meetia-flow-room__message--ai
+                              p 本日はAI Interviewのサービス紹介をさせていただきます。まずはサービス概要からご説明しますね。
+                          .meetia-flow-room__input
+                            input type="text" placeholder="質問を入力してください..." disabled=""
+                            button type="button" tabindex="-1" aria-label="送信"
+                              i.fa-solid.fa-paper-plane aria-hidden="true"
+
+                    .meetia-flow-room__footer
+                      p.meetia-flow-room__topics-label 話したいトピックを選んでください
+                      .meetia-flow-room__topics
+                        span サービス概要
+                        span 導入事例
+                        span 料金プラン
+                        span セキュリティ
+                        span 他サービスとの違い
+                      .meetia-flow-room__voice
+                        .meetia-flow-room__wave aria-hidden="true"
+                          i
+                          i
+                          i
+                          i
+                          i
+                        span AIが話しています…
+
+              span.meetia-ai-deal-flow__arrow aria-hidden="true"
+                i.fa-solid.fa-chevron-right
+
+              .meetia-ai-deal-flow__step
+                .meetia-ai-deal-flow__step-label
+                  span.meetia-ai-deal-flow__step-num 3
+                  p
+                    | AIが面接内容を自動で分析
+                    br
+                    | 結果をダッシュボードで確認
+                .meetia-ai-deal-flow__panel.meetia-ai-deal-flow__panel--dashboard
+                  .meetia-ai-deal-flow__dash-card
+                    .meetia-ai-deal-flow__dash-head
+                      span 評価ランク
+                      strong A
+                    p.meetia-ai-deal-flow__dash-grade 合格ラインを大きく上回っています
+                    .meetia-ai-deal-flow__dash-bar aria-hidden="true"
+                      span
+                  h4.meetia-ai-deal-flow__dash-section 面接サマリー
+                  ul.meetia-ai-deal-flow__dash-list
+                    li
+                      i.fa-solid.fa-check aria-hidden="true"
+                      span 課題：一次面接の日程調整・属人評価
+                    li
+                      i.fa-solid.fa-check aria-hidden="true"
+                      span 関心：評価基準の統一・可視化
+                    li
+                      i.fa-solid.fa-check aria-hidden="true"
+                      span 検討：合否基準・運用体制
+                    li
+                      i.fa-solid.fa-check aria-hidden="true"
+                      span 次アクション：最終面接へ進む
+                  .meetia-ai-deal-flow__dash-follow
+                    span.meetia-ai-deal-flow__dash-follow-label フォローアップ（自動実行）
+                    .meetia-ai-deal-flow__dash-follow-box
+                      i.fa-solid.fa-envelope aria-hidden="true"
+                      p
+                        strong フォローメール
+                        |  2025/05/28（水）15:00 予約済み
+                  button.meetia-ai-deal-flow__dash-btn type="button" tabindex="-1" 結果詳細を表示
+            button.meetia-ai-deal-flow__scroll-btn.meetia-ai-deal-flow__scroll-btn--next type="button" aria-label="次へ" data-lp-scroll-next=".meetia-ai-deal-flow__steps"
+              i.fa-solid.fa-chevron-right aria-hidden="true"
+
+          p.meetia-ai-deal-flow__foot
+            | 資料を見せながら、AIが音声で質問。
+            br
+            | リアルな面接体験で、採用成果につながる。
+
+
+  section#service.meetia-section.meetia-service-concept
+    .meetia-section__inner
+      .meetia-section__head.meetia-service-head
+        span.meetia-section__eyebrow SERVICE
+        h2.meetia-section__title
+          | AI Interviewが提供する
+          span.meetia-text-gradient AI面接サービス
+        p.meetia-section__lead シナリオ作成から受験・評価・合否まで、一気通貫で自動化します。
+      .meetia-service-concept__scroll-wrap
+        button.meetia-service-concept__scroll-btn.meetia-service-concept__scroll-btn--prev type="button" aria-label="前へ" data-lp-scroll-prev=".meetia-service-concept__grid"
+          i.fa-solid.fa-chevron-left aria-hidden="true"
+        .meetia-service-concept__grid
+          - TopsHelper::SERVICE_CARDS.each do |card|
+            .meetia-service-concept__card
+              .meetia-service-concept__header
+                span.meetia-service-concept__num = card[:num]
+                h3.meetia-service-concept__title = card[:title]
+              p.meetia-service-concept__desc = card[:desc]
+              .meetia-service-concept__illust aria-hidden="true"
+                .meetia-service-concept__icon-stage
+                  span.meetia-service-concept__icon-ring
+                    i.fa-solid class=card[:icon]
+                  span.meetia-service-concept__icon-orbit
+                    i.fa-solid class=card[:orbit]
+        button.meetia-service-concept__scroll-btn.meetia-service-concept__scroll-btn--next type="button" aria-label="次へ" data-lp-scroll-next=".meetia-service-concept__grid"
+          i.fa-solid.fa-chevron-right aria-hidden="true"
+
+  section#features.meetia-section.meetia-section--strip.meetia-features-page
+    .meetia-section__inner.meetia-section__inner--wide
+      .meetia-features-page__head
+        span.meetia-section__eyebrow FEATURES
+        h2.meetia-features-page__title AI Interviewの機能一覧
+        p.meetia-features-page__lead
+          | AIが採用面接を革新し、シナリオ設計から評価・合否までを自動化。
+          br
+          | 成果につながる機能を詳しくご紹介します。
+      .meetia-features-showcase
+        .meetia-features-showcase__grid
+          - TopsHelper::FEATURE_ROWS.each do |(num, icon, title, body, _)|
+            - if num == "03"
+              article.meetia-feature-focus data-feature=num
+                .meetia-feature-focus__head
+                  .meetia-feature-focus__head-icon
+                    i.fa-solid class=icon aria-hidden="true"
+                  .meetia-feature-focus__head-main
+                    p.meetia-feature-focus__num = num
+                    h2.meetia-feature-focus__title = title
+                    p.meetia-feature-focus__body = body
+                .meetia-feature-focus__screen
+                  = image_tag "top_hero_portal.png", alt: "24時間AI面接ルームのイメージ", class: "meetia-feature-focus__image"
+            - else
+              article.meetia-feature-card data-feature=num
+                .meetia-feature-card__icon
+                  i.fa-solid class=icon aria-hidden="true"
+                .meetia-feature-card__content
+                  p.meetia-feature-card__num = num
+                  h3.meetia-feature-card__title = title
+                  p.meetia-feature-card__body = body
+                span.meetia-feature-card__arrow aria-hidden="true"
+                  i.fa-solid.fa-chevron-right
+
+        .meetia-features-showcase__cta
+          p.meetia-features-showcase__cta-copy すべての機能を体験して、採用面接の未来を変えましょう。
+          .meetia-features-showcase__cta-actions
+            = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill" do
+              | 無料でAI Interviewを始める
+              i.fa-solid.fa-chevron-right aria-hidden="true"
+            = link_to plans_path, class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill" do
+              i.fa-solid.fa-download aria-hidden="true"
+              | 資料をダウンロード
+
+  section#pricing.meetia-section.meetia-pricing-section
+    .meetia-section__inner.meetia-section__inner--wide
+      .meetia-section__head
+        span.meetia-section__eyebrow PRICING
+        h2.meetia-section__title 料金プラン
+        p.meetia-section__lead トライアルから始めて、チームの規模に合わせてアップグレードできます。
+      / Subscription::PLAN_CATALOG から LP 料金セクションを描画（/plans と同一ソース）
+      - visible_plans = Subscription.lp_display_plans
+
+      .meetia-pricing__slider data-pricing-slider=""
+        p.meetia-pricing__scroll-hint 最初の3プランを表示し、4つ目の途中まで見えます。右矢印で続きを確認できます
+        .meetia-pricing__slider-body
+          button.meetia-pricing__arrow.meetia-pricing__arrow--prev type="button" aria-label="前のプラン" data-pricing-prev=""
+            svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+              polyline points="15 18 9 12 15 6"
+          .meetia-pricing__viewport
+            .meetia-pricing__track
+              - visible_plans.each do |plan_key, config|
+                - is_trial = plan_key == :trial
+                - card_classes = []
+                - card_classes << 'meetia-pricing__card--popular' if config[:popular]
+                - card_classes << 'meetia-pricing__card--featured' if config[:featured]
+                - card_classes << 'meetia-pricing__card--trial' if is_trial
+                .meetia-pricing__card class=card_classes.join(' ')
+                  - if config[:popular]
+                    .meetia-pricing__badge.meetia-pricing__badge--popular POPULAR
+                  - if config[:featured]
+                    .meetia-pricing__badge RECOMMENDED
+                  - if is_trial
+                    .meetia-pricing__badge.meetia-pricing__badge--trial FREE TRIAL
+                  .meetia-pricing__card-head
+                    h3.meetia-pricing__plan = config[:name]
+                    .meetia-pricing__price
+                      span.meetia-pricing__currency ¥
+                      span.meetia-pricing__amount = number_with_delimiter(config[:price])
+                      - if is_trial
+                        span.meetia-pricing__period = " / #{Subscription::TRIAL_DAYS}日間"
+                      - else
+                        span.meetia-pricing__period = " / 月"
+                    p.meetia-pricing__desc = config[:description]
+                  ul.meetia-pricing__features
+                    - Subscription::LP_COMPARISON_FEATURES.each do |feature|
+                      li.meetia-pricing__feature
+                        span.meetia-pricing__feature-label = feature[:label]
+                        span.meetia-pricing__feature-value = Subscription.format_feature_value(plan_key, feature[:key])
+                  .meetia-pricing__card-foot
+                    - cta_label = config[:lp_cta].presence || "このプランで始める"
+                    - btn_class = is_trial ? "meetia-btn meetia-btn--secondary meetia-pricing__card-btn" : "meetia-btn meetia-btn--primary meetia-pricing__card-btn"
+                    = link_to cta_label, new_client_registration_path, class: btn_class
+          button.meetia-pricing__arrow.meetia-pricing__arrow--next type="button" aria-label="次のプラン" data-pricing-next=""
+            svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+              polyline points="9 18 15 12 9 6"
+
+      .meetia-pricing__cta
+        = link_to "無料トライアルを開始", new_client_registration_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg"
+
+  section#compare.meetia-section
+    .meetia-section__inner
+      .meetia-section__head
+        span.meetia-section__eyebrow WHY AI INTERVIEW?
+        h2.meetia-section__title
+          | 他社との違いは、圧倒的な
+          span.meetia-text-gradient 「AI面接体験」
+        p.meetia-section__lead AI Interviewは、AIが面接の質と成果を最大化するための機能をオールインワンで提供します。
+
+      .meetia-compare-scroll-wrap
+        button.meetia-compare-scroll-btn.meetia-compare-scroll-btn--prev type="button" aria-label="前へ" data-lp-scroll-prev=".meetia-compare-scroll"
+          i.fa-solid.fa-chevron-left aria-hidden="true"
+        .meetia-compare-scroll
+          .meetia-compare-table
+            .meetia-compare-table__glow aria-hidden="true"
+            .meetia-compare-table__head
+              span.meetia-compare-table__label 比較項目
+              span.meetia-compare-table__col.meetia-compare-table__col--meetia
+                span.meetia-compare-table__brand
+                  i.fa-solid.fa-sparkles aria-hidden="true"
+                  | AI Interview
+              span.meetia-compare-table__col 従来の面接 / 他社ツール
+            - TopsHelper::COMPARE_ROWS.each do |row|
+              .meetia-compare-table__row
+                .meetia-compare-table__topic
+                  span.meetia-compare-table__icon aria-hidden="true"
+                    i.fa-solid class=row[:icon]
+                  span = row[:label]
+                .meetia-compare-table__cell.meetia-compare-table__cell--meetia
+                  span.meetia-compare-table__mark.meetia-compare-table__mark--ok aria-hidden="true"
+                    i.fa-solid.fa-check
+                  span = row[:meetia]
+                .meetia-compare-table__cell
+                  span.meetia-compare-table__mark.meetia-compare-table__mark--ng aria-hidden="true"
+                    i.fa-solid.fa-xmark
+                  span = row[:legacy]
+        button.meetia-compare-scroll-btn.meetia-compare-scroll-btn--next type="button" aria-label="次へ" data-lp-scroll-next=".meetia-compare-scroll"
+          i.fa-solid.fa-chevron-right aria-hidden="true"
+
+      .meetia-compare-cta
+        .meetia-compare-cta__text-block
+          span.meetia-compare-cta__badge まずは体験！
+          p.meetia-compare-cta__lead AIによる本格面接を、ぜひご体感ください。
+        .meetia-compare-cta__actions
+          = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--lg") do
+            | 無料トライアルをする
+            i.fa-solid.fa-chevron-right aria-hidden="true"
+          = link_to "#features", class: "meetia-btn meetia-btn--outline meetia-btn--lg" do
+            | 機能を見る
+            i.fa-solid.fa-arrow-right aria-hidden="true"
+
+  section#reviews.meetia-section.meetia-section--strip
+    .meetia-section__inner
+      .meetia-section__head
+        span.meetia-section__eyebrow REVIEWS
+        h2.meetia-section__title 導入企業の声
+        p.meetia-section__lead AI Interviewをご利用いただいている企業様からのフィードバックです。
+      .meetia-reviews-summary
+        .meetia-reviews-summary__stat
+          span.meetia-reviews-summary__value 4.8
+          span.meetia-reviews-summary__label
+            | / 5.0
+        .meetia-reviews-summary__stat
+          span.meetia-reviews-summary__value 1,200+
+          span.meetia-reviews-summary__label 導入企業
+        .meetia-reviews-summary__stat
+          span.meetia-reviews-summary__value 98%
+          span.meetia-reviews-summary__label 継続率
+      .meetia-reviews-slider data-reviews-slider=""
+        button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--prev type="button" aria-label="前のレビュー" data-reviews-prev=""
+          i.fa-solid.fa-chevron-left aria-hidden="true"
+        .meetia-reviews-slider__viewport
+          .meetia-reviews-slider__track
+            - TopsHelper::REVIEW_CARDS.each do |card|
+              .meetia-cases__card
+                .meetia-cases__meta = card[:meta]
+                .meetia-cases__stars ★★★★★
+                h3 = card[:title]
+                p = card[:quote]
+                span.meetia-cases__metric = card[:metric]
+        button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--next type="button" aria-label="次のレビュー" data-reviews-next=""
+          i.fa-solid.fa-chevron-right aria-hidden="true"
+
+  section#faq.meetia-section
+    .meetia-section__inner
+      .meetia-section__head
+        span.meetia-section__eyebrow FAQ
+        h2.meetia-section__title よくあるご質問
+        p.meetia-section__lead AI Interviewに関してよくいただくご質問にお答えします。
+      .meetia-faq-search
+        input.meetia-faq-search__input type="search" placeholder="キーワードで検索（例：料金、セキュリティ、導入期間など）" data-faq-search=""
+        i.fa-solid.fa-magnifying-glass aria-hidden="true"
+      .meetia-faq-layout data-faq-root=""
+        nav.meetia-faq-categories aria-label="FAQカテゴリ"
+          h3 カテゴリ
+          - TopsHelper::FAQ_CATEGORIES.each_with_index do |(key, label, icon), idx|
+            button.meetia-faq-categories__btn type="button" class=("is-active" if idx.zero?) data-faq-category=key
+              i.fa-solid class=icon aria-hidden="true"
+              span = label
+              i.fa-solid.fa-chevron-right aria-hidden="true"
+        .meetia-faq-panel
+          - TopsHelper::FAQ_ITEMS.each_with_index do |item, idx|
+            details.meetia-faq-panel__item class=("is-open-default" if idx.zero?) data-faq-item=item[:category] open=(idx.zero? || nil)
+              summary.meetia-faq-panel__q = item[:q]
+              p.meetia-faq-panel__a = item[:a]
+      .meetia-faq-contact
+        p 解決しない場合は、お気軽にお問い合わせください。
+        = link_to "#company", class: "meetia-btn meetia-btn--primary meetia-btn--lg" do
+          i.fa-solid.fa-envelope aria-hidden="true"
+          span お問い合わせ
+
+
+
+
+  section.meetia-deal-flow
+    .meetia-deal-flow__inner
+      /-- セクションタイトル部 --/
+      .meetia-deal-flow__head
+        span.meetia-section__eyebrow HOW IT WORKS
+        h2.meetia-deal-flow__title AI面接の流れ
+        p.meetia-deal-flow__lead 面倒な準備は不要。URLを共有するだけで、AIが自動で音声面接から結果の分析・通知までを行います。
+
+      /-- 3ステップフローコンテナ --/
+      .meetia-deal-flow__scroll-wrap
+        button.meetia-deal-flow__scroll-btn.meetia-deal-flow__scroll-btn--prev type="button" aria-label="前へ" data-lp-scroll-prev=".meetia-deal-flow__container"
+          i.fa-solid.fa-chevron-left aria-hidden="true"
+        .meetia-deal-flow__container
+        
+          /-- STEP 1 --/
+          .meetia-deal-flow__step-card
+            .meetia-deal-flow__step-num STEP 01
+            .meetia-deal-flow__icon-wrap
+              i.fa-solid.fa-link
+            h3.meetia-deal-flow__step-title URL共有でルームを作成
+            p.meetia-deal-flow__step-desc 専用の招待URLを発行し、候補者へ送るだけ。面倒な日程調整やアカウント作成は一切不要です。
+
+          /-- 矢印（デスクトップでは横、スマホでは非表示） --/
+          .meetia-deal-flow__arrow
+            i.fa-solid.fa-chevron-right
+
+          /-- STEP 2 --/
+          .meetia-deal-flow__step-card
+            .meetia-deal-flow__step-num STEP 02
+            .meetia-deal-flow__icon-wrap
+              i.fa-solid.fa-microphone-lines
+            h3.meetia-deal-flow__step-title AIが自動で音声面接を進行
+            p.meetia-deal-flow__step-desc 候補者がURLにアクセスすると、AIがシナリオに沿って質問し、音声・選択式の回答を評価します。
+
+          /-- 矢印 --/
+          .meetia-deal-flow__arrow
+            i.fa-solid.fa-chevron-right
+
+          /-- STEP 3 --/
+          .meetia-deal-flow__step-card
+            .meetia-deal-flow__step-num STEP 03
+            .meetia-deal-flow__icon-wrap
+              i.fa-solid.fa-chart-pie
+            h3.meetia-deal-flow__step-title 終了後に結果を自動分析・通知
+            p.meetia-deal-flow__step-desc 文字起こし、スコアリング、合否判定を自動実行。結果は即座にダッシュボードに反映されます。
+        button.meetia-deal-flow__scroll-btn.meetia-deal-flow__scroll-btn--next type="button" aria-label="次へ" data-lp-scroll-next=".meetia-deal-flow__container"
+          i.fa-solid.fa-chevron-right aria-hidden="true"
+
+
+
+
+  section#company.meetia-section.meetia-section--strip
+    .meetia-section__inner.meetia-section__inner--wide
+
+      .meetia-company-profile
+        .meetia-company-profile__head
+          span.meetia-section__eyebrow ABOUT US
+          h2.meetia-company-profile__title 会社概要
+          p.meetia-company-profile__lead AIと人の採用体験を融合し、一次面接の取りこぼしをゼロに。
+
+        .meetia-company-profile__grid
+          .meetia-company-profile__left
+            h3.meetia-company-profile__catch
+              | 採用の未来を、
+              br
+              | AIと共に
+              span.meetia-text-gradient 創る。
+            p.meetia-company-profile__mission-text AI Interviewは、面接シナリオをもとにAIが一次面接を代行するBtoB向けサービスです。24時間体制で受験機会を逃さず、データに基づく採用改善を支援します。
+            .meetia-company-profile__stats
+              - TopsHelper::COMPANY_STATS.each do |stat|
+                .meetia-company-profile__stat
+                  .meetia-company-profile__stat-icon
+                    i.fa-solid class=stat[:icon] aria-hidden="true"
+                  span.meetia-company-profile__stat-label = stat[:label]
+                  .meetia-company-profile__stat-num
+                    span = stat[:num]
+                    small = stat[:unit]
+
+          .meetia-company-profile__right
+            .meetia-company-profile__facts
+              - TopsHelper::COMPANY_PROFILE.each do |label, value|
+                .meetia-company-profile__row
+                  .meetia-company-profile__th = label
+                  .meetia-company-profile__td = value
+
+  section.meetia-cta-band
+    .meetia-cta-band__inner
+      .meetia-cta-band__header
+        span.meetia-cta-band__badge
+          i.fa-solid.fa-bolt aria-hidden="true"
+          | TRIAL
+        h2.meetia-cta-band__title
+          = "#{Subscription::TRIAL_DAYS}日間の無料トライアルを今すぐ体験"
+        p.meetia-cta-band__lead AI Interviewで、一次面接の機会を逃さない。シナリオを作ってリンクを送るだけ。24時間、候補者が受験を始められます。
+
+      .meetia-cta-band__features
+        - TopsHelper::TRIAL_FEATURES.each do |feature|
+          .meetia-cta-band__feature
+            .meetia-cta-band__feature-icon
+              i.fa-solid class=feature[:icon] aria-hidden="true"
+            h3.meetia-cta-band__feature-label = feature[:label]
+            p.meetia-cta-band__feature-desc = feature[:desc]
+
+      .meetia-cta-band__actions
+        = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-cta-band__btn" do
+          i.fa-solid.fa-rocket aria-hidden="true"
+          span 無料トライアルを開始
+  footer.meetia-footer
+    .meetia-footer__glow aria-hidden="true"
+    .meetia-footer__inner
+      .meetia-footer__brand
+        = link_to root_path, class: "meetia-footer__logo-link" do
+          = image_tag "meetia_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
+        p.meetia-footer__tagline シナリオを作って、AIと本格面接
+        p.meetia-footer__desc BtoB向けAI面接サービス。シナリオ作成から招待リンク受験・評価・合否まで。
+      nav.meetia-footer__nav aria-label="フッターナビ"
+        h3.meetia-footer__nav-title プロダクト
+        .meetia-footer__nav-links
+          - TopsHelper::LP_NAV_ITEMS.first(4).each do |item|
+            = link_to item[:label], item[:href], class: "meetia-footer__link"
+      nav.meetia-footer__nav aria-label="サポート"
+        h3.meetia-footer__nav-title サポート
+        .meetia-footer__nav-links
+          - TopsHelper::LP_NAV_ITEMS.last(3).each do |item|
+            = link_to item[:label], item[:href], class: "meetia-footer__link"
+      .meetia-footer__cta
+        h3.meetia-footer__nav-title 今すぐ体験
+        p = "#{Subscription::TRIAL_DAYS}日間、無料でAI面接をお試しください。"
+        = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--sm") do
+          i.fa-solid.fa-bolt aria-hidden="true"
+          span 無料トライアル
+    .meetia-footer__bottom
+      p.meetia-footer__copy © #{Time.current.year} AI Interview Inc.
+      .meetia-footer__bottom-links
+        = link_to "#faq", class: "meetia-footer__bottom-link" do
+          | FAQ
+        = link_to "#company", class: "meetia-footer__bottom-link" do
+          | 会社概要

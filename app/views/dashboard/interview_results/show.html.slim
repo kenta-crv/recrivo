@@ -1,0 +1,149 @@
+.db-v2-header
+  .db-v2-header__left
+    nav.db-v2-breadcrumb aria-label="パンくず"
+      = link_to "面接結果", dashboard_interview_results_path, class: "db-v2-breadcrumb__link"
+      i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
+      span.db-v2-breadcrumb__current = "##{@result.id}"
+    h1.db-v2-header__title 面接結果 ##{@result.id}
+    p.db-v2-header__subtitle
+      = @result.interview.situation&.title
+      |  ／ 
+      = @result.interview.user&.email
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    - if @result.pending_review? || @result.interview.situation&.manual_judgment?
+      = button_to judge_pass_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary", data: { confirm: "合格に確定しますか？" } do
+        span 合格にする
+      = button_to judge_fail_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: "不合格に確定しますか？" } do
+        span 不合格にする
+    = button_to notify_hire_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary", data: { confirm: "採用通知メールを送信しますか？" } do
+      i.fa-solid.fa-envelope aria-hidden="true"
+      span 採用通知を送る
+    = button_to notify_reject_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: "不採用通知メールを送信しますか？" } do
+      i.fa-solid.fa-envelope aria-hidden="true"
+      span 不採用通知を送る
+    = link_to dashboard_interview_results_path, class: "db-v2-btn db-v2-btn--ghost" do
+      i.fa-solid.fa-arrow-left aria-hidden="true"
+      span 一覧に戻る
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 受験者情報
+  .db-v2-bottom-card__body
+    - user = @result.interview.user
+    .db-v2-leads-table-wrap
+      table.db-v2-leads-table
+        tbody
+          tr
+            th 氏名
+            td = user&.name.presence || "—"
+          tr
+            th メール
+            td = user&.email.presence || "—"
+          tr
+            th 電話番号
+            td = user&.tel.presence || "—"
+          tr
+            th 住所
+            td = user&.address.presence || "—"
+
+.db-v2-summary-grid
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--green
+      i.fa-solid.fa-flag-checkered aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 判定
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value
+          - case @result.final_status
+          - when "passed"
+            | 合格
+          - when "failed"
+            | 不合格
+          - when "pending_review"
+            | 確認待ち（面接官判定）
+          - else
+            = @result.final_status
+      - failure_reason = @result.results_data.is_a?(Hash) && (@result.results_data["failure_reason"] || @result.results_data[:failure_reason])
+      - failure_reason ||= @result.interview.rejection_reason
+      - if @result.failed? && failure_reason.present?
+        p.db-v2-muted style="margin-top:8px;font-size:0.9rem;line-height:1.5;" = "理由: #{failure_reason}"
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--gold
+      i.fa-solid.fa-star aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 平均点
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value = @result.average_score || "—"
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
+      i.fa-solid.fa-list-ol aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 回答数
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value
+          = "#{@result.answered_questions.to_i} / #{@result.total_questions.to_i}"
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title AI総評
+    - if @result.summary.blank?
+      = button_to "総評を生成", regenerate_summary_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary db-v2-btn--xs"
+  .db-v2-bottom-card__body
+    p style="white-space:pre-wrap;line-height:1.7;" = @result.summary.presence || "AI総評はまだ生成されていません。「総評を生成」から作成できます。"
+
+    h3.db-v2-panel__title style="margin-top:1rem" 強み
+    - if Array(@result.strengths).blank?
+      p.db-v2-muted なし
+    - else
+      ul
+        - Array(@result.strengths).each do |item|
+          li = item
+
+    h3.db-v2-panel__title style="margin-top:1rem" 改善点
+    - if Array(@result.weaknesses).blank?
+      p.db-v2-muted なし
+    - else
+      ul
+        - Array(@result.weaknesses).each do |item|
+          li = item
+
+    h3.db-v2-panel__title style="margin-top:1rem" 推奨アクション
+    p style="white-space:pre-wrap;" = @result.recommendation.presence || "—"
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 回答ログ（録音再生）
+  .db-v2-bottom-card__body
+    - if @responses.blank?
+      p.db-v2-muted 回答がありません
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table
+          thead
+            tr
+              th 質問
+              th 回答テキスト
+              th 録音
+              th スコア
+          tbody
+            - @responses.each do |resp|
+              tr
+                td = resp.question&.question_text
+                td = resp.audio_transcript
+                td
+                  - if resp.answer_audio.attached?
+                    .db-v2-recording-play
+                      p.db-v2-recording-play__label
+                        i.fa-solid.fa-circle-play aria-hidden="true"
+                        |  録音を再生
+                      audio.db-v2-audio-player controls=true preload="metadata" src=rails_blob_path(resp.answer_audio, only_path: true)
+                  - elsif resp.answer_video.attached?
+                    .db-v2-recording-play
+                      p.db-v2-recording-play__label
+                        i.fa-solid.fa-circle-play aria-hidden="true"
+                        |  動画を再生
+                      video.db-v2-audio-player controls=true preload="metadata" style="max-height:160px;" src=rails_blob_path(resp.answer_video, only_path: true)
+                  - else
+                    span.db-v2-muted 録音なし
+                td = resp.score

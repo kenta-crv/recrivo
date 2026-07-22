@@ -1,0 +1,16 @@
+{
+  "name": "smart",
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
+    "build:scss": "node -e \"console.log('build:scss skipped (prebuilt css)')\"",
+    "build:css": "yarn build:scss && npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  }
+}

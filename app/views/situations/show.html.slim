@@ -1,0 +1,172 @@
+.db-v2-header
+  .db-v2-header__left
+    nav.db-v2-breadcrumb aria-label="パンくず"
+      = link_to dashboard_index_path, class: "db-v2-breadcrumb__link" do
+        i.fa-solid.fa-gauge-high aria-hidden="true"
+        span ダッシュボード
+      i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
+      = link_to "シナリオ管理", situations_path, class: "db-v2-breadcrumb__link"
+      i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
+      span.db-v2-breadcrumb__current = @situation.title
+    h1.db-v2-header__title = @situation.title
+    p.db-v2-header__subtitle
+      - if @situation.industry.present? || @situation.job_title.present?
+        = [@situation.industry.presence, @situation.job_title.presence].compact.join(" ／ ")
+        |  ／ 
+      = @situation.description.presence || "説明未設定"
+      |  ／ 言語 #{@situation.language.to_s.upcase}
+      - if @situation.archived?
+        |  ／ アーカイブ中
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    = link_to edit_situation_path(@situation), class: "db-v2-btn db-v2-btn--ghost" do
+      i.fa-solid.fa-pen aria-hidden="true"
+      span 編集
+    = link_to new_situation_question_path(@situation), class: "db-v2-btn db-v2-btn--primary" do
+      i.fa-solid.fa-plus aria-hidden="true"
+      span 質問を追加
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 招待リンク
+  .db-v2-bottom-card__body
+    p.db-v2-muted 候補者にこのURLを共有してください（ログイン不要）。
+    .db-v2-form-group
+      input.db-v2-form-control#invite-url-field type="text" readonly=true value=interview_invite_url(@situation.invite_token)
+    .db-v2-form-actions
+      button.db-v2-btn.db-v2-btn--primary type="button" data-copy-text-from="#invite-url-field"
+        i.fa-solid.fa-copy aria-hidden="true"
+        span リンクをコピー
+      = link_to interview_invite_path(@situation.invite_token), class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener", data: { turbo: false } do
+        i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
+        span 面接ページを開く
+      = button_to regenerate_invite_token_situation_path(@situation), method: :post, class: "db-v2-btn db-v2-btn--ghost", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: "既存リンクは無効になります。再発行しますか？", confirm: "既存リンクは無効になります。再発行しますか？" } do
+        span リンクを再発行
+
+.db-v2-bottom-card style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation)
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title AIで質問を提案
+    span.db-v2-deals-count 業種・職種から自動生成
+  .db-v2-bottom-card__body
+    p.db-v2-muted style="margin-bottom:12px"
+      | 業種と募集職種をもとに、面接で使いやすい質問をいくつか提案します。必要なものだけチェックして追加してください。
+    .db-v2-suggest-grid
+      .db-v2-form-group
+        label.db-v2-form-label for="suggest-industry" 業種
+        input#suggest-industry.db-v2-form-control type="text" value=(@situation.industry.to_s) placeholder="例: IT・Web" data-ai-suggest-industry="1"
+      .db-v2-form-group
+        label.db-v2-form-label for="suggest-job-title" 募集職種
+        input#suggest-job-title.db-v2-form-control type="text" value=(@situation.job_title.to_s) placeholder="例: カスタマーサクセス" data-ai-suggest-job="1"
+      .db-v2-form-group
+        label.db-v2-form-label for="suggest-count" 提案数
+        select#suggest-count.db-v2-form-control data-ai-suggest-count="1"
+          option value="3" 3問
+          option value="5" selected="selected" 5問
+          option value="8" 8問
+    .db-v2-form-actions style="margin-top:4px"
+      button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-run="1"
+        i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
+        span 質問を提案する
+      span.db-v2-muted data-ai-suggest-status="1"
+
+    .db-v2-suggest-results data-ai-suggest-results="1" hidden=true
+      p.db-v2-muted style="margin:16px 0 8px" 提案結果（追加したい質問にチェック）
+      .db-v2-suggest-list data-ai-suggest-list="1"
+      .db-v2-form-actions style="margin-top:12px"
+        button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
+          i.fa-solid.fa-plus aria-hidden="true"
+          span 選択した質問を追加
+        button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" すべて選択
+        button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" 選択解除
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title 質問一覧
+    span.db-v2-deals-count = "#{@questions.size} 問"
+  .db-v2-bottom-card__body
+    - if @questions.empty?
+      .db-v2-empty-state
+        .db-v2-empty-state__icon
+          i.fa-solid.fa-circle-question aria-hidden="true"
+        p.db-v2-empty-state__text まだ質問がありません。最低1問必要です。
+        = link_to new_situation_question_path(@situation), class: "db-v2-btn db-v2-btn--primary" do
+          span 最初の質問を追加
+    - else
+      ol.db-v2-question-list
+        - @questions.each do |q|
+          li.db-v2-question-list__item
+            .db-v2-question-list__order
+              span.db-v2-question-list__num = q.order
+            .db-v2-question-list__main
+              p.db-v2-question-list__text = q.question_text
+              .db-v2-question-list__meta
+                span.db-v2-question-list__chip = question_type_label(q.question_type)
+                - if q.published?
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--required 公開
+                - else
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional 下書き
+                - if q.required?
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--required 必須
+                - else
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional 任意
+                - if q.has_branching_rules?
+                  span.db-v2-question-list__chip 分岐あり
+            .db-v2-question-list__actions
+              = button_to toggle_publish_situation_question_path(@situation, q), method: :post, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form" } do
+                span = q.published? ? "非公開にする" : "公開する"
+              = link_to edit_situation_question_path(@situation, q), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
+                i.fa-solid.fa-pen aria-hidden="true"
+                span 編集
+              = button_to situation_question_path(@situation, q), method: :delete, class: "db-v2-btn db-v2-btn--danger db-v2-btn--xs", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: "この質問を削除しますか？", confirm: "この質問を削除しますか？" } do
+                i.fa-solid.fa-trash aria-hidden="true"
+                span 削除
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 評価・合否のルール
+  .db-v2-bottom-card__body
+    .db-v2-leads-table-wrap
+      table.db-v2-leads-table
+        tbody
+          tr
+            th 判定モード
+            td = @situation.manual_judgment? ? "面接官が判定" : "自動判定"
+          tr
+            th 候補者への結果表示
+            td = @situation.hide_result_from_candidate? ? "非表示（後日連絡）" : "その場で表示"
+          tr
+            th 最終の合格ライン
+            td
+              = "#{@situation.passing_score} 点（全回答の平均）"
+          tr
+            th 途中不合格
+            td
+              - if @situation.auto_reject_enabled?
+                | 使う
+                ul.db-v2-list-plain style="margin:8px 0 0; padding-left:1.1rem"
+                  - if @situation.reject_on_required_fail?
+                    li = "必須質問が #{@situation.min_required_score} 点未満なら不合格（平均点とは別ルール。面接は続行し最終判定で不合格）"
+                  - else
+                    li 必須質問での不合格はしない
+                  - if @situation.max_consecutive_fails.to_i > 0
+                    li = "#{@situation.max_consecutive_fails} 問連続で基準未達なら不合格（面接は続行し最終判定で不合格）"
+                  - else
+                    li 連続未達での不合格はしない
+              - else
+                | 使わない（最後まで答えてから平均で判定）
+          tr
+            th セッションタイムアウト
+            td = "#{@situation.session_timeout_minutes} 分"
+          tr
+            th 再開
+            td = @situation.allow_resume? ? "可（最大 #{@situation.max_resume_count} 回）" : "不可"
+          tr
+            th 途中不合格時の通知
+            td
+              - case @situation.reject_notify_method
+              - when "email"
+                | メール
+              - when "none"
+                | なし
+              - else
+                | アプリ内

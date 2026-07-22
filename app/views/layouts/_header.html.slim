@@ -1,0 +1,75 @@
+header.custom-navbar.py-2
+  .container-fluid.d-flex.align-items-center.justify-content-between
+    .d-flex.align-items-center.logo-section
+      = link_to root_path, class: "nav-logo-link", style: "text-decoration:none;color:inherit;font-weight:700;" do
+        = image_tag "meetia_logo.png", class: "nav-logo me-2", alt: "AI Interview", style: "height:28px;"
+      - if ENV['AI_INTERVIEW_TEST_MODE'] == 'true'
+        span style="margin-left:10px; background:#e74c3c; color:#fff; font-size:11px; font-weight:bold; padding:2px 8px; border-radius:4px; letter-spacing:0.5px;" TEST MODE
+
+    nav.nav-menu.d-none.d-lg-flex
+      ul.d-flex.list-unstyled.mb-0.align-items-center
+        - if client_signed_in?
+          li
+            = link_to "シナリオ管理", situations_path, class: "nav-link-custom"
+          li
+            = link_to "面接結果", dashboard_interview_results_path, class: "nav-link-custom"
+          li
+            = link_to "ダッシュボード", dashboard_index_path, class: "nav-link-custom"
+        - elsif admin_signed_in?
+          li
+            = link_to "面接結果", admin_interview_results_path, class: "nav-link-custom"
+          li
+            = link_to "ダッシュボード", dashboard_index_path, class: "nav-link-custom"
+
+    nav.mobile-nav.d-lg-none
+      #mobile-nav-toggle.mobile-nav-toggle
+        span.hamburger-line
+        span.hamburger-line
+        span.hamburger-line
+      #mobile-nav-menu.mobile-nav-menu
+        .mobile-nav-header
+          #mobile-nav-close.mobile-nav-close
+            span.close-line
+            span.close-line
+        ul.mobile-nav-list
+          li
+            = link_to "トップページ", root_path, class: "nav-link-custom"
+          - if client_signed_in?
+            li
+              = link_to "シナリオ管理", situations_path, class: "nav-link-custom"
+            li
+              = link_to "面接結果", dashboard_interview_results_path, class: "nav-link-custom"
+            li
+              = link_to "ダッシュボード", dashboard_index_path, class: "nav-link-custom"
+          - elsif admin_signed_in?
+            li
+              = link_to "面接結果", admin_interview_results_path, class: "nav-link-custom"
+
+        .mobile-nav-actions
+          - if client_signed_in?
+            = render "shared/sign_out_button", path: destroy_client_session_path
+          - elsif admin_signed_in?
+            = render "shared/sign_out_button", path: destroy_admin_session_path
+          - elsif user_signed_in?
+            = render "shared/sign_out_button", path: destroy_user_session_path
+          - else
+            = link_to "ログイン", new_client_session_path, class: "btn login-btn"
+            = link_to "無料トライアル", new_client_registration_path, class: "btn login-btn"
+
+    .d-flex.align-items-center.gap-3.d-none.d-lg-flex
+      - if client_signed_in?
+        span.nav-link-custom style="color: #333; font-size: 14px;"
+          = current_client.email
+        = render "shared/sign_out_button", path: destroy_client_session_path
+      - elsif admin_signed_in?
+        span.nav-link-custom style="color: #333; font-size: 14px;"
+          | 管理者:
+          = current_admin.email
+        = render "shared/sign_out_button", path: destroy_admin_session_path
+      - elsif user_signed_in?
+        span.nav-link-custom style="color: #333; font-size: 14px;"
+          = current_user.name || current_user.email
+        = render "shared/sign_out_button", path: destroy_user_session_path
+      - else
+        = link_to "ログイン", new_client_session_path, class: "btn login-btn"
+        = link_to "無料トライアル", new_client_registration_path, class: "btn login-btn", style: "margin-left:8px;"

@@ -1,0 +1,85 @@
+- is_trial = @target_client.on_trial? || (@subscription&.trial? && !@subscription&.cancelled?)
+- is_active = @subscription&.active? || @target_client.on_trial?
+- can_cancel = subscription_can_cancel?(@target_client)
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title
+      i.fa-solid.fa-id-card aria-hidden="true"
+      |  現在のプラン
+  .db-v2-bottom-card__body
+    - if @subscription.present? || @target_client.on_trial?
+      .db-v2-subscription-status
+        .db-v2-subscription-status__row
+          span.db-v2-subscription-status__label プランタイプ
+          span.db-v2-subscription-status__value
+            - if is_trial
+              = Subscription::PLAN_NAMES[:trial]
+            - else
+              = @subscription&.plan_name || "—"
+
+        .db-v2-subscription-status__row
+          span.db-v2-subscription-status__label ステータス
+          span.db-v2-subscription-status__value class=("db-v2-subscription-status__value--trial" if is_trial)
+            - if is_trial
+              | トライアル中
+            - elsif @subscription&.cancelled?
+              | 解約手続き済み
+            - elsif is_active
+              | 有効
+            - else
+              = @subscription&.status || "—"
+
+        - current_trial_ends_at = nil
+        - if is_trial
+          - current_trial_ends_at = @subscription&.trial_ends_at || @target_client.trial_ends_at || (@subscription&.created_at&.+ Subscription::TRIAL_DAYS.days)
+
+        - if current_trial_ends_at.present?
+          .db-v2-subscription-status__row
+            span.db-v2-subscription-status__label トライアル終了日
+            span.db-v2-subscription-status__value = current_trial_ends_at.strftime("%Y年%m月%d日")
+
+      - unless admin_signed_in?
+        .db-v2-subscription-upgrade
+          h3.db-v2-subscription-upgrade__title プランのアップグレード・変更
+          = link_to plans_path, class: "db-v2-btn db-v2-btn--primary" do
+            i.fa-solid.fa-tags aria-hidden="true"
+            span プランを変更する
+
+        - if can_cancel
+          .db-v2-subscription-cancel
+            p.db-v2-subscription-cancel__note
+              - if is_trial
+                | トライアル期間中でも解約できます。解約後はトライアル終了時の自動課金が停止されます。
+              - else
+                | 解約手続き後も、契約期間の終了日まではご利用いただけます。
+            = link_to "サブスクリプションを解約する", cancel_confirm_dashboard_subscription_path(subscription_path_options), class: "db-v2-btn db-v2-btn--danger"
+
+    - else
+      .db-v2-empty-state
+        p.db-v2-empty-state__text アクティブなサブスクリプションがありません。
+        = link_to plans_path, class: "db-v2-btn db-v2-btn--primary" do
+          span プランを選択する
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 支払い履歴
+  .db-v2-bottom-card__body
+    - if @payments.present?
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table
+          thead
+            tr
+              th 日付
+              th 金額
+              th 説明
+              th ステータス
+          tbody
+            - @payments.each do |payment|
+              tr
+                td = payment.created_at.strftime("%Y/%m/%d")
+                td = payment.respond_to?(:formatted_amount) ? payment.formatted_amount : "¥#{number_with_delimiter(payment.amount)}"
+                td = payment.try(:description) || "—"
+                td = payment.status
+    - else
+      p.db-v2-empty-state__text 支払い履歴はありません。

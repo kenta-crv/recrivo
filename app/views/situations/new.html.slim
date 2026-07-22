@@ -1,0 +1,27 @@
+.db-v2-header
+  .db-v2-header__left
+    nav.db-v2-breadcrumb aria-label="パンくず"
+      = link_to dashboard_index_path, class: "db-v2-breadcrumb__link" do
+        i.fa-solid.fa-gauge-high aria-hidden="true"
+        span ダッシュボード
+      i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
+      = link_to "シナリオ管理", situations_path, class: "db-v2-breadcrumb__link"
+      i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
+      span.db-v2-breadcrumb__current 新規作成
+    h1.db-v2-header__title 新規シナリオ作成
+    p.db-v2-header__subtitle 基本情報と評価ルールを先に登録し、続けて質問を追加します
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    = link_to situations_path, class: "db-v2-btn db-v2-btn--ghost" do
+      i.fa-solid.fa-arrow-left aria-hidden="true"
+      span 一覧に戻る
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 基本情報
+  .db-v2-bottom-card__body
+    - if @situation.errors.any?
+      .db-v2-alert.db-v2-alert--danger
+        i.fa-solid.fa-circle-exclamation aria-hidden="true"
+        p = @situation.errors.full_messages.to_sentence
+    = render "form"
