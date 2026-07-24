@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/* Devise auth screens — LP dark theme */
+/* Devise auth screens — LP light theme */
 .meetia-modern-lp.meetia-auth {
   min-height: 100vh;
   display: flex;
@@ -47,23 +47,23 @@
 .meetia-modern-lp.meetia-auth .meetia-auth__logo {
   height: 40px;
   width: auto;
-  display: block;
-  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.35)); }
+  display: block; }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__card {
   padding: 32px 28px 28px;
   border-radius: 18px;
-  background: var(--lp-card);
+  background: #ffffff;
   border: 1px solid var(--lp-card-border);
-  box-shadow: var(--lp-shadow-card), var(--lp-neon-purple); }
+  box-shadow: var(--lp-shadow-card); }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__title {
   margin: 0 0 8px;
   text-align: center;
+  font-family: var(--lp-font-sans);
   font-size: 1.65rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--lp-heading);
-  letter-spacing: 0.02em; }
+  letter-spacing: -0.02em; }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__lead {
   margin: 0 0 24px;
@@ -80,7 +80,7 @@
   margin-bottom: 8px;
   font-size: 0.86rem;
   font-weight: 600;
-  color: #cbd5e1; }
+  color: var(--lp-heading); }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__hint {
   display: block;
@@ -95,20 +95,20 @@
   box-sizing: border-box;
   padding: 13px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(139, 92, 246, 0.28);
-  background: rgba(8, 8, 12, 0.92);
-  color: var(--lp-text);
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  background: #ffffff;
+  color: var(--lp-heading);
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   appearance: none; }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__input::placeholder {
-  color: #64748b; }
+  color: #94a3b8; }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__input:focus {
   outline: none;
-  border-color: rgba(168, 85, 247, 0.65);
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.22); }
+  border-color: rgba(124, 58, 237, 0.55);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12); }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__remember {
   display: flex;
@@ -121,7 +121,7 @@
 .meetia-modern-lp.meetia-auth .meetia-auth__remember input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: var(--lp-purple-light); }
+  accent-color: var(--lp-purple); }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__remember label {
   margin: 0;
@@ -142,27 +142,27 @@
   color: var(--lp-muted); }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__links a {
-  color: var(--lp-accent);
+  color: var(--lp-purple);
   text-decoration: none;
   transition: color 0.2s ease; }
 
 .meetia-modern-lp.meetia-auth .meetia-auth__links a:hover {
-  color: #e9d5ff;
+  color: var(--lp-purple-deep);
   text-decoration: underline; }
 
 .meetia-modern-lp.meetia-auth #error_explanation {
   margin-bottom: 18px;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(248, 113, 113, 0.45);
-  background: rgba(127, 29, 29, 0.28);
-  color: #fecaca; }
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: #fef2f2;
+  color: #b91c1c; }
 
 .meetia-modern-lp.meetia-auth #error_explanation h2 {
   margin: 0 0 8px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #fda4af; }
+  color: #b91c1c; }
 
 .meetia-modern-lp.meetia-auth #error_explanation ul {
   margin: 0;
