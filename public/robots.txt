@@ -21,4 +21,4 @@ Disallow: /clients/edit
 Disallow: /users
 Disallow: /webhooks
 
-Sitemap: https://hirevo.com/sitemap.xml
+Sitemap: https://recrivo.pro/sitemap.xml

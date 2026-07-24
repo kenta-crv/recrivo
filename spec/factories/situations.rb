@@ -16,6 +16,9 @@ FactoryBot.define do
     min_required_score { 70 }
     max_consecutive_fails { 0 }
     reject_notify_method { 'in_app' }
+    allow_text_answer { true }
+    allow_voice_answer { true }
+    record_camera { false }
 
     trait :with_questions do
       after(:create) do |situation|
@@ -25,6 +28,20 @@ FactoryBot.define do
 
     trait :no_resume do
       allow_resume { false }
+    end
+
+    trait :voice_only do
+      allow_text_answer { false }
+      allow_voice_answer { true }
+    end
+
+    trait :text_only do
+      allow_text_answer { true }
+      allow_voice_answer { false }
+    end
+
+    trait :with_camera do
+      record_camera { true }
     end
 
     trait :short_timeout do

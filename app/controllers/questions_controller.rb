@@ -1,5 +1,4 @@
 class QuestionsController < Dashboard::BaseController
-  before_action :authenticate_client_only!
   before_action :set_situation
   before_action :set_question, only: [:edit, :update, :destroy, :toggle_publish]
 
@@ -50,7 +49,7 @@ class QuestionsController < Dashboard::BaseController
   private
 
   def set_situation
-    @situation = current_client.situations.find(params[:situation_id])
+    @situation = situations_scope.find(params[:situation_id])
   end
 
   def set_question

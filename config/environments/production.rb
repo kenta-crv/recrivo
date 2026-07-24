@@ -3,7 +3,7 @@ Rails.application.configure do
 
   # Code is not reloaded between requests.
   config.cache_classes = true
-  config.hosts << ENV.fetch("RAILS_ALLOWED_HOST", "hirevo.com")
+  config.hosts << ENV.fetch("RAILS_ALLOWED_HOST", "recrivo.pro")
   # ローカル本番検証用（RAILS_ALLOWED_HOST=localhost のときも IP 直打ちを許可）
   config.hosts << "127.0.0.1" if ENV["RAILS_ALLOWED_HOST"] == "localhost"
   # Eager load code on boot. This eager loads most of Rails and

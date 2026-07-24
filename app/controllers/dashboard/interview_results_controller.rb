@@ -51,15 +51,17 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
   end
 
   def scoped_results
-    InterviewResult
-      .joins(interview: :situation)
-      .where(situations: { client_id: current_client.id })
+    interview_results_scope
   end
 
   def set_result
     @result = scoped_results
       .includes(interview: [:user, :situation, :interview_responses])
       .find(params[:id])
+  end
+
+  def result_client
+    @result.interview.situation.client
   end
 
   def send_decision_email(decision)
@@ -70,8 +72,8 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
                            alert: "候補者のメールアドレスがありません。"
     end
 
-    client = current_client
-    vars = decision_template_variables
+    client = result_client
+    vars = decision_template_variables(client)
     if decision == :hire
       subject = client.render_decision_email_template(client.hire_email_subject_template, vars)
       body = client.render_decision_email_template(client.hire_email_body_template, vars)
@@ -96,13 +98,13 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
                   alert: "#{label}通知メールの送信に失敗しました。設定を確認してください。"
   end
 
-  def decision_template_variables
+  def decision_template_variables(client)
     interview = @result.interview
     user = interview.user
     {
       "candidate_name" => user&.name.presence || "候補者",
       "candidate_email" => user&.email.to_s,
-      "company" => current_client.company.presence || "弊社",
+      "company" => client.company.presence || "弊社",
       "situation_title" => interview.situation&.title.to_s,
       "average_score" => @result.average_score.to_s
     }

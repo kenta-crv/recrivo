@@ -2052,6 +2052,93 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-suggest-item {
   max-width: 320px;
 }
 
+.dashboard-v2-container .db-v2-recording-play--video {
+  max-width: 420px;
+  width: 100%;
+}
+
+.dashboard-v2-container .db-v2-video-player {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  max-height: 240px;
+  margin-top: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--db-input-border);
+  background: #0f172a;
+  object-fit: contain;
+}
+
+.dashboard-v2-container .db-v2-answer-log {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dashboard-v2-container .db-v2-answer-log__item {
+  padding: 14px 16px;
+  border: 1px solid var(--db-table-border);
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.03);
+}
+
+.dashboard-v2-container .db-v2-answer-log__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.dashboard-v2-container .db-v2-answer-log__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--db-brand-strong, #0f766e);
+  background: rgba(15, 118, 110, 0.1);
+}
+
+.dashboard-v2-container .db-v2-answer-log__score {
+  font-size: 13px;
+  color: var(--db-text-muted);
+}
+
+.dashboard-v2-container .db-v2-answer-log__score strong {
+  color: var(--db-heading);
+}
+
+.dashboard-v2-container .db-v2-answer-log__question {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--db-heading);
+}
+
+.dashboard-v2-container .db-v2-answer-log__label {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--db-text-muted);
+}
+
+.dashboard-v2-container .db-v2-answer-log__transcript {
+  margin-bottom: 12px;
+}
+
+.dashboard-v2-container .db-v2-answer-log__media {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .dashboard-v2-container .db-v2-recording-play__label {
   display: flex;
   align-items: center;

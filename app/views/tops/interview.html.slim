@@ -3,7 +3,7 @@
 javascript:
   var accessToken = null;
 
-.interview-room data-situation-id=@situation.id data-invite-token=@invite_token data-language=(@situation.language.presence || "ja") data-situation-title=@situation.title
+.interview-room data-situation-id=@situation.id data-invite-token=@invite_token data-language=(@situation.language.presence || "ja") data-situation-title=@situation.title data-allow-text=(@situation.allow_text_answer? ? "1" : "0") data-allow-voice=(@situation.allow_voice_answer? ? "1" : "0") data-record-camera=(@situation.record_camera? ? "1" : "0")
   #interview-error.interview-room__error role="alert" hidden=true
 
   /! ===== 身元入力 =====
@@ -34,6 +34,10 @@ javascript:
             - selected_lang = @situation.language.presence || "ja"
             option value="ja" selected=(selected_lang == "ja") 日本語
             option value="en" selected=(selected_lang == "en") English
+
+        - if @situation.record_camera?
+          p.interview-room__hint style="margin-bottom:12px"
+            | この面接ではカメラ映像の表示・録画を行います。ブラウザでカメラの許可をお願いします。
 
         button#enter_room.interview-room__primary type="button" 面接室に入る
 
@@ -75,6 +79,11 @@ javascript:
             span#avatar_state_label 待機中
             |  · AIインタビュアー
 
+        #candidate_camera.interview-cinema__camera hidden=true
+          video#candidate_camera_preview.interview-cinema__camera-video autoplay=true playsinline=true muted=true
+          p.interview-cinema__camera-label あなたの映像
+          span#candidate_camera_rec.interview-cinema__camera-rec hidden=true REC
+
         .interview-cinema__caption
           p#question_text.interview-room__question 面接を開始すると質問が表示されます。
           #mcq_options.interview-room__mcq
@@ -83,9 +92,10 @@ javascript:
             button#replay_question.interview-cinema__replay type="button" 🔊 音声を再生
 
       .interview-cinema__dock
-        label.interview-room__label for="text_answer" あなたの回答
-        textarea#text_answer.interview-room__textarea rows="3" placeholder="テキスト入力、または下のボタンで音声回答"
-        .interview-room__voice-tools
+        #text_answer_block
+          label#text_answer_label.interview-room__label for="text_answer" あなたの回答
+          textarea#text_answer.interview-room__textarea rows="3" placeholder="テキスト入力、または下のボタンで音声回答"
+        #voice_answer_block.interview-room__voice-tools
           button#voice_answer_start.interview-room__secondary type="button" 🎤 音声で回答
           button#voice_answer_stop.interview-room__secondary type="button" disabled=true 録音を止める
           span#voice_answer_status.interview-room__hint

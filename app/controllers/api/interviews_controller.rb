@@ -49,7 +49,8 @@ module Api
         language: interview.language,
         session_timeout_minutes: situation.session_timeout_minutes,
         remaining_seconds: interview.remaining_seconds,
-        greeting: greeting
+        greeting: greeting,
+        answer_settings: answer_settings_payload(situation)
       }, status: :created
     rescue InterviewEngine::SessionManager::AlreadyCompletedError => e
       # 1回のみ仕様: 受験済みは「エラー」ではなく「案内」として返す
@@ -191,9 +192,27 @@ module Api
       audio_file = params[:audio_file]
       video_file = params[:video_file]
       text_answer = params[:text_answer].presence || params[:selected_option].presence
+      situation = @interview.situation
 
       unless question_id && (audio_file || video_file || text_answer.present?)
         return render_api_error('Missing question_id or answer input', status: :bad_request)
+      end
+
+      if text_answer.present? && !situation.allow_text_answer? && audio_file.blank? && video_file.blank?
+        return render_api_error('Text answers are not allowed for this interview', status: :forbidden)
+      end
+
+      if audio_file.present? && !situation.allow_voice_answer?
+        return render_api_error('Voice answers are not allowed for this interview', status: :forbidden)
+      end
+
+      if video_file.present? && !situation.record_camera?
+        return render_api_error('Camera recording is not enabled for this interview', status: :forbidden)
+      end
+
+      # テキスト不可かつ音声可の場合は、音声（または録画）必須
+      if !situation.allow_text_answer? && situation.allow_voice_answer? && audio_file.blank? && video_file.blank?
+        return render_api_error('Voice answer is required for this interview', status: :bad_request)
       end
 
       # ファイルアップロードバリデーション
@@ -623,6 +642,14 @@ module Api
       end
 
       response.answer_video.attach(video_file) if video_file
+    end
+
+    def answer_settings_payload(situation)
+      {
+        allow_text_answer: situation.allow_text_answer?,
+        allow_voice_answer: situation.allow_voice_answer?,
+        record_camera: situation.record_camera?
+      }
     end
   end
 end

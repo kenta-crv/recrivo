@@ -86,6 +86,30 @@
           = f.select :reject_notify_method, [["アプリ内", "in_app"], ["メール", "email"], ["なし", "none"]], {}, class: "db-v2-form-control"
 
   .db-v2-form-section
+    h3.db-v2-form-section__title 回答方式
+    p.db-v2-form-hint style="margin-bottom:12px"
+      | 候補者が使える回答手段を事前に指定します。少なくとも一方は有効にしてください。
+
+    .db-v2-form-group
+      label.db-v2-form-label 許可する回答手段
+      .db-v2-form-check
+        = f.check_box :allow_text_answer
+        = f.label :allow_text_answer, "テキスト回答を許可する"
+      .db-v2-form-check
+        = f.check_box :allow_voice_answer
+        = f.label :allow_voice_answer, "音声回答を許可する"
+      p.db-v2-form-hint
+        | テキスト不可の場合、テキスト入力欄は表示されません（音声の文字起こしは確認メッセージのみ）。
+
+    .db-v2-form-group
+      label.db-v2-form-label カメラ録画
+      .db-v2-form-check
+        = f.check_box :record_camera
+        = f.label :record_camera, "面接中にカメラ映像を表示・録画する"
+      p.db-v2-form-hint
+        | オンにすると受験画面にカメラが表示され、各回答が動画として結果画面で確認できます。
+
+  .db-v2-form-section
     h3.db-v2-form-section__title セッション
     .db-v2-form-group
       = f.label :session_timeout_minutes, "無操作でタイムアウト（分）", class: "db-v2-form-label"

@@ -466,6 +466,7 @@ body.interview-room-body {
   padding: 12px 20px 8px;
   text-align: center;
   min-height: 420px;
+  position: relative;
 }
 
 .interview-cinema__avatar {
@@ -579,6 +580,50 @@ body.interview-room-body {
   backdrop-filter: blur(10px);
 }
 
+.interview-cinema__camera {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: min(180px, 36vw);
+  z-index: 3;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(2, 6, 23, 0.75);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.interview-cinema__camera-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #0f172a;
+  transform: scaleX(-1);
+}
+
+.interview-cinema__camera-label {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.interview-cinema__camera-rec {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(220, 38, 38, 0.9);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
 .interview-cinema__audio-row {
   display: flex;
   gap: 10px;
@@ -633,6 +678,12 @@ body.interview-room-body {
 
   .interview-cinema__avatar {
     width: min(220px, 72vw);
+  }
+
+  .interview-cinema__camera {
+    right: 12px;
+    bottom: 12px;
+    width: min(132px, 34vw);
   }
 
   .interview-room__scoreboard {

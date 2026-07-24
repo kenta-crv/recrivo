@@ -1,5 +1,5 @@
 module ApplicationHelper
-  SITE_NAME = "Hirevo".freeze
+  SITE_NAME = "Recrivo".freeze
   DEFAULT_TITLE = "AI Interview System".freeze
   DEFAULT_DESCRIPTION = "Automate first-round hiring interviews with AI. Create scenarios, send invite links, evaluate voice answers, and decide pass/fail end to end.".freeze
 
@@ -43,7 +43,7 @@ module ApplicationHelper
   end
 
   def site_public_host
-    host = ENV["APP_HOST"].presence || "https://#{ENV.fetch('RAILS_ALLOWED_HOST', 'hirevo.com')}"
+    host = ENV["APP_HOST"].presence || "https://#{ENV.fetch('RAILS_ALLOWED_HOST', 'recrivo.pro')}"
     host = "https://#{host}" unless host.match?(%r{\Ahttps?://}i)
     host.chomp("/")
   end

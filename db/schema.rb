@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_07_21_223706) do
+ActiveRecord::Schema.define(version: 2026_07_22_000001) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -188,6 +188,9 @@ ActiveRecord::Schema.define(version: 2026_07_21_223706) do
     t.string "job_title"
     t.string "judgment_mode", default: "automatic", null: false
     t.string "candidate_result_visibility", default: "immediate", null: false
+    t.boolean "allow_text_answer", default: true, null: false
+    t.boolean "allow_voice_answer", default: true, null: false
+    t.boolean "record_camera", default: false, null: false
     t.index ["client_id", "archived"], name: "index_situations_on_client_id_and_archived"
     t.index ["client_id"], name: "index_situations_on_client_id"
     t.index ["invite_token"], name: "index_situations_on_invite_token", unique: true

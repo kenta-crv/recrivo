@@ -54,4 +54,7 @@
         - if resp.answer_audio.attached?
           p = link_to "音声", rails_blob_path(resp.answer_audio, disposition: "attachment", only_path: true), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--sm"
         - if resp.answer_video.attached?
-          p = link_to "動画", rails_blob_path(resp.answer_video, disposition: "attachment", only_path: true), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--sm"
+          p
+            = link_to "動画", rails_blob_path(resp.answer_video, disposition: "attachment", only_path: true), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--sm"
+            |  
+            video controls=true preload="metadata" style="display:block;max-height:180px;max-width:100%;margin-top:8px;" src=rails_blob_path(resp.answer_video, only_path: true)

@@ -11,7 +11,9 @@ RSpec.describe 'Api::Interviews', type: :request do
       invite_token: situation.invite_token,
       language: 'ja',
       candidate_name: 'テスト太郎',
-      candidate_email: candidate_email
+      candidate_email: candidate_email,
+      candidate_tel: '09012345678',
+      candidate_address: '東京都渋谷区1-1-1'
     }
   end
 
@@ -36,6 +38,11 @@ RSpec.describe 'Api::Interviews', type: :request do
       expect(body['access_token']).to be_present
       expect(body['status']).to eq('in_progress')
       expect(body['total_questions']).to eq(3)
+      expect(body['answer_settings']).to eq(
+        'allow_text_answer' => true,
+        'allow_voice_answer' => true,
+        'record_camera' => false
+      )
     end
 
     it 'returns error for non-existent situation' do
@@ -255,6 +262,39 @@ RSpec.describe 'Api::Interviews', type: :request do
       expect(body['response_id']).to be_present
     end
 
+    it 'rejects text-only answer when text is disabled' do
+      situation.update!(allow_text_answer: false, allow_voice_answer: true)
+
+      post "/api/interviews/#{interview.id}/submit_answer",
+        params: {
+          question_id: question.id,
+          text_answer: 'テキストのみ'
+        },
+        headers: { 'X-Interview-Token' => interview.access_token },
+        as: :json
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'rejects video upload when camera recording is disabled' do
+      video = Tempfile.new(['answer', '.webm'])
+      video.write('fake-video')
+      video.rewind
+
+      post "/api/interviews/#{interview.id}/submit_answer",
+        params: {
+          question_id: question.id,
+          text_answer: 'テスト',
+          video_file: Rack::Test::UploadedFile.new(video.path, 'video/webm')
+        },
+        headers: { 'X-Interview-Token' => interview.access_token }
+
+      expect(response).to have_http_status(:forbidden)
+    ensure
+      video.close
+      video.unlink
+    end
+
     it 'returns error for non-existent question' do
       post "/api/interviews/#{interview.id}/submit_answer",
         params: {
@@ -290,16 +330,18 @@ RSpec.describe 'Api::Interviews', type: :request do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it 'enqueues evaluation job after submission' do
-      expect {
-        post "/api/interviews/#{interview.id}/submit_answer",
-          params: {
-            question_id: question.id,
-            text_answer: 'テスト回答'
-          },
-          headers: { 'X-Interview-Token' => interview.access_token },
-          as: :json
-      }.to have_enqueued_job(EvaluateInterviewResponseJob)
+    it 'evaluates response after submission' do
+      expect(EvaluateInterviewResponseJob).to receive(:perform_now).once
+
+      post "/api/interviews/#{interview.id}/submit_answer",
+        params: {
+          question_id: question.id,
+          text_answer: 'テスト回答'
+        },
+        headers: { 'X-Interview-Token' => interview.access_token },
+        as: :json
+
+      expect(response).to have_http_status(:created)
     end
 
     it 'accepts selected_option parameter' do

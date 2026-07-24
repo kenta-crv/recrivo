@@ -1,13 +1,13 @@
 class SituationsController < Dashboard::BaseController
-  before_action :authenticate_client_only!
   before_action :set_situation, only: [
     :show, :edit, :update, :destroy, :regenerate_invite_token,
     :suggest_questions, :apply_suggested_questions
   ]
+  before_action :ensure_client_can_create!, only: [:new, :create]
   before_action :ensure_service_quota!, only: [:new, :create]
 
   def index
-    @situations = current_client.situations.includes(:questions).order(updated_at: :desc)
+    @situations = situations_scope.includes(:client, :questions).order(updated_at: :desc)
   end
 
   def show
@@ -132,7 +132,7 @@ class SituationsController < Dashboard::BaseController
   private
 
   def set_situation
-    @situation = current_client.situations.find(params[:id])
+    @situation = situations_scope.find(params[:id])
   end
 
   def situation_params
@@ -142,11 +142,19 @@ class SituationsController < Dashboard::BaseController
       :session_timeout_minutes, :allow_resume, :max_resume_count,
       :passing_score, :auto_reject_enabled, :reject_on_required_fail,
       :min_required_score, :max_consecutive_fails, :reject_notify_method,
-      :judgment_mode, :candidate_result_visibility
+      :judgment_mode, :candidate_result_visibility,
+      :allow_text_answer, :allow_voice_answer, :record_camera
     )
   end
 
+  def ensure_client_can_create!
+    return if client_signed_in?
+
+    redirect_to situations_path, alert: "シナリオの新規作成は企業アカウントで行ってください。"
+  end
+
   def ensure_service_quota!
+    return unless client_signed_in?
     return if current_client.can_create_service?
 
     redirect_to situations_path, alert: current_client.service_limit_message

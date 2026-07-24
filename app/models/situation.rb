@@ -15,6 +15,7 @@ class Situation < ApplicationRecord
   validates :reject_notify_method, inclusion: { in: %w[in_app email none] }
   validates :judgment_mode, inclusion: { in: %w[automatic manual] }
   validates :candidate_result_visibility, inclusion: { in: %w[immediate hidden] }
+  validate :at_least_one_answer_mode_enabled
 
   enum language: { en: 'en', ja: 'ja' }
 
@@ -24,6 +25,18 @@ class Situation < ApplicationRecord
 
   def allow_resume?
     allow_resume
+  end
+
+  def allow_text_answer?
+    allow_text_answer
+  end
+
+  def allow_voice_answer?
+    allow_voice_answer
+  end
+
+  def record_camera?
+    record_camera
   end
 
   def auto_reject_enabled?
@@ -61,5 +74,11 @@ class Situation < ApplicationRecord
 
   def ensure_invite_token
     self.invite_token = self.class.generate_unique_invite_token if invite_token.blank?
+  end
+
+  def at_least_one_answer_mode_enabled
+    return if allow_text_answer? || allow_voice_answer?
+
+    errors.add(:base, 'テキスト回答または音声回答のどちらか一方は有効にしてください')
   end
 end

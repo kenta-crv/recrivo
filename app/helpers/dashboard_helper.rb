@@ -60,4 +60,8 @@ module DashboardHelper
 
     client.subscription_cancellable?
   end
+
+  def acting_as_admin?
+    admin_signed_in? && !client_signed_in?
+  end
 end

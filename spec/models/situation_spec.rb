@@ -57,6 +57,22 @@ RSpec.describe Situation, type: :model do
     end
   end
 
+  describe 'answer modes' do
+    it 'is invalid when both text and voice are disabled' do
+      situation = build(:situation, allow_text_answer: false, allow_voice_answer: false)
+      expect(situation).not_to be_valid
+      expect(situation.errors[:base]).to include('テキスト回答または音声回答のどちらか一方は有効にしてください')
+    end
+
+    it 'is valid for voice-only' do
+      expect(build(:situation, :voice_only)).to be_valid
+    end
+
+    it 'is valid for text-only' do
+      expect(build(:situation, :text_only)).to be_valid
+    end
+  end
+
   describe '#auto_reject_enabled?' do
     it 'returns value of auto_reject_enabled' do
       situation = build(:situation, auto_reject_enabled: true)

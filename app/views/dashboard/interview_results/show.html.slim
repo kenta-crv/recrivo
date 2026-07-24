@@ -113,37 +113,35 @@
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 回答ログ（録音再生）
+    h2.db-v2-bottom-card__title 回答ログ（録音・動画）
   .db-v2-bottom-card__body
     - if @responses.blank?
       p.db-v2-muted 回答がありません
     - else
-      .db-v2-leads-table-wrap
-        table.db-v2-leads-table
-          thead
-            tr
-              th 質問
-              th 回答テキスト
-              th 録音
-              th スコア
-          tbody
-            - @responses.each do |resp|
-              tr
-                td = resp.question&.question_text
-                td = resp.audio_transcript
-                td
-                  - if resp.answer_audio.attached?
-                    .db-v2-recording-play
-                      p.db-v2-recording-play__label
-                        i.fa-solid.fa-circle-play aria-hidden="true"
-                        |  録音を再生
-                      audio.db-v2-audio-player controls=true preload="metadata" src=rails_blob_path(resp.answer_audio, only_path: true)
-                  - elsif resp.answer_video.attached?
-                    .db-v2-recording-play
-                      p.db-v2-recording-play__label
-                        i.fa-solid.fa-circle-play aria-hidden="true"
-                        |  動画を再生
-                      video.db-v2-audio-player controls=true preload="metadata" style="max-height:160px;" src=rails_blob_path(resp.answer_video, only_path: true)
-                  - else
-                    span.db-v2-muted 録音なし
-                td = resp.score
+      .db-v2-answer-log
+        - @responses.each_with_index do |resp, idx|
+          .db-v2-answer-log__item
+            .db-v2-answer-log__meta
+              span.db-v2-answer-log__index = "Q#{idx + 1}"
+              span.db-v2-answer-log__score
+                | スコア: 
+                strong = resp.score.presence || "—"
+            p.db-v2-answer-log__question = resp.question&.question_text
+            .db-v2-answer-log__transcript
+              p.db-v2-answer-log__label 回答テキスト
+              p.db-v2-text-block = resp.audio_transcript.presence || "—"
+            .db-v2-answer-log__media
+              - if resp.answer_audio.attached?
+                .db-v2-recording-play
+                  p.db-v2-recording-play__label
+                    i.fa-solid.fa-circle-play aria-hidden="true"
+                    |  録音を再生
+                  audio.db-v2-audio-player controls=true preload="metadata" src=rails_blob_path(resp.answer_audio, only_path: true)
+              - if resp.answer_video.attached?
+                .db-v2-recording-play.db-v2-recording-play--video
+                  p.db-v2-recording-play__label
+                    i.fa-solid.fa-circle-play aria-hidden="true"
+                    |  動画を再生
+                  video.db-v2-video-player controls=true preload="metadata" playsinline=true src=rails_blob_path(resp.answer_video, only_path: true)
+              - unless resp.answer_audio.attached? || resp.answer_video.attached?
+                p.db-v2-muted 録音・動画なし

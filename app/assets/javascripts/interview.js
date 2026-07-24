@@ -10,6 +10,10 @@
     var situationId = parseInt(root.getAttribute('data-situation-id'), 10);
     var inviteToken = root.getAttribute('data-invite-token');
     var defaultLanguage = root.getAttribute('data-language') || 'ja';
+    // 未指定時は現状どおり両方可（後方互換）
+    var allowTextAnswer = root.getAttribute('data-allow-text') !== '0';
+    var allowVoiceAnswer = root.getAttribute('data-allow-voice') !== '0';
+    var recordCamera = root.getAttribute('data-record-camera') === '1';
 
     var errorEl = byId('interview-error');
     var phaseIdentity = byId('phase-identity');
@@ -35,6 +39,12 @@
     var voiceStartBtn = byId('voice_answer_start');
     var voiceStopBtn = byId('voice_answer_stop');
     var voiceStatus = byId('voice_answer_status');
+    var textAnswerBlock = byId('text_answer_block');
+    var voiceAnswerBlock = byId('voice_answer_block');
+    var textAnswerLabel = byId('text_answer_label');
+    var candidateCameraEl = byId('candidate_camera');
+    var candidateCameraPreview = byId('candidate_camera_preview');
+    var candidateCameraRec = byId('candidate_camera_rec');
     var resultStatus = byId('result_status');
     var resultFinal = byId('result_final_status');
     var resultAvg = byId('result_avg_score');
@@ -51,6 +61,10 @@
     var mediaRecorder = null;
     var recordedChunks = [];
     var recordedBlob = null;
+    var recordedVideoBlob = null;
+    var cameraStream = null;
+    var videoMediaRecorder = null;
+    var videoRecordedChunks = [];
     var selectedOption = null;
     var isSubmitting = false;
     var candidateName = '';
@@ -250,11 +264,15 @@
 
         interviewId = data.interview_id;
         interviewLanguage = data.language || language;
+        applyAnswerSettingsFromApi(data.answer_settings);
         saveSession(interviewId, interviewLanguage, data.access_token);
         showPhase('room');
         if (startBtn) {
           startBtn.disabled = false;
           startBtn.textContent = '面接を開始';
+        }
+        if (recordCamera) {
+          await ensureCameraPreview();
         }
 
         var greetingText = (data.greeting && data.greeting.text) || '';
@@ -348,6 +366,9 @@
         setStatus(played ? '回答を入力してください' : '音声の自動再生がブロックされました。「音声を再生」を押してください。');
         setSubmitButtonState('ready');
         setVoiceControlsForQuestioning(false);
+        if (recordCamera) {
+          startAnswerVideoRecording().catch(function() {});
+        }
         refreshStatus().catch(function() {});
         return true;
       } catch (e) {
@@ -397,6 +418,11 @@
     }
 
     function setVoiceControlsForQuestioning(isQuestioning) {
+      if (!allowVoiceAnswer) {
+        if (voiceStartBtn) voiceStartBtn.hidden = true;
+        if (voiceStopBtn) voiceStopBtn.hidden = true;
+        return;
+      }
       if (voiceStartBtn) {
         voiceStartBtn.hidden = false;
         voiceStartBtn.disabled = !!isQuestioning;
@@ -412,11 +438,164 @@
       if (hint) hint.textContent = msg || '';
     }
 
+    function applyAnswerModeUi() {
+      var textEl = byId('text_answer');
+      if (voiceAnswerBlock) voiceAnswerBlock.hidden = !allowVoiceAnswer;
+
+      if (allowTextAnswer) {
+        if (textAnswerBlock) textAnswerBlock.hidden = false;
+        if (textEl) {
+          textEl.readOnly = false;
+          textEl.placeholder = allowVoiceAnswer
+            ? 'テキスト入力、または下のボタンで音声回答'
+            : 'テキストで回答を入力してください';
+        }
+        if (textAnswerLabel) textAnswerLabel.textContent = 'あなたの回答';
+      } else {
+        // テキスト回答不可: テキスト入力UIは出さない（音声の確認は status 表示）
+        if (textAnswerBlock) textAnswerBlock.hidden = true;
+      }
+
+      setVoiceControlsForQuestioning(false);
+    }
+
+    function applyAnswerSettingsFromApi(settings) {
+      if (!settings) return;
+      if (typeof settings.allow_text_answer === 'boolean') allowTextAnswer = settings.allow_text_answer;
+      if (typeof settings.allow_voice_answer === 'boolean') allowVoiceAnswer = settings.allow_voice_answer;
+      if (typeof settings.record_camera === 'boolean') recordCamera = settings.record_camera;
+      applyAnswerModeUi();
+    }
+
+    async function ensureCameraPreview() {
+      if (!recordCamera) return false;
+      if (cameraStream) {
+        if (candidateCameraEl) candidateCameraEl.hidden = false;
+        return true;
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showError('このブラウザではカメラを利用できません。');
+        return false;
+      }
+      try {
+        // 音声マイク経路と競合しないよう、カメラは映像のみ取得する
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user' },
+          audio: false
+        });
+        if (candidateCameraPreview) {
+          candidateCameraPreview.srcObject = cameraStream;
+          try { await candidateCameraPreview.play(); } catch (e) {}
+        }
+        if (candidateCameraEl) candidateCameraEl.hidden = false;
+        return true;
+      } catch (e) {
+        showError('カメラを開始できませんでした。ブラウザのカメラ許可を確認してください。');
+        return false;
+      }
+    }
+
+    function stopCameraPreview() {
+      stopAnswerVideoRecordingSync();
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(function(t) { t.stop(); });
+        cameraStream = null;
+      }
+      if (candidateCameraPreview) candidateCameraPreview.srcObject = null;
+      if (candidateCameraEl) candidateCameraEl.hidden = true;
+      if (candidateCameraRec) candidateCameraRec.hidden = true;
+    }
+
+    function pickVideoMimeType() {
+      if (!window.MediaRecorder) return '';
+      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) return 'video/webm;codecs=vp9,opus';
+      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) return 'video/webm;codecs=vp8,opus';
+      if (MediaRecorder.isTypeSupported('video/webm')) return 'video/webm';
+      return '';
+    }
+
+    async function startAnswerVideoRecording() {
+      if (!recordCamera) return;
+      recordedVideoBlob = null;
+      videoRecordedChunks = [];
+      var ok = await ensureCameraPreview();
+      if (!ok || !cameraStream) return;
+      if (!window.MediaRecorder) return;
+      if (videoMediaRecorder && videoMediaRecorder.state !== 'inactive') return;
+
+      var mime = pickVideoMimeType();
+      try {
+        videoMediaRecorder = mime
+          ? new MediaRecorder(cameraStream, { mimeType: mime })
+          : new MediaRecorder(cameraStream);
+      } catch (e) {
+        videoMediaRecorder = null;
+        return;
+      }
+      videoMediaRecorder.ondataavailable = function(e) {
+        if (e.data && e.data.size > 0) videoRecordedChunks.push(e.data);
+      };
+      try {
+        videoMediaRecorder.start(500);
+        if (candidateCameraRec) candidateCameraRec.hidden = false;
+      } catch (e2) {
+        videoMediaRecorder = null;
+      }
+    }
+
+    function stopAnswerVideoRecordingSync() {
+      if (!videoMediaRecorder) return;
+      try {
+        if (videoMediaRecorder.state !== 'inactive') videoMediaRecorder.stop();
+      } catch (e) {}
+      videoMediaRecorder = null;
+      if (candidateCameraRec) candidateCameraRec.hidden = true;
+    }
+
+    function stopAnswerVideoRecordingAndWait() {
+      return new Promise(function(resolve) {
+        if (!videoMediaRecorder || videoMediaRecorder.state === 'inactive') {
+          if (videoRecordedChunks.length) {
+            recordedVideoBlob = new Blob(videoRecordedChunks, {
+              type: (videoMediaRecorder && videoMediaRecorder.mimeType) || 'video/webm'
+            });
+          }
+          videoMediaRecorder = null;
+          if (candidateCameraRec) candidateCameraRec.hidden = true;
+          resolve();
+          return;
+        }
+        var recorder = videoMediaRecorder;
+        recorder.onstop = function() {
+          if (videoRecordedChunks.length) {
+            recordedVideoBlob = new Blob(videoRecordedChunks, {
+              type: recorder.mimeType || 'video/webm'
+            });
+          } else {
+            recordedVideoBlob = null;
+          }
+          videoMediaRecorder = null;
+          if (candidateCameraRec) candidateCameraRec.hidden = true;
+          resolve();
+        };
+        try {
+          recorder.stop();
+        } catch (e) {
+          videoMediaRecorder = null;
+          if (candidateCameraRec) candidateCameraRec.hidden = true;
+          resolve();
+        }
+      });
+    }
+
     function clearAnswerForm() {
       recordedChunks = [];
       recordedBlob = null;
+      recordedVideoBlob = null;
+      videoRecordedChunks = [];
       selectedOption = null;
       voiceFinalText = '';
+      lastVoiceTranscript = '';
       voiceRecordedBlob = null;
       voiceRecordedChunks = [];
       if (byId('text_answer')) byId('text_answer').value = '';
@@ -429,6 +608,8 @@
     }
 
     async function finishInterviewWithClosing() {
+      await stopAnswerVideoRecordingAndWait();
+      stopCameraPreview();
       var closing = closingMessageText();
       setStatus('面接終了');
       setAvatarState('idle');
@@ -690,6 +871,7 @@
 
     var voiceListening = false;
     var voiceFinalText = '';
+    var lastVoiceTranscript = '';
     var voiceMediaRecorder = null;
     var voiceRecordedChunks = [];
     var voiceRecordedBlob = null;
@@ -832,10 +1014,15 @@
           if (voiceStartBtn) voiceStartBtn.disabled = false;
           return;
         }
-        if (textEl) textEl.value = data.transcript;
+        if (textEl && allowTextAnswer) textEl.value = data.transcript;
+        lastVoiceTranscript = data.transcript || '';
         recordedBlob = voiceRecordedBlob;
         if (voiceStatus) {
-          voiceStatus.textContent = '文字起こし完了。内容を確認して「回答を送信」を押してください。';
+          if (allowTextAnswer) {
+            voiceStatus.textContent = '文字起こし完了。内容を確認して「回答を送信」を押してください。';
+          } else {
+            voiceStatus.textContent = '文字起こし: ' + lastVoiceTranscript + '　→「回答を送信」で確定';
+          }
         }
       } catch (e) {
         showError(e.message);
@@ -893,11 +1080,29 @@
       }
 
       var textAnswer = (byId('text_answer').value || '').trim();
+      if (!allowTextAnswer && lastVoiceTranscript) {
+        textAnswer = lastVoiceTranscript;
+      }
       var hasRecording = recordedBlob !== null && recordedBlob.size > 0;
       var hasSelection = !!selectedOption;
 
+      if (!allowTextAnswer && allowVoiceAnswer && !hasRecording && !hasSelection) {
+        showError('音声で回答してください。');
+        return;
+      }
+      if (allowTextAnswer && !allowVoiceAnswer && !textAnswer && !hasSelection) {
+        showError('テキストで回答を入力してください。');
+        return;
+      }
       if (!textAnswer && !hasRecording && !hasSelection) {
-        showError('回答を入力してください（テキストまたは音声）。');
+        showError(allowVoiceAnswer && allowTextAnswer
+          ? '回答を入力してください（テキストまたは音声）。'
+          : '回答を入力してください。');
+        return;
+      }
+      if (!allowTextAnswer && textAnswer && !hasRecording && !hasSelection) {
+        // テキスト不可時、文字起こしだけで音声なし送信は不可
+        showError('音声で回答してください。');
         return;
       }
 
@@ -906,11 +1111,17 @@
       setSubmitButtonState('submitting');
       setStatus('回答を送信しています...');
 
+      await stopAnswerVideoRecordingAndWait();
+
       var form = new FormData();
       form.append('question_id', currentQuestion.question_id);
       if (hasSelection) form.append('selected_option', selectedOption);
+      // テキスト可、または音声の文字起こし確認用として送る（サーバー側の再STT回避）
       if (textAnswer) form.append('text_answer', textAnswer);
       if (hasRecording) form.append('audio_file', recordedBlob, 'recording.webm');
+      if (recordCamera && recordedVideoBlob && recordedVideoBlob.size > 0) {
+        form.append('video_file', recordedVideoBlob, 'answer.webm');
+      }
 
       try {
         var result = await apiRequest('/api/interviews/' + interviewId + '/submit_answer', {
@@ -921,6 +1132,7 @@
         if (!data.success) {
           showError(data.error || '回答の送信に失敗しました。');
           setSubmitButtonState('ready');
+          if (recordCamera) startAnswerVideoRecording().catch(function() {});
           return;
         }
 
@@ -933,6 +1145,7 @@
       } catch (e) {
         showError(e.message || '回答の送信に失敗しました。');
         setSubmitButtonState('ready');
+        if (recordCamera) startAnswerVideoRecording().catch(function() {});
       } finally {
         isSubmitting = false;
         if (submitBtn && submitBtn.textContent === '送信中...') {
@@ -1087,6 +1300,7 @@
     }
 
     restoreToken();
+    applyAnswerModeUi();
     setAvatarState('idle');
     showPhase('identity');
   }
