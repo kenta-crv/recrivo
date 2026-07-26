@@ -56,9 +56,11 @@ module ApplicationHelper
       "@graph" => [
         {
           "@type" => "Organization",
-          "name" => "株式会社J Work",
+          "name" => SITE_NAME,
+          "legalName" => "株式会社J Work",
           "url" => host,
-          "logo" => image_url("meetia_logo.png"),
+          "logo" => image_url("favicon.ico"),
+          "description" => DEFAULT_DESCRIPTION,
           "address" => {
             "@type" => "PostalAddress",
             "streetAddress" => "浜松町２丁目２番１５号２Ｆ",

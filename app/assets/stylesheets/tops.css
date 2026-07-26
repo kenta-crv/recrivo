@@ -29,9 +29,9 @@ html.meetia-lp-html,
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 72% 48% at 82% 0%, rgba(168, 85, 247, 0.14), transparent 58%),
-    radial-gradient(ellipse 50% 40% at 8% 12%, rgba(99, 102, 241, 0.1), transparent 55%),
-    radial-gradient(ellipse 60% 36% at 50% 100%, rgba(196, 181, 253, 0.12), transparent 62%);
+    radial-gradient(ellipse 72% 48% at 82% 0%, rgba(47, 111, 237, 0.14), transparent 58%),
+    radial-gradient(ellipse 50% 40% at 8% 12%, rgba(37, 99, 235, 0.1), transparent 55%),
+    radial-gradient(ellipse 60% 36% at 50% 100%, rgba(147, 197, 253, 0.12), transparent 62%);
 }
 
 .meetia-lp-atmosphere__orb {
@@ -47,7 +47,7 @@ html.meetia-lp-html,
   right: 4%;
   width: 340px;
   height: 340px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.32), transparent 70%);
+  background: radial-gradient(circle, rgba(47, 111, 237, 0.32), transparent 70%);
 }
 
 .meetia-lp-atmosphere__orb--b {
@@ -55,7 +55,7 @@ html.meetia-lp-html,
   left: -8%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.2), transparent 70%);
   animation-delay: -7s;
 }
 
@@ -64,8 +64,8 @@ html.meetia-lp-html,
   inset: 0;
   opacity: 0.4;
   background-image:
-    linear-gradient(rgba(124, 58, 237, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 58, 237, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(47, 111, 237, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 111, 237, 0.045) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(ellipse 90% 55% at 50% 8%, #000 0%, transparent 72%);
 }
@@ -83,22 +83,22 @@ html.meetia-lp-html,
 /* Base */
 .meetia-modern-lp {
   --lp-bg: #ffffff;
-  --lp-bg-alt: #faf8ff;
-  --lp-bg-strip: #f7f5ff;
+  --lp-bg-alt: #f8fbff;
+  --lp-bg-strip: #f0f6ff;
   --lp-card: #ffffff;
-  --lp-card-border: rgba(124, 58, 237, 0.12);
+  --lp-card-border: rgba(47, 111, 237, 0.12);
   --lp-text: #0a1e3f;
   --lp-muted: #64748b;
   --lp-heading: #0b1333;
-  --lp-purple: #7c3aed;
-  --lp-purple-deep: #5b21b6;
-  --lp-purple-light: #a855f7;
-  --lp-purple-soft: #f5f3ff;
-  --lp-accent: #7c3aed;
-  --lp-gradient: linear-gradient(135deg, #5b21b6 0%, #7c3aed 42%, #a855f7 78%, #818cf8 100%);
-  --lp-shadow-card: 0 14px 40px rgba(91, 33, 182, 0.08);
-  --lp-shadow-btn: 0 12px 28px rgba(124, 58, 237, 0.28);
-  --lp-neon-purple: 0 8px 24px rgba(168, 85, 247, 0.16);
+  --lp-purple: #2f6fed;
+  --lp-purple-deep: #0c2d6b;
+  --lp-purple-light: #3b82f6;
+  --lp-purple-soft: #eff6ff;
+  --lp-accent: #2f6fed;
+  --lp-gradient: linear-gradient(135deg, #0c2d6b 0%, #1f56b8 42%, #2f6fed 78%, #60a5fa 100%);
+  --lp-shadow-card: 0 14px 40px rgba(12, 45, 107, 0.08);
+  --lp-shadow-btn: 0 12px 28px rgba(47, 111, 237, 0.28);
+  --lp-neon-purple: 0 8px 24px rgba(47, 111, 237, 0.16);
   --lp-font-sans: "DM Sans", "Noto Sans JP", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   position: relative;
@@ -183,7 +183,7 @@ html.meetia-lp-html,
 
 .meetia-btn--primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgba(124, 58, 237, 0.34);
+  box-shadow: 0 16px 32px rgba(47, 111, 237, 0.34);
   color: #ffffff !important;
 }
 
@@ -195,11 +195,11 @@ html.meetia-lp-html,
 .meetia-btn--outline {
   background: #ffffff;
   color: var(--lp-heading);
-  border-color: rgba(124, 58, 237, 0.22);
+  border-color: rgba(47, 111, 237, 0.22);
 }
 
 .meetia-btn--outline:hover {
-  border-color: rgba(124, 58, 237, 0.45);
+  border-color: rgba(47, 111, 237, 0.45);
   background: var(--lp-purple-soft);
   color: var(--lp-purple-deep);
 }
@@ -216,7 +216,7 @@ html.meetia-lp-html,
 .meetia-btn--secondary {
   background: var(--lp-purple-soft);
   color: var(--lp-purple-deep);
-  border-color: rgba(124, 58, 237, 0.14);
+  border-color: rgba(47, 111, 237, 0.14);
 }
 
 .meetia-btn--lg {
@@ -242,7 +242,7 @@ html.meetia-lp-html,
   z-index: 100;
   backdrop-filter: blur(16px);
   background: rgba(255, 255, 255, 0.86);
-  border-bottom: 1px solid rgba(124, 58, 237, 0.08);
+  border-bottom: 1px solid rgba(47, 111, 237, 0.08);
 }
 
 .meetia-nav__inner {
@@ -273,7 +273,7 @@ html.meetia-lp-html,
   width: 40px;
   height: 40px;
   padding: 9px;
-  border: 1px solid rgba(124, 58, 237, 0.16);
+  border: 1px solid rgba(47, 111, 237, 0.16);
   border-radius: 10px;
   background: #ffffff;
   cursor: pointer;
@@ -294,7 +294,7 @@ html.meetia-lp-html,
   padding: 6px 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(47, 111, 237, 0.1);
 }
 
 .meetia-nav__menu-actions {
@@ -316,7 +316,7 @@ html.meetia-lp-html,
 .meetia-nav__item:hover,
 .meetia-nav__item.is-active {
   color: var(--lp-purple-deep);
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(47, 111, 237, 0.08);
 }
 
 /* Sections */
@@ -408,8 +408,8 @@ html.meetia-lp-html,
   height: 420px;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 70% 28%, rgba(168, 85, 247, 0.2), transparent 55%),
-    radial-gradient(ellipse at 18% 70%, rgba(99, 102, 241, 0.12), transparent 50%);
+    radial-gradient(ellipse at 70% 28%, rgba(47, 111, 237, 0.2), transparent 55%),
+    radial-gradient(ellipse at 18% 70%, rgba(37, 99, 235, 0.12), transparent 50%);
   animation: lpOrbFloat 12s ease-in-out infinite alternate;
 }
 
@@ -443,7 +443,7 @@ html.meetia-lp-html,
   padding: 8px 14px;
   border-radius: 999px;
   background: var(--lp-purple-soft);
-  border: 1px solid rgba(124, 58, 237, 0.14);
+  border: 1px solid rgba(47, 111, 237, 0.14);
   color: var(--lp-purple-deep);
   font-size: 0.8rem;
   font-weight: 700;
@@ -486,14 +486,14 @@ html.meetia-lp-html,
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   max-width: 430px;
-  border-top: 1px solid rgba(124, 58, 237, 0.12);
+  border-top: 1px solid rgba(47, 111, 237, 0.12);
   padding-top: 18px;
   animation: lpFadeUp 0.7s ease 0.3s both;
 }
 
 .meetia-hero__stat {
   padding: 0 14px;
-  border-right: 1px solid rgba(124, 58, 237, 0.12);
+  border-right: 1px solid rgba(47, 111, 237, 0.12);
 }
 
 .meetia-hero__stat:first-child { padding-left: 0; }
@@ -547,7 +547,7 @@ html.meetia-lp-html,
   display: block;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 24px 60px rgba(91, 33, 182, 0.16);
+  box-shadow: 0 24px 60px rgba(12, 45, 107, 0.16);
 }
 
 /* Problems */
@@ -575,7 +575,7 @@ html.meetia-lp-html,
   border-radius: 12px;
   background: var(--lp-purple-soft);
   color: var(--lp-purple);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(47, 111, 237, 0.12);
 }
 
 .meetia-problems__title {
@@ -597,8 +597,8 @@ html.meetia-lp-html,
   margin-top: 28px;
   padding: 28px 24px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 55%, #eef2ff 100%);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 55%, #dbeafe 100%);
+  border: 1px solid rgba(47, 111, 237, 0.12);
   text-align: center;
 }
 
@@ -652,7 +652,7 @@ html.meetia-lp-html,
   justify-content: center;
   background: var(--lp-purple-soft);
   color: var(--lp-purple);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(47, 111, 237, 0.12);
 }
 
 .meetia-whats-light__point strong {
@@ -687,7 +687,7 @@ html.meetia-lp-html,
   max-width: 420px;
   margin: 0 auto;
   display: block;
-  filter: drop-shadow(0 18px 36px rgba(91, 33, 182, 0.14));
+  filter: drop-shadow(0 18px 36px rgba(12, 45, 107, 0.14));
 }
 
 /* Flow steps */
@@ -725,7 +725,7 @@ html.meetia-lp-html,
   border-radius: 16px;
   background: var(--lp-purple-soft);
   color: var(--lp-purple);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(47, 111, 237, 0.12);
   font-size: 1.2rem;
 }
 
@@ -747,7 +747,7 @@ html.meetia-lp-html,
 .meetia-deal-flow__arrow {
   display: flex;
   align-items: center;
-  color: #a855f7;
+  color: #2f6fed;
   font-size: 1.1rem;
 }
 
@@ -832,7 +832,7 @@ html.meetia-lp-html,
   border-radius: 50%;
   background: var(--lp-purple-soft);
   color: var(--lp-purple);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(47, 111, 237, 0.12);
 }
 
 .meetia-service-concept__icon-ring {
@@ -920,7 +920,7 @@ html.meetia-lp-html,
   width: 100%;
   display: block;
   border-radius: 16px;
-  border: 1px solid rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(47, 111, 237, 0.1);
 }
 
 .meetia-features-showcase__cta {
@@ -968,7 +968,7 @@ html.meetia-lp-html,
   width: 40px;
   height: 40px;
   border-radius: 999px;
-  border: 1px solid rgba(124, 58, 237, 0.16);
+  border: 1px solid rgba(47, 111, 237, 0.16);
   background: #ffffff;
   color: var(--lp-heading);
   display: inline-flex;
@@ -1005,8 +1005,8 @@ html.meetia-lp-html,
 
 .meetia-pricing__card--popular,
 .meetia-pricing__card--featured {
-  border-color: rgba(124, 58, 237, 0.28);
-  box-shadow: 0 18px 44px rgba(91, 33, 182, 0.12);
+  border-color: rgba(47, 111, 237, 0.28);
+  box-shadow: 0 18px 44px rgba(12, 45, 107, 0.12);
 }
 
 .meetia-pricing__badge {
@@ -1067,7 +1067,7 @@ html.meetia-lp-html,
   gap: 12px;
   font-size: 0.86rem;
   color: var(--lp-text);
-  border-bottom: 1px solid rgba(124, 58, 237, 0.08);
+  border-bottom: 1px solid rgba(47, 111, 237, 0.08);
   padding-bottom: 8px;
 }
 
@@ -1135,7 +1135,7 @@ html.meetia-lp-html,
 .meetia-compare-table__topic,
 .meetia-compare-table__cell {
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(124, 58, 237, 0.08);
+  border-bottom: 1px solid rgba(47, 111, 237, 0.08);
   color: var(--lp-text);
 }
 
@@ -1424,7 +1424,7 @@ html.meetia-lp-html,
 .meetia-company-profile__row {
   display: grid;
   grid-template-columns: 120px 1fr;
-  border-bottom: 1px solid rgba(124, 58, 237, 0.08);
+  border-bottom: 1px solid rgba(47, 111, 237, 0.08);
 }
 
 .meetia-company-profile__row:last-child { border-bottom: 0; }
@@ -1456,9 +1456,9 @@ html.meetia-lp-html,
   margin: 0 auto;
   padding: 40px 32px;
   border-radius: 28px;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 48%, #eef2ff 100%);
-  border: 1px solid rgba(124, 58, 237, 0.12);
-  box-shadow: 0 20px 50px rgba(91, 33, 182, 0.1);
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 48%, #dbeafe 100%);
+  border: 1px solid rgba(47, 111, 237, 0.12);
+  box-shadow: 0 20px 50px rgba(12, 45, 107, 0.1);
   text-align: center;
 }
 
@@ -1470,7 +1470,7 @@ html.meetia-lp-html,
   padding: 8px 14px;
   border-radius: 999px;
   background: #ffffff;
-  border: 1px solid rgba(124, 58, 237, 0.14);
+  border: 1px solid rgba(47, 111, 237, 0.14);
   color: var(--lp-purple-deep);
   font-size: 0.78rem;
   font-weight: 800;
@@ -1508,7 +1508,7 @@ html.meetia-lp-html,
   border-radius: 14px;
   background: #ffffff;
   color: var(--lp-purple);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(47, 111, 237, 0.12);
 }
 
 .meetia-cta-band__feature-label {
@@ -1527,7 +1527,7 @@ html.meetia-lp-html,
 .meetia-footer {
   position: relative;
   background: var(--lp-bg-alt);
-  border-top: 1px solid rgba(124, 58, 237, 0.1);
+  border-top: 1px solid rgba(47, 111, 237, 0.1);
   padding: 56px 20px 28px;
 }
 
@@ -1536,7 +1536,7 @@ html.meetia-lp-html,
   inset: 0 auto auto 0;
   width: 100%;
   height: 180px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.1), transparent 65%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(47, 111, 237, 0.1), transparent 65%);
   pointer-events: none;
 }
 
@@ -1606,7 +1606,7 @@ html.meetia-lp-html,
   max-width: 1180px;
   margin: 0 auto;
   padding-top: 18px;
-  border-top: 1px solid rgba(124, 58, 237, 0.1);
+  border-top: 1px solid rgba(47, 111, 237, 0.1);
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -1670,7 +1670,7 @@ html.meetia-lp-html,
   }
   .meetia-hero__stat {
     border-right: 0;
-    border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+    border-bottom: 1px solid rgba(47, 111, 237, 0.1);
     padding: 0 0 10px;
   }
   .meetia-hero__stat:last-child {

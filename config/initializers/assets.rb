@@ -2,7 +2,7 @@
 
 # Version of your assets, change this if you want to expire all your assets.
 Rails.application.config.assets.version = '3.3'
-Rails.application.config.assets.precompile += %w( turbo.js meetia_page_init.js db_v2_pricing_slider.js interview.js interview.css dashboard.css dashboard.js )
+Rails.application.config.assets.precompile += %w( turbo.js meetia_page_init.js db_v2_pricing_slider.js interview.js interview.css dashboard.css dashboard.js recrivo_lp.css )
 # Add additional assets to the asset load path.
 # Rails.application.config.assets.paths << Emoji.images_path
 # Add Yarn node_modules folder to the asset load path.

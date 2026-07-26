@@ -1,7 +1,7 @@
 - set_meta_tags \
-    title: "AI面接・商談｜一次面接と営業商談を自動化", \
-    description: "シナリオと資料を用意するだけ。AIが24時間、一次面接と商談を代行し、評価・見込み度まで可視化します。", \
-    og: { title: "AI Interview｜面接と商談をAIで自動化", type: "website" }
+    title: "AI面接サービス｜人とAIの力で、より良い出会いを", \
+    description: "Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。", \
+    og: { title: "Recrivo｜AI面接サービス", type: "website" }
 
 
 .meetia-modern-lp.meetia-modern-lp--drafty
@@ -24,37 +24,64 @@
     .meetia-hero__glow aria-hidden="true"
     .meetia-hero__inner
       .meetia-hero__content
-        p.meetia-hero__brand AI Interview
-        .meetia-hero__badge
-          i.fa-solid.fa-sparkles aria-hidden="true"
-          span 面接も商談も、AIが一気通貫
-        h1.meetia-hero__title
-          | 一次面接と営業商談を、
+        p.meetia-hero__catch AIで、面接をもっと公平に、効率的に。
+        h1.meetia-hero__brand
+          span.recrivo-logo aria-label="Recrivo"
+            | Recriv
+            span.recrivo-logo__o
+              | o
+              svg.recrivo-logo__mark xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 30" fill="none" aria-hidden="true"
+                path d="M4 24C8 8 22 1.5 38 5" stroke="currentColor" stroke-width="4" stroke-linecap="round"
+                circle cx="42" cy="6.5" r="4.5" fill="currentColor"
+        p.meetia-hero__sub AI面接サービス「リクリボ」
+        h2.meetia-hero__title
+          | 人とAIの力で、
           br
-          span.meetia-text-gradient AIが24時間代行する。
+          | より良い出会いを。
         p.meetia-hero__lead
-          | シナリオと資料を用意してリンクを送るだけ。
-          | 候補者・見込み客はいつでも参加でき、評価と見込み度まで自動で届きます。
+          | Recrivoは、AIが面接をサポートすることで、
+          br
+          | 企業と候補者の可能性を最大限に引き出します。
         .meetia-hero__actions
           = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill") do
             span 無料トライアル
             i.fa-solid.fa-arrow-right aria-hidden="true"
           = link_to "使い方を見る", "#flow", class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill"
 
-        .meetia-hero__stats
-          .meetia-hero__stat
-            strong 24h
-            span いつでも面接・商談
-          .meetia-hero__stat
-            strong 1リンク
-            span 招待するだけで開始
-          .meetia-hero__stat
-            strong 自動分析
-            span 評価・見込み度まで
-
       .meetia-hero__visual
-        .meetia-hero-portal
-          = image_tag "top_hero.png", class: "meetia-hero-portal__scene", alt: "AI面接・商談ルームのイメージ"
+        .meetia-hero-portal.recrivo-portal
+          .recrivo-portal__screen
+            = image_tag "recrivo_candidate.jpg", class: "recrivo-portal__photo", alt: ""
+            .recrivo-portal__shade
+            .recrivo-portal-q
+              p.recrivo-portal-q__meta 質問 02/07
+              p.recrivo-portal-q__text 学生時代に力を入れたことは何ですか？
+              p.recrivo-portal-q__timer 回答時間 01:30
+            .recrivo-portal-report
+              p.recrivo-portal-report__title AI評価レポート
+              .recrivo-portal-report__score
+                svg viewBox="0 0 96 96" aria-hidden="true"
+                  circle cx="48" cy="48" r="38" fill="none" stroke="#e8eef8" stroke-width="8"
+                  circle cx="48" cy="48" r="38" fill="none" stroke="#2f6fed" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="84 16" transform="rotate(-90 48 48)"
+                .recrivo-portal-report__score-copy
+                  span 総合評価
+                  strong
+                    | 4.2
+                    small = " / 5.0"
+              ul.recrivo-portal-report__bars
+                - [["論理的思考力", 90, "4.5"], ["課題解決力", 80, "4.0"], ["コミュニケーション力", 90, "4.5"], ["主体性", 80, "4.0"], ["成長ポテンシャル", 80, "4.0"]].each do |label, pct, score|
+                  li
+                    span = label
+                    span.recrivo-portal-report__track
+                      span style="width: #{pct}%"
+                    b = score
+              .recrivo-portal-report__fb
+                p AIからのフィードバック
+                p 目標に向かって主体的に行動し、課題を乗り越えた経験が具体的に語られています。
+            .recrivo-portal-controls
+              span.recrivo-portal-controls__mic
+              span.recrivo-portal-controls__stop
+              p あなたの回答を録音中です
 
   section#problems.meetia-section.meetia-problems
     .meetia-section__inner
