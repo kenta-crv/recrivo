@@ -95,6 +95,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :problems
+
   get 'checkout/confirmation', to: 'checkout#confirmation', as: :checkout_confirmation
   post 'checkout/create', to: 'checkout#create', as: :checkout_create
   get 'checkout/success', to: 'checkout#success', as: :checkout_success
