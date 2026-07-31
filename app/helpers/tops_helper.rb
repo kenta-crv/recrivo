@@ -78,8 +78,8 @@ module TopsHelper
   ].freeze
 
   COMPANY_STATS = [
-    { icon: "fa-calendar", label: "サービス開始", num: "2026", unit: "年" },
-    { icon: "fa-building", label: "対象", num: "採用・営業", unit: "チーム" },
+    { icon: "fa-calendar", label: "顧客満足度", num: "97.5", unit: "%" },
+    { icon: "fa-building", label: "累計導入社数", num: "500", unit: "+社" },
     { icon: "fa-clock", label: "対応体制", num: "24", unit: "時間" }
   ].freeze
 
