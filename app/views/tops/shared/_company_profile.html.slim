@@ -7,16 +7,17 @@
       h1.meetia-company-profile__title 会社概要
     - else
       h2.meetia-company-profile__title 会社概要
-    p.meetia-company-profile__lead AIと人の営業体験を融合し、面接機会の取りこぼしをゼロに。
+    p.meetia-company-profile__lead AIと人の対話体験を融合し、面接の取りこぼしをゼロに。
 
   .meetia-company-profile__grid
     .meetia-company-profile__left
       h3.meetia-company-profile__catch
-        | 営業の未来を、
+        | 対話の入口を、
+        span.meetia-text-accent AIと共に創る。
+      p.meetia-company-profile__mission-text
+        | Recrivoは、AIが一次面接を代行するBtoBサービスです。
         br
-        | AIと共に
-        span.meetia-text-gradient 創る。
-      p.meetia-company-profile__mission-text AI Interviewは、営業資料をもとにAIが音声面接を代行するBtoB向けサービスです。24時間体制で面接機会を逃さず、データに基づく営業改善を支援します。
+        | シナリオ設計から評価・フォローまでを支えます。
       .meetia-company-profile__stats
         - TopsHelper::COMPANY_STATS.each do |stat|
           .meetia-company-profile__stat

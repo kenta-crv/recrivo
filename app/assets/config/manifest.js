@@ -10,6 +10,7 @@
 //= link interview.css
 //= link tops.css
 //= link recrivo_lp.css
+//= link lp_fonts.css
 //= link questions.css
 //= link situations.css
 //= link answers.css

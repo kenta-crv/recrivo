@@ -1,15 +1,59 @@
 @charset "UTF-8";
 
-/* Recrivo hero on Drafty LP portal (front-facing, no tilt) */
+/* Recrivo hero */
+
+.meetia-hero--drafty {
+  position: relative;
+  min-height: min(90vh, 780px);
+  padding: 56px clamp(20px, 3vw, 40px) 48px clamp(56px, 9vw, 120px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.meetia-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: #e8f3fc;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.meetia-hero--drafty .meetia-hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.meetia-hero__content {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  padding-right: 8px;
+}
 
 .meetia-hero__catch {
   margin: 0 0 14px;
-  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  font-size: clamp(0.95rem, 1.15vw, 1.08rem);
   font-weight: 500;
   letter-spacing: 0.02em;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #1f56b8;
   animation: lpFadeUp 0.7s ease both;
+}
+
+.meetia-hero__brand {
+  margin: 0 0 12px;
+  animation: lpFadeUp 0.7s ease 0.04s both;
 }
 
 .meetia-hero__brand .recrivo-logo {
@@ -17,310 +61,99 @@
   display: inline-block;
   color: #0c2d6b;
   font-weight: 800;
-  font-size: clamp(2.4rem, 4.8vw, 3.4rem);
-  letter-spacing: -0.03em;
-  line-height: 0.95;
-}
-
-.recrivo-logo__o {
-  position: relative;
-  display: inline-block;
-}
-
-.recrivo-logo__mark {
-  position: absolute;
-  left: 8%;
-  top: -0.38em;
-  width: 1.05em;
-  height: 0.56em;
-  color: #2f6fed;
-  overflow: visible;
-  pointer-events: none;
+  font-size: clamp(3.8rem, 7.5vw, 5.6rem);
+  letter-spacing: -0.04em;
+  line-height: 0.92;
 }
 
 .meetia-hero__sub {
-  margin: 6px 0 18px;
-  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  margin: 8px 0 20px;
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: #3b7ddd;
-  animation: lpFadeUp 0.7s ease 0.05s both;
+  animation: lpFadeUp 0.7s ease 0.08s both;
 }
 
 .meetia-hero--drafty .meetia-hero__title {
-  font-size: clamp(1.55rem, 2.8vw, 2.1rem);
+  margin: 0 0 14px;
+  font-family: var(--lp-font-display);
+  font-size: clamp(1.55rem, 2.4vw, 2rem);
   font-weight: 700;
   line-height: 1.5;
   letter-spacing: 0.02em;
   color: #2b2f36;
+  animation: lpFadeUp 0.7s ease 0.12s both;
 }
 
 .meetia-hero--drafty .meetia-hero__lead {
-  max-width: 34em;
-  font-size: clamp(0.92rem, 1.2vw, 1rem);
-  line-height: 1.95;
-  color: #6b7280;
+  margin: 0 0 28px;
+  max-width: none;
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #4b5563;
+  animation: lpFadeUp 0.7s ease 0.16s both;
 }
 
-/* Drafty portal: front product screen */
-.recrivo-portal {
-  max-width: 560px;
+.meetia-hero--drafty .meetia-hero__actions {
+  margin-bottom: 0;
+  gap: 12px;
+  animation: lpFadeUp 0.7s ease 0.2s both;
 }
 
-.recrivo-portal__screen {
+.meetia-hero--drafty .meetia-hero__visual {
   position: relative;
   z-index: 1;
-  aspect-ratio: 16 / 10;
-  border-radius: 24px;
-  overflow: hidden;
-  background: #0b1220;
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 24px 60px rgba(12, 45, 107, 0.16);
-}
-
-.recrivo-portal__photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 18%;
-}
-
-.recrivo-portal__shade {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(8, 16, 36, 0.18) 0%, transparent 26%, transparent 60%, rgba(8, 16, 36, 0.28) 100%),
-    linear-gradient(180deg, transparent 52%, rgba(8, 16, 36, 0.48) 100%);
-  pointer-events: none;
-}
-
-.recrivo-portal-q {
-  position: absolute;
-  top: 6%;
-  left: 3.5%;
-  z-index: 2;
-  width: min(38%, 210px);
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(15, 40, 90, 0.16);
-}
-
-.recrivo-portal-q__meta {
-  margin: 0 0 4px;
-  font-size: 10px;
-  color: #8b93a3;
-}
-
-.recrivo-portal-q__text {
-  margin: 0 0 8px;
-  font-size: clamp(11px, 1.05vw, 13px);
-  font-weight: 700;
-  line-height: 1.45;
-  color: #1f2937;
-}
-
-.recrivo-portal-q__timer {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 600;
-  color: #2f6fed;
-}
-
-.recrivo-portal-report {
-  position: absolute;
-  top: 5%;
-  right: 3%;
-  bottom: 8%;
-  z-index: 2;
-  width: min(34%, 190px);
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.97);
-  border-radius: 14px;
-  box-shadow: 0 14px 32px rgba(15, 40, 90, 0.18);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow: hidden;
-}
-
-.recrivo-portal-report__title {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.recrivo-portal-report__score {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  margin: 0 auto;
-}
-
-.recrivo-portal-report__score svg {
-  width: 100%;
-  height: 100%;
-}
-
-.recrivo-portal-report__score-copy {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  min-width: 0;
+  margin-right: clamp(-48px, -4vw, -16px);
 }
 
-.recrivo-portal-report__score-copy span {
-  font-size: 8px;
-  color: #8b93a3;
-}
-
-.recrivo-portal-report__score-copy strong {
-  margin-top: 2px;
-  font-size: 15px;
-  font-weight: 800;
-  color: #2f6fed;
-  line-height: 1;
-}
-
-.recrivo-portal-report__score-copy small {
-  font-size: 9px;
-  font-weight: 600;
-  color: #6b7280;
-}
-
-.recrivo-portal-report__bars {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.recrivo-portal-report__bars li {
-  display: grid;
-  grid-template-columns: 1fr 42px 18px;
-  gap: 4px;
-  align-items: center;
-  font-size: 7.5px;
-  color: #4b5563;
-}
-
-.recrivo-portal-report__bars li span:first-child {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.recrivo-portal-report__track {
+.meetia-hero__product {
   display: block;
-  height: 5px;
-  border-radius: 999px;
-  background: #e8eef8;
-  overflow: hidden;
+  width: 112%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 36px rgba(12, 45, 107, 0.16));
+  animation: lpFadeUp 0.85s ease 0.14s both;
 }
 
-.recrivo-portal-report__track span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-}
+@media (max-width: 980px) {
+  .meetia-hero--drafty {
+    min-height: auto;
+    padding: 40px 28px 36px;
+  }
 
-.recrivo-portal-report__bars b {
-  font-size: 8px;
-  font-weight: 700;
-  color: #374151;
-  text-align: right;
-}
+  .meetia-hero--drafty .meetia-hero__inner {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 
-.recrivo-portal-report__fb {
-  margin-top: auto;
-  padding: 6px 7px;
-  border-radius: 8px;
-  background: #f3f6fb;
-}
+  .meetia-hero--drafty .meetia-hero__visual {
+    justify-content: center;
+    margin-right: 0;
+  }
 
-.recrivo-portal-report__fb p {
-  margin: 0;
-  font-size: 8px;
-  line-height: 1.45;
-  color: #4b5563;
-}
-
-.recrivo-portal-report__fb p:first-child {
-  margin-bottom: 3px;
-  font-weight: 600;
-  color: #8b93a3;
-}
-
-.recrivo-portal-controls {
-  position: absolute;
-  left: 50%;
-  bottom: 5%;
-  z-index: 2;
-  transform: translateX(-50%);
-  text-align: center;
-}
-
-.recrivo-portal-controls__mic,
-.recrivo-portal-controls__stop {
-  display: inline-block;
-  vertical-align: middle;
-  border-radius: 50%;
-}
-
-.recrivo-portal-controls__mic {
-  width: 40px;
-  height: 40px;
-  margin-right: 8px;
-  background: #2f6fed url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 3.5a3.2 3.2 0 00-3.2 3.2v5.1a3.2 3.2 0 006.4 0V6.7A3.2 3.2 0 0012 3.5z' fill='%23fff'/%3E%3Cpath d='M6.8 11.2a5.2 5.2 0 0010.4 0M12 16.4v3.2' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center / 18px no-repeat;
-  box-shadow: 0 0 0 5px rgba(47, 111, 237, 0.22);
-}
-
-.recrivo-portal-controls__stop {
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  box-shadow: 0 6px 14px rgba(15, 40, 90, 0.18);
-  position: relative;
-}
-
-.recrivo-portal-controls__stop::after {
-  content: "";
-  position: absolute;
-  inset: 9px;
-  border-radius: 2px;
-  background: #2f6fed;
-}
-
-.recrivo-portal-controls p {
-  margin: 7px 0 0;
-  font-size: 10px;
-  font-weight: 500;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
-  white-space: nowrap;
+  .meetia-hero__product {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 640px) {
-  .recrivo-portal-q {
-    width: min(44%, 160px);
-    padding: 8px;
+  .meetia-hero--drafty {
+    padding: 32px 18px 28px;
   }
 
-  .recrivo-portal-report {
-    width: min(40%, 150px);
-    padding: 8px;
+  .meetia-hero__brand .recrivo-logo {
+    font-size: clamp(3.2rem, 14vw, 4.2rem);
   }
 
-  .recrivo-portal-report__score {
-    width: 62px;
-    height: 62px;
+  .meetia-hero__product {
+    max-width: 100%;
   }
 }

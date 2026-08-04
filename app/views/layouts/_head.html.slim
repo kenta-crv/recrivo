@@ -7,7 +7,9 @@ meta name="format-detection" content="telephone=no"
 = display_meta_tags default_meta_tags
 = favicon_link_tag "favicon.ico"
 link rel="apple-touch-icon" href=image_path("favicon.ico")
-link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet"
+/ LP 以外用。LP は layouts/lp.html.slim 側で Drafty フォントを読み込む
+- unless controller_name == "tops"
+  link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet"
 script async=true src="https://s.yimg.jp/images/listing/tool/cv/ytag.js"
 
 javascript:

@@ -3,12 +3,11 @@
     description: "Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。", \
     og: { title: "Recrivo｜AI面接サービス", type: "website" }
 
-
 .meetia-modern-lp.meetia-modern-lp--drafty
   header.meetia-nav
     .meetia-nav__inner
       = link_to root_path, class: "meetia-nav__logo" do
-        = image_tag "meetia_logo.png", alt: "AI Interview", class: "meetia-nav__logo-image"
+        = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-nav__logo-image"
       button.meetia-nav__toggle type="button" aria-label="メニュー" data-lp-nav-toggle=""
         span
         span
@@ -21,27 +20,16 @@
           = link_to "無料トライアル", lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--sm meetia-btn--pill"
 
   section#top.meetia-hero.meetia-hero--drafty
-    .meetia-hero__glow aria-hidden="true"
+    .meetia-hero__bg aria-hidden="true" style="background-image: url(#{asset_path('background-lp.png')});"
     .meetia-hero__inner
       .meetia-hero__content
         p.meetia-hero__catch AIで、面接をもっと公平に、効率的に。
         h1.meetia-hero__brand
           span.recrivo-logo aria-label="Recrivo"
-            | Recriv
-            span.recrivo-logo__o
-              | o
-              svg.recrivo-logo__mark xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 30" fill="none" aria-hidden="true"
-                path d="M4 24C8 8 22 1.5 38 5" stroke="currentColor" stroke-width="4" stroke-linecap="round"
-                circle cx="42" cy="6.5" r="4.5" fill="currentColor"
+            | Recrivo
         p.meetia-hero__sub AI面接サービス「リクリボ」
-        h2.meetia-hero__title
-          | 人とAIの力で、
-          br
-          | より良い出会いを。
-        p.meetia-hero__lead
-          | Recrivoは、AIが面接をサポートすることで、
-          br
-          | 企業と候補者の可能性を最大限に引き出します。
+        h2.meetia-hero__title 人とAIの力で、より良い出会いを。
+        p.meetia-hero__lead Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。
         .meetia-hero__actions
           = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill") do
             span 無料トライアル
@@ -49,47 +37,12 @@
           = link_to "使い方を見る", "#flow", class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill"
 
       .meetia-hero__visual
-        .meetia-hero-portal.recrivo-portal
-          .recrivo-portal__screen
-            = image_tag "recrivo_candidate.jpg", class: "recrivo-portal__photo", alt: ""
-            .recrivo-portal__shade
-            .recrivo-portal-q
-              p.recrivo-portal-q__meta 質問 02/07
-              p.recrivo-portal-q__text 学生時代に力を入れたことは何ですか？
-              p.recrivo-portal-q__timer 回答時間 01:30
-            .recrivo-portal-report
-              p.recrivo-portal-report__title AI評価レポート
-              .recrivo-portal-report__score
-                svg viewBox="0 0 96 96" aria-hidden="true"
-                  circle cx="48" cy="48" r="38" fill="none" stroke="#e8eef8" stroke-width="8"
-                  circle cx="48" cy="48" r="38" fill="none" stroke="#2f6fed" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="84 16" transform="rotate(-90 48 48)"
-                .recrivo-portal-report__score-copy
-                  span 総合評価
-                  strong
-                    | 4.2
-                    small = " / 5.0"
-              ul.recrivo-portal-report__bars
-                - [["論理的思考力", 90, "4.5"], ["課題解決力", 80, "4.0"], ["コミュニケーション力", 90, "4.5"], ["主体性", 80, "4.0"], ["成長ポテンシャル", 80, "4.0"]].each do |label, pct, score|
-                  li
-                    span = label
-                    span.recrivo-portal-report__track
-                      span style="width: #{pct}%"
-                    b = score
-              .recrivo-portal-report__fb
-                p AIからのフィードバック
-                p 目標に向かって主体的に行動し、課題を乗り越えた経験が具体的に語られています。
-            .recrivo-portal-controls
-              span.recrivo-portal-controls__mic
-              span.recrivo-portal-controls__stop
-              p あなたの回答を録音中です
-
+        = image_tag "background-pc.png", class: "meetia-hero__product", alt: "Recrivo AI面接画面のイメージ"
   section#problems.meetia-section.meetia-problems
     .meetia-section__inner
       .meetia-section__head
-        span.meetia-section__eyebrow こんなお悩みありませんか？
-        h2.meetia-section__title
-          | 面接も商談も、
-          span.meetia-text-gradient 人が足りない。
+        span.meetia-section__eyebrow PROBLEMS
+        h2.meetia-section__title こんなお悩みありませんか？
         p.meetia-section__lead 日程調整・属人評価・フォロー漏れ——成長のボトルネックをAIで解消します。
       .meetia-problems__grid.meetia-problems__grid--static
         - TopsHelper::PROBLEM_ITEMS.each do |item|
@@ -99,40 +52,64 @@
             .meetia-problems__content
               p.meetia-problems__title == item[:text]
               p.meetia-problems__desc = item[:desc]
+      .meetia-problems__arrow aria-hidden="true"
+        i.fa-solid.fa-caret-down
       .meetia-problems__solution
         .meetia-problems__solution-copy
           .meetia-problems__solution-lead
-            span そのお悩み、
-            span.meetia-text-gradient AI面接・商談
+            span.meetia-problems__solution-lead-text そのお悩み、
+            span.meetia-problems__solution-badge AI面接の一気通貫
           .meetia-problems__solution-brand
-            strong.meetia-problems__solution-name AI Interview
+            span.meetia-problems__solution-mark aria-hidden="true"
+              i.fa-solid.fa-microphone-lines
+            strong.meetia-problems__solution-name Recrivo
             span.meetia-problems__solution-suffix がすべて
             span.meetia-text-gradient 解決
             span.meetia-problems__solution-suffix します。
+        .meetia-problems__solution-visual aria-hidden="true"
+          .meetia-problems__solution-mock
+            .meetia-problems__solution-mock-head
+              span
+              span
+              span
+            .meetia-problems__solution-mock-row
+              i.fa-solid.fa-list-check
+              span シナリオ設計
+            .meetia-problems__solution-mock-row
+              i.fa-solid.fa-microphone-lines
+              span 音声面接
+            .meetia-problems__solution-mock-row
+              i.fa-solid.fa-chart-line
+              span 自動評価
+          .meetia-problems__solution-deco.meetia-problems__solution-deco--sparkle
+            i.fa-solid.fa-sparkles
+          .meetia-problems__solution-deco.meetia-problems__solution-deco--chat
+            i.fa-solid.fa-comments
+          .meetia-problems__solution-deco.meetia-problems__solution-deco--chart
+            i.fa-solid.fa-chart-column
 
   section#whats.meetia-section.meetia-whats-light
     .meetia-section__inner
+      .meetia-section__head
+        span.meetia-section__eyebrow What's AI Interview?
+        h2.meetia-section__title
+          | 面接と商談を、
+          br
+          span.meetia-text-accent ひとつのAI体験に。
+        p.meetia-section__lead
+          | AI Interviewは、採用の一次面接と営業の初回商談を自動化するBtoBプラットフォームです。
+          | 同じルーム体験で、質問シナリオにも提案資料にも対応します。
       .meetia-whats-light__grid
-        .meetia-whats-light__copy
-          span.meetia-section__eyebrow What's AI Interview?
-          h2.meetia-section__title
-            | 面接と商談を、
-            br
-            span.meetia-text-gradient ひとつのAI体験
-            | に。
-          p.meetia-section__lead
-            | AI Interviewは、採用の一次面接と営業の初回商談を自動化するBtoBプラットフォームです。
-            | 同じルーム体験で、質問シナリオにも提案資料にも対応します。
-          ul.meetia-whats-light__points
-            - TopsHelper::HERO_FEATURE_CARDS.first(4).each do |icon, title, body|
-              li
-                span.meetia-whats-light__icon
-                  i.fa-solid class=icon aria-hidden="true"
-                .meetia-whats-light__point
-                  strong = title
-                  span = body
+        ul.meetia-whats-light__points
+          - TopsHelper::HERO_FEATURE_CARDS.first(4).each do |icon, title, body|
+            li
+              span.meetia-whats-light__icon
+                i.fa-solid class=icon aria-hidden="true"
+              .meetia-whats-light__point
+                strong = title
+                span = body
         .meetia-whats-light__visual
-          = image_tag "whats.png", alt: "AIアシスタントのイメージ", class: "meetia-whats-light__image"
+          = image_tag "recrivo_hero_screen.png", alt: "AI面接・商談体験のイメージ", class: "meetia-whats-light__image"
 
   section#flow.meetia-section.meetia-section--strip
     .meetia-section__inner
@@ -169,22 +146,19 @@
       .meetia-section__head
         span.meetia-section__eyebrow SERVICE
         h2.meetia-section__title
-          | AI Interviewが提供する
-          span.meetia-text-gradient AI面接・商談
-        p.meetia-section__lead 設計から実施、評価・フォローまで。採用と営業の入口を一気通貫で自動化します。
+          | Recrivoが提供する
+          span.meetia-text-accent AI面接
+        p.meetia-section__lead 設計から実施、評価・フォローまで。採用の一次対応を一気通貫で自動化します。
       .meetia-service-concept__grid.meetia-service-concept__grid--static
         - TopsHelper::SERVICE_CARDS.each do |card|
           .meetia-service-concept__card
-            .meetia-service-concept__header
-              span.meetia-service-concept__num = card[:num]
-              h3.meetia-service-concept__title = card[:title]
-            p.meetia-service-concept__desc = card[:desc]
-            .meetia-service-concept__illust aria-hidden="true"
-              .meetia-service-concept__icon-stage
-                span.meetia-service-concept__icon-ring
-                  i.fa-solid class=card[:icon]
-                span.meetia-service-concept__icon-orbit
-                  i.fa-solid class=card[:orbit]
+            .meetia-service-concept__media
+              = image_tag card[:image], alt: card[:alt], class: "meetia-service-concept__image", loading: "lazy"
+            .meetia-service-concept__body
+              .meetia-service-concept__header
+                span.meetia-service-concept__num = card[:num]
+                h3.meetia-service-concept__title = card[:title]
+              p.meetia-service-concept__desc = card[:desc]
 
   section#features.meetia-section.meetia-section--strip.meetia-features-page
     .meetia-section__inner.meetia-section__inner--wide
@@ -206,7 +180,7 @@
                     h2.meetia-feature-focus__title = title
                     p.meetia-feature-focus__body = body
                 .meetia-feature-focus__screen
-                  = image_tag "top_hero_portal.png", alt: "24時間AI面接・商談ルームのイメージ", class: "meetia-feature-focus__image"
+                  = image_tag "recrivo_candidate.jpg", alt: "音声で進むAI対話のイメージ", class: "meetia-feature-focus__image"
             - else
               article.meetia-feature-card data-feature=num
                 .meetia-feature-card__icon
@@ -217,13 +191,19 @@
                   p.meetia-feature-card__body = body
 
         .meetia-features-showcase__cta
-          p.meetia-features-showcase__cta-copy まずは無料で、AI面接・商談を体験してください。
+          .meetia-features-showcase__cta-icon aria-hidden="true"
+            i.fa-solid.fa-rocket
+          p.meetia-features-showcase__cta-copy
+            | まずは無料で、
+            span.meetia-text-gradient AI面接
+            | を体験してください。
           .meetia-features-showcase__cta-actions
             = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill" do
-              | 無料で始める
-              i.fa-solid.fa-chevron-right aria-hidden="true"
+              span 無料で始める
+              i.fa-solid.fa-arrow-right aria-hidden="true"
             = link_to plans_path, class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill" do
-              | 料金を見る
+              i.fa-solid.fa-tags aria-hidden="true"
+              span 料金を見る
 
   section#pricing.meetia-section.meetia-pricing-section
     .meetia-section__inner.meetia-section__inner--wide
@@ -247,12 +227,15 @@
                 - card_classes << 'meetia-pricing__card--featured' if config[:featured]
                 - card_classes << 'meetia-pricing__card--trial' if is_trial
                 .meetia-pricing__card class=card_classes.join(' ')
-                  - if config[:popular]
-                    .meetia-pricing__badge.meetia-pricing__badge--popular POPULAR
-                  - if config[:featured]
-                    .meetia-pricing__badge RECOMMENDED
-                  - if is_trial
-                    .meetia-pricing__badge.meetia-pricing__badge--trial FREE TRIAL
+                  .meetia-pricing__badge-slot
+                    - if config[:popular]
+                      .meetia-pricing__badge.meetia-pricing__badge--popular POPULAR
+                    - elsif config[:featured]
+                      .meetia-pricing__badge RECOMMENDED
+                    - elsif is_trial
+                      .meetia-pricing__badge.meetia-pricing__badge--trial FREE TRIAL
+                    - else
+                      span.meetia-pricing__badge.meetia-pricing__badge--spacer aria-hidden="true"
                   .meetia-pricing__card-head
                     h3.meetia-pricing__plan = config[:name]
                     .meetia-pricing__price
@@ -275,16 +258,13 @@
           button.meetia-pricing__arrow.meetia-pricing__arrow--next type="button" aria-label="次のプラン" data-pricing-next=""
             i.fa-solid.fa-chevron-right aria-hidden="true"
 
-      .meetia-pricing__cta
-        = link_to "無料トライアルを開始", new_client_registration_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill"
-
   section#compare.meetia-section
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow WHY AI INTERVIEW?
         h2.meetia-section__title
           | 他社との違いは、
-          span.meetia-text-gradient AI面接・商談体験
+          span.meetia-text-accent AI面接・商談体験
         p.meetia-section__lead 人が足りない入口業務を、品質を落とさずスケールさせるための設計です。
       .meetia-compare-table
         .meetia-compare-table__head
@@ -317,15 +297,20 @@
         p.meetia-section__lead AI Interviewをご利用いただいている企業様からのフィードバックです。
       .meetia-reviews-summary
         .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__value 4.8
-          span.meetia-reviews-summary__label
-            | / 5.0
+          span.meetia-reviews-summary__icon aria-hidden="true"
+            i.fa-solid.fa-star
+          span.meetia-reviews-summary__value.meetia-text-gradient 4.8/5.0
+          p.meetia-reviews-summary__label 平均評価
         .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__value 1,200+
-          span.meetia-reviews-summary__label 導入企業
+          span.meetia-reviews-summary__icon aria-hidden="true"
+            i.fa-solid.fa-building
+          span.meetia-reviews-summary__value.meetia-text-gradient 1,200+
+          p.meetia-reviews-summary__label 導入企業
         .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__value 98%
-          span.meetia-reviews-summary__label 継続率
+          span.meetia-reviews-summary__icon aria-hidden="true"
+            i.fa-solid.fa-rotate
+          span.meetia-reviews-summary__value.meetia-text-gradient 98%
+          p.meetia-reviews-summary__label 継続率
       .meetia-reviews-slider data-reviews-slider=""
         button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--prev type="button" aria-label="前のレビュー" data-reviews-prev=""
           i.fa-solid.fa-chevron-left aria-hidden="true"
@@ -366,15 +351,16 @@
         .meetia-company-profile__head
           span.meetia-section__eyebrow ABOUT US
           h2.meetia-company-profile__title 会社概要
-          p.meetia-company-profile__lead AIと人の対話体験を融合し、面接と商談の取りこぼしをゼロに。
+          p.meetia-company-profile__lead AIと人の対話体験を融合し、面接の取りこぼしをゼロに。
         .meetia-company-profile__grid
           .meetia-company-profile__left
             h3.meetia-company-profile__catch
               | 対話の入口を、
+              span.meetia-text-accent AIと共に創る。
+            p.meetia-company-profile__mission-text
+              | Recrivoは、AIが一次面接を代行するBtoBサービスです。
               br
-              | AIと共に
-              span.meetia-text-gradient 創る。
-            p.meetia-company-profile__mission-text AI Interviewは、面接シナリオと営業資料をもとにAIが一次対応を代行するBtoB向けサービスです。
+              | シナリオ設計から評価・フォローまでを支えます。
             .meetia-company-profile__stats
               - TopsHelper::COMPANY_STATS.each do |stat|
                 .meetia-company-profile__stat
@@ -399,7 +385,9 @@
           | TRIAL
         h2.meetia-cta-band__title
           = "#{Subscription::TRIAL_DAYS}日間の無料トライアルを今すぐ体験"
-        p.meetia-cta-band__lead AI Interviewで、面接と商談の機会を逃さない。シナリオや資料を用意してリンクを送るだけ。
+        p.meetia-cta-band__lead
+          | Recrivoで、面接の機会を逃さない。シナリオを用意してリンクを送るだけ。24時間、AIが一次対応を担います。
+
       .meetia-cta-band__features
         - TopsHelper::TRIAL_FEATURES.each do |feature|
           .meetia-cta-band__feature
@@ -407,8 +395,9 @@
               i.fa-solid class=feature[:icon] aria-hidden="true"
             h3.meetia-cta-band__feature-label = feature[:label]
             p.meetia-cta-band__feature-desc = feature[:desc]
+
       .meetia-cta-band__actions
-        = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-cta-band__btn meetia-btn--pill" do
+        = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-cta-band__btn" do
           i.fa-solid.fa-rocket aria-hidden="true"
           span 無料トライアルを開始
 
@@ -417,7 +406,7 @@
     .meetia-footer__inner
       .meetia-footer__brand
         = link_to root_path, class: "meetia-footer__logo-link" do
-          = image_tag "meetia_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
+          = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
         p.meetia-footer__tagline シナリオと資料で、AIが面接・商談を代行
         p.meetia-footer__desc BtoB向けAI面接・商談サービス。設計から実施・評価・フォローまで。
       nav.meetia-footer__nav aria-label="フッターナビ"

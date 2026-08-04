@@ -16,6 +16,12 @@ class Subscription < ApplicationRecord
       price: 0,
       situation_limit: 3,
       monthly_interview_limit: 20,
+      voice_ai_interview: true,
+      auto_scoring: true,
+      guest_invite: true,
+      result_dashboard: true,
+      follow_up_automation: false,
+      priority_support: false,
       description: "#{TRIAL_DAYS}日間。その後スタンダード移行",
       purchasable: false,
       public_on_lp: true,
@@ -29,6 +35,12 @@ class Subscription < ApplicationRecord
       price: 29_800,
       situation_limit: 3,
       monthly_interview_limit: 100,
+      voice_ai_interview: true,
+      auto_scoring: true,
+      guest_invite: true,
+      result_dashboard: true,
+      follow_up_automation: false,
+      priority_support: false,
       description: "小規模採用向け。シナリオ3・月100面接から始められます。",
       purchasable: true,
       public_on_lp: true,
@@ -40,6 +52,12 @@ class Subscription < ApplicationRecord
       price: 59_800,
       situation_limit: 10,
       monthly_interview_limit: 500,
+      voice_ai_interview: true,
+      auto_scoring: true,
+      guest_invite: true,
+      result_dashboard: true,
+      follow_up_automation: true,
+      priority_support: false,
       description: "成長中の採用チーム向け。シナリオ10・月500面接。",
       purchasable: true,
       public_on_lp: true,
@@ -52,6 +70,12 @@ class Subscription < ApplicationRecord
       price: 98_000,
       situation_limit: 30,
       monthly_interview_limit: 2_000,
+      voice_ai_interview: true,
+      auto_scoring: true,
+      guest_invite: true,
+      result_dashboard: true,
+      follow_up_automation: true,
+      priority_support: true,
       description: "本格運用向け。シナリオ30・月2,000面接。",
       purchasable: true,
       public_on_lp: true,
@@ -63,6 +87,12 @@ class Subscription < ApplicationRecord
       price: 198_000,
       situation_limit: nil,
       monthly_interview_limit: nil,
+      voice_ai_interview: true,
+      auto_scoring: true,
+      guest_invite: true,
+      result_dashboard: true,
+      follow_up_automation: true,
+      priority_support: true,
       description: "大規模運用向け。シナリオ・面接数ともに無制限。",
       purchasable: true,
       public_on_lp: true,
@@ -73,7 +103,13 @@ class Subscription < ApplicationRecord
 
   LP_COMPARISON_FEATURES = [
     { key: :situation_limit, label: "面接シナリオ数" },
-    { key: :monthly_interview_limit, label: "月間面接数" }
+    { key: :monthly_interview_limit, label: "月間面接数" },
+    { key: :voice_ai_interview, label: "AI音声面接" },
+    { key: :auto_scoring, label: "合否・スコア自動評価" },
+    { key: :guest_invite, label: "招待リンク（ログイン不要）" },
+    { key: :result_dashboard, label: "結果ダッシュボード" },
+    { key: :follow_up_automation, label: "フォロー自動化" },
+    { key: :priority_support, label: "優先サポート" }
   ].freeze
 
   class << self
@@ -117,6 +153,8 @@ class Subscription < ApplicationRecord
       case feature_key
       when :situation_limit, :monthly_interview_limit
         format_limit(config[feature_key])
+      when :voice_ai_interview, :auto_scoring, :guest_invite, :result_dashboard, :follow_up_automation, :priority_support
+        config[feature_key] ? "✔︎" : "✕"
       else
         config[feature_key].present? ? "✔︎" : "✕"
       end

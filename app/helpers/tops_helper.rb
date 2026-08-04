@@ -63,9 +63,9 @@ module TopsHelper
   ].freeze
 
   SERVICE_CARDS = [
-    { num: "01", icon: "fa-list-check", orbit: "fa-pen-to-square", title: "シナリオ／資料の作成", desc: "面接質問や営業資料、合格点・フォロールールを設定し、自社の入口対応をテンプレート化します。" },
-    { num: "02", icon: "fa-link", orbit: "fa-user-check", title: "招待リンクで実施", desc: "相手はURLから入室。AIが音声で質問・提案し、回答をその場で評価します。" },
-    { num: "03", icon: "fa-clipboard-check", orbit: "fa-chart-pie", title: "結果とフォローの自動化", desc: "スコア・合否・見込み度・関心トピックを可視化し、次アクションまでつなげます。" }
+    { num: "01", image: "service_01_scenario.png", alt: "面接シナリオ設計画面", title: "シナリオの作成", desc: "面接質問・合格点・評価基準を設定し、自社の一次対応をテンプレート化します。" },
+    { num: "02", image: "service_02_interview.png", alt: "招待リンクからAI面接を実施する画面", title: "招待リンクで実施", desc: "候補者はURLから入室。ログイン不要で、AIが音声面接を進めます。" },
+    { num: "03", image: "service_03_results.png", alt: "評価結果とフォローを可視化する画面", title: "結果とフォローの自動化", desc: "スコア・合否・関心トピックを可視化し、次アクションまでつなげます。" }
   ].freeze
 
   COMPANY_PROFILE = [
@@ -78,7 +78,7 @@ module TopsHelper
   ].freeze
 
   COMPANY_STATS = [
-    { icon: "fa-calendar", label: "顧客満足度", num: "97.5", unit: "%" },
+    { icon: "fa-face-smile", label: "顧客満足度", num: "97.5", unit: "%" },
     { icon: "fa-building", label: "累計導入社数", num: "500", unit: "+社" },
     { icon: "fa-clock", label: "対応体制", num: "24", unit: "時間" }
   ].freeze
@@ -86,7 +86,9 @@ module TopsHelper
   COMPARE_ROWS = [
     { label: "初回対応", icon: "fa-bolt", legacy: "日程調整後に人が実施", meetia: "招待リンクですぐAI面接／商談開始" },
     { label: "対応時間", icon: "fa-clock", legacy: "担当者の稼働時間に依存", meetia: "24時間365日参加可能" },
-    { label: "評価・記録", icon: "fa-chart-line", legacy: "メモが属人化", meetia: "スコア・見込み度・ログを自動保存" }
+    { label: "評価・記録", icon: "fa-chart-line", legacy: "メモが属人化", meetia: "スコア・見込み度・ログを自動保存" },
+    { label: "評価の公平性", icon: "fa-scale-balanced", legacy: "面接官ごとに判定がばらつく", meetia: "同一シナリオで合否・スコアを統一" },
+    { label: "運用工数", icon: "fa-users", legacy: "一次対応に人が張り付く", meetia: "AIが入口対応し、人は見極めに集中" }
   ].freeze
 
   FAQ_CATEGORIES = [
@@ -98,9 +100,9 @@ module TopsHelper
   ].freeze
 
   TRIAL_FEATURES = [
-    { icon: "fa-rocket", label: "即日スタート", desc: "シナリオや資料を用意してリンクを送るだけで、すぐに体験できます。" },
+    { icon: "fa-rocket", label: "即日スタート", desc: "シナリオを用意してリンクを送るだけで、すぐに体験できます。" },
     { icon: "fa-shield-halved", label: "セキュア設計", desc: "トークン認証と暗号化で、企業利用にも安心の環境を提供します。" },
-    { icon: "fa-chart-simple", label: "成果を可視化", desc: "合否・スコア・見込み度・回答ログをダッシュボードで確認できます。" }
+    { icon: "fa-chart-simple", label: "成果を可視化", desc: "合否・スコア・回答ログをダッシュボードで確認できます。" }
   ].freeze
 
   def lp_nav_active?(key)

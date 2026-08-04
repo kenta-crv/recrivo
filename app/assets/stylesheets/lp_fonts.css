@@ -1,0 +1,72 @@
+@charset "UTF-8";
+/* LP fonts
+   - 日本語: Zen Kaku Gothic New に統一
+   - 英字UI: DM Sans
+*/
+
+@font-face {
+  font-family: "Zen Kaku Gothic New";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("https://cdn.jsdelivr.net/npm/@fontsource/zen-kaku-gothic-new@5.2.5/files/zen-kaku-gothic-new-japanese-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Zen Kaku Gothic New";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("https://cdn.jsdelivr.net/npm/@fontsource/zen-kaku-gothic-new@5.2.5/files/zen-kaku-gothic-new-japanese-500-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Zen Kaku Gothic New";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("https://cdn.jsdelivr.net/npm/@fontsource/zen-kaku-gothic-new@5.2.5/files/zen-kaku-gothic-new-japanese-700-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Zen Kaku Gothic New";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url("https://cdn.jsdelivr.net/npm/@fontsource/zen-kaku-gothic-new@5.2.5/files/zen-kaku-gothic-new-japanese-900-normal.woff2") format("woff2");
+}
+
+html.meetia-lp-html,
+html.meetia-lp-html body.meetia-lp-body,
+.meetia-modern-lp {
+  font-family: "Zen Kaku Gothic New", "DM Sans", "Hiragino Sans", sans-serif !important;
+}
+
+.meetia-modern-lp .meetia-section__title,
+.meetia-modern-lp .meetia-features-page__title,
+.meetia-modern-lp .meetia-page-hero__title,
+.meetia-modern-lp .meetia-company-profile__title,
+.meetia-modern-lp .meetia-company-profile__catch,
+.meetia-modern-lp .meetia-hero__title,
+.meetia-modern-lp .meetia-cta-band__title,
+.meetia-modern-lp .meetia-problems__solution-title,
+.meetia-modern-lp .meetia-features-showcase__cta-copy,
+.meetia-modern-lp h1,
+.meetia-modern-lp h2,
+.meetia-modern-lp h3,
+.meetia-modern-lp h4 {
+  font-family: "Zen Kaku Gothic New", "DM Sans", "Hiragino Sans", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+}
+
+.meetia-modern-lp .meetia-section__eyebrow,
+.meetia-modern-lp .meetia-features-page__eyebrow,
+.meetia-modern-lp .meetia-page-hero__eyebrow,
+.meetia-modern-lp .meetia-btn,
+.meetia-modern-lp .meetia-nav__item,
+.meetia-modern-lp .meetia-pricing__badge,
+.meetia-modern-lp .meetia-features-showcase__cta-badge,
+.meetia-modern-lp .meetia-cta-band__eyebrow {
+  font-family: "DM Sans", "Zen Kaku Gothic New", sans-serif !important;
+}
