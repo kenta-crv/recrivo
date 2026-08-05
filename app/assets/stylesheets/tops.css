@@ -560,7 +560,11 @@ html.meetia-lp-html,
 }
 
 .meetia-problems__card {
-  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 22px 26px;
   border-radius: 18px;
   background: #ffffff;
   border: 1px solid var(--lp-card-border);
@@ -568,20 +572,25 @@ html.meetia-lp-html,
 }
 
 .meetia-problems__icon {
-  width: 42px;
-  height: 42px;
-  margin-bottom: 14px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 18px;
   background: var(--lp-purple-soft);
   color: var(--lp-purple);
   border: 1px solid rgba(47, 111, 237, 0.12);
+  font-size: 1.45rem;
+}
+
+.meetia-problems__content {
+  width: 100%;
 }
 
 .meetia-problems__title {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 0.98rem;
   font-weight: 700;
   line-height: 1.55;
@@ -1621,6 +1630,10 @@ html.meetia-lp-html,
   box-shadow: var(--lp-shadow-card);
 }
 
+.meetia-faq-panel__item.is-hidden {
+  display: none;
+}
+
 .meetia-faq-panel__q {
   cursor: pointer;
   font-weight: 700;
@@ -1906,8 +1919,27 @@ html.meetia-lp-html,
   }
 
   .meetia-cta-band__features {
-    grid-template-columns: 1fr;
-    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .meetia-cta-band__feature {
+    padding: 4px 2px 0;
+  }
+
+  .meetia-cta-band__feature-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 10px;
+  }
+
+  .meetia-cta-band__feature-label {
+    font-size: 0.82rem;
+  }
+
+  .meetia-cta-band__feature-desc {
+    font-size: 0.72rem;
+    line-height: 1.45;
   }
 }
 
@@ -2006,6 +2038,28 @@ html.meetia-lp-html,
   gap: 16px;
 }
 
+/* Mobile horizontal scroll rails (Drafty-style) */
+.meetia-h-scroll {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.meetia-h-scroll::-webkit-scrollbar { display: none; }
+
+.meetia-h-scroll > * {
+  flex: 0 0 min(300px, 78vw);
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
 /* Responsive */
 @media (max-width: 980px) {
   .meetia-nav__toggle { display: inline-flex; }
@@ -2030,12 +2084,7 @@ html.meetia-lp-html,
 
   .meetia-hero__inner,
   .meetia-whats-light__grid,
-  .meetia-problems__grid--static,
-  .meetia-service-concept__grid--static,
-  .meetia-service-flow,
-  .meetia-deal-flow__container--static,
   .meetia-feature-focus,
-  .meetia-features-showcase__grid,
   .meetia-faq-layout,
   .meetia-company-profile__grid,
   .meetia-compare,
@@ -2043,8 +2092,142 @@ html.meetia-lp-html,
     grid-template-columns: 1fr !important;
   }
 
+  .meetia-problems__grid--static,
+  .meetia-deal-flow__container--static,
+  .meetia-service-concept__grid--static,
+  .meetia-service-flow,
+  .meetia-features-showcase__grid {
+    display: flex !important;
+    align-items: stretch;
+    gap: 14px;
+    margin-inline: -4px;
+    padding: 4px 4px 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    grid-template-columns: none !important;
+  }
+
+  .meetia-problems__grid--static::-webkit-scrollbar,
+  .meetia-deal-flow__container--static::-webkit-scrollbar,
+  .meetia-service-concept__grid--static::-webkit-scrollbar,
+  .meetia-service-flow::-webkit-scrollbar,
+  .meetia-features-showcase__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .meetia-problems__grid--static > .meetia-problems__card,
+  .meetia-deal-flow__container--static > .meetia-deal-flow__step-card,
+  .meetia-service-concept__grid--static > .meetia-service-concept__card,
+  .meetia-service-flow > *,
+  .meetia-features-showcase__grid > .meetia-feature-card,
+  .meetia-features-showcase__grid > .meetia-feature-focus {
+    flex: 0 0 min(300px, 78vw);
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  .meetia-features-showcase__grid > .meetia-feature-focus {
+    flex-basis: min(340px, 86vw);
+    grid-column: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .meetia-feature-focus__screen {
+    order: 1;
+    margin-top: auto;
+  }
+
+  .meetia-feature-focus__image {
+    width: 100%;
+    height: auto;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+  }
+
   .meetia-deal-flow__arrow { display: none; }
   .meetia-hero__visual { justify-content: center; }
+
+  /* WHY AI Interview — row cards as horizontal slides */
+  .meetia-compare-table {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin-inline: -4px;
+    padding: 4px 4px 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .meetia-compare-table::-webkit-scrollbar { display: none; }
+
+  .meetia-compare-table__head {
+    display: none;
+  }
+
+  .meetia-compare-table__row {
+    flex: 0 0 min(300px, 78vw);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid var(--lp-card-border);
+    box-shadow: var(--lp-shadow-card);
+    overflow: hidden;
+  }
+
+  .meetia-compare-table__topic,
+  .meetia-compare-table__cell {
+    display: flex;
+    width: 100%;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(47, 111, 237, 0.08);
+  }
+
+  .meetia-compare-table__cell:last-child {
+    border-bottom: 0;
+  }
+
+  .meetia-compare-table__topic {
+    background: var(--lp-purple-soft);
+    font-size: 0.95rem;
+  }
+
+  .meetia-compare-table__cell::before {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--lp-muted);
+    flex-shrink: 0;
+    width: 5.5em;
+  }
+
+  .meetia-compare-table__cell--meetia::before {
+    content: "AI Interview";
+    color: var(--lp-purple-deep);
+  }
+
+  .meetia-compare-table__cell:not(.meetia-compare-table__cell--meetia)::before {
+    content: "従来";
+  }
 }
 
 @media (max-width: 640px) {
@@ -2070,18 +2253,76 @@ html.meetia-lp-html,
     border-bottom: 0;
     padding-bottom: 0;
   }
+
+  /* Keep review / company / trial stats side-by-side */
   .meetia-reviews-summary,
   .meetia-company-profile__stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
   }
+
+  .meetia-reviews-summary__stat {
+    padding: 18px 8px;
+  }
+
+  .meetia-reviews-summary__icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+
+  .meetia-reviews-summary__value {
+    font-size: clamp(1.15rem, 5vw, 1.55rem);
+    margin-bottom: 6px;
+  }
+
+  .meetia-reviews-summary__label {
+    font-size: 0.72rem;
+  }
+
   .meetia-company-profile__stat {
-    padding: 20px 16px;
+    padding: 16px 8px 14px;
   }
-  .meetia-compare-table__head,
-  .meetia-compare-table__row,
+
+  .meetia-company-profile__stat-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 10px;
+    font-size: 0.88rem;
+  }
+
+  .meetia-company-profile__stat-label {
+    font-size: 0.62rem;
+  }
+
+  .meetia-company-profile__stat-num {
+    font-size: clamp(1.15rem, 4.5vw, 1.45rem);
+  }
+
   .meetia-company-profile__row {
     grid-template-columns: 1fr;
   }
+
+  .meetia-problems__grid--static > .meetia-problems__card,
+  .meetia-deal-flow__container--static > .meetia-deal-flow__step-card,
+  .meetia-service-concept__grid--static > .meetia-service-concept__card,
+  .meetia-features-showcase__grid > .meetia-feature-card,
+  .meetia-compare-table__row {
+    flex-basis: min(280px, 82vw);
+  }
+
+  .meetia-features-showcase__grid > .meetia-feature-focus {
+    flex-basis: min(300px, 88vw);
+  }
+
+  .meetia-problems__icon {
+    width: 72px;
+    height: 72px;
+    font-size: 1.65rem;
+    border-radius: 20px;
+  }
+
   .meetia-pricing__slider-body,
   .meetia-reviews-slider {
     grid-template-columns: 36px 1fr 36px;

@@ -1,1 +1,21 @@
-= render "form"
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title
+      i.fa-solid.fa-bug aria-hidden="true"
+      |  問題報告
+  .db-v2-bottom-card__body
+    p.db-v2-muted style="margin-bottom:1.25rem;"
+      | サービス利用中に不具合や問題が発生した場合は、こちらからご報告ください。内容を確認のうえ、対応いたします。
+
+    .db-v2-problem-actions style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.5rem;"
+      button.db-v2-btn.db-v2-btn--primary type="button" data-problem-modal-open=""
+        i.fa-solid.fa-bug aria-hidden="true"
+        span モーダルで報告する
+      = link_to new_problem_path, class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener noreferrer" do
+        i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
+        span 新しいウィンドウで開く
+
+    hr style="margin:0 0 1.5rem;border:none;border-top:1px solid var(--db-border, #e2e8f0);"
+
+    h3.db-v2-panel__title style="margin-bottom:1rem;" このページから報告する
+    = render "form", problem: @problem, form_id: "problem-report-page-form"

@@ -39,6 +39,9 @@
     document.querySelectorAll('[data-pricing-bound]').forEach(function(el) {
       el.removeAttribute('data-pricing-bound');
     });
+    document.querySelectorAll('[data-faq-bound]').forEach(function(el) {
+      el.removeAttribute('data-faq-bound');
+    });
     document.querySelectorAll('[data-faq-search-bound]').forEach(function(el) {
       el.removeAttribute('data-faq-search-bound');
     });
@@ -255,30 +258,35 @@
 
   function initFaqSearch() {
     var root = document.querySelector('[data-faq-root]');
-    var searchInput = document.querySelector('[data-faq-search]');
-    var items = document.querySelectorAll('.meetia-faq-panel__item');
-    if (!searchInput || !items.length) return;
+    if (!root) return;
 
-    MeetiaPageInit.bindOnce(searchInput, 'data-faq-search-bound', function(input) {
-      var categoryBtns = root ? root.querySelectorAll('[data-faq-category]') : [];
-      var activeCategory = 'service';
+    MeetiaPageInit.bindOnce(root, 'data-faq-bound', function(faqRoot) {
+      var searchInput = faqRoot.querySelector('[data-faq-search]') || document.querySelector('[data-faq-search]');
+      var items = faqRoot.querySelectorAll('[data-faq-item]');
+      var categoryBtns = faqRoot.querySelectorAll('[data-faq-category]');
+      if (!items.length) return;
+
+      var activeCategory = categoryBtns.length
+        ? categoryBtns[0].getAttribute('data-faq-category')
+        : '';
 
       function applyFilters() {
-        var q = input.value.trim().toLowerCase();
+        var q = searchInput ? searchInput.value.trim().toLowerCase() : '';
         items.forEach(function(item) {
           var category = item.getAttribute('data-faq-item') || '';
           var text = item.textContent.toLowerCase();
           var matchCategory = !activeCategory || category === activeCategory;
           var matchSearch = !q || text.indexOf(q) !== -1;
-          item.classList.toggle('is-hidden', !(matchCategory && matchSearch));
-          item.style.display = (matchCategory && matchSearch) ? '' : 'none';
+          var visible = matchCategory && matchSearch;
+          item.classList.toggle('is-hidden', !visible);
+          item.style.display = visible ? '' : 'none';
         });
       }
 
       function setCategory(category) {
-        activeCategory = category;
+        activeCategory = category || '';
         categoryBtns.forEach(function(btn) {
-          btn.classList.toggle('is-active', btn.getAttribute('data-faq-category') === category);
+          btn.classList.toggle('is-active', btn.getAttribute('data-faq-category') === activeCategory);
         });
         applyFilters();
       }
@@ -289,7 +297,11 @@
         });
       });
 
-      input.addEventListener('input', applyFilters);
+      if (searchInput) {
+        MeetiaPageInit.bindOnce(searchInput, 'data-faq-search-bound', function(input) {
+          input.addEventListener('input', applyFilters);
+        });
+      }
 
       if (categoryBtns.length) {
         setCategory(categoryBtns[0].getAttribute('data-faq-category'));
@@ -307,7 +319,7 @@
       if (grid.classList.contains('meetia-compare-scroll')) {
         step = Math.max(200, grid.clientWidth * 0.75);
       } else {
-        var card = grid.querySelector('.meetia-problems__card, .meetia-service-concept__card, .meetia-ai-deal-flow__step, .meetia-deal-flow__step-card');
+        var card = grid.querySelector('.meetia-problems__card, .meetia-service-concept__card, .meetia-ai-deal-flow__step, .meetia-deal-flow__step-card, .meetia-feature-card, .meetia-feature-focus, .meetia-compare-table__row');
         if (!card) return;
         var style = window.getComputedStyle(grid);
         var gap = parseFloat(style.columnGap || style.gap || '16') || 16;

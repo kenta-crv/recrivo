@@ -268,6 +268,73 @@ html.dashboard-html {
   flex-shrink: 0;
 }
 
+.dashboard-v2-container .db-v2-sidebar__account {
+  position: relative;
+}
+
+.dashboard-v2-container .db-v2-sidebar__account-caret {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #64748b;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-v2-container .db-v2-sidebar__account.is-open .db-v2-sidebar__account-caret,
+.dashboard-v2-container .db-v2-sidebar__account:hover .db-v2-sidebar__account-caret {
+  color: #c4b5fd;
+  transform: rotate(180deg);
+}
+
+.dashboard-v2-container .db-v2-sidebar__account-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 14, 28, 0.98) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+
+.dashboard-v2-container .db-v2-sidebar__account:hover .db-v2-sidebar__account-menu,
+.dashboard-v2-container .db-v2-sidebar__account:focus-within .db-v2-sidebar__account-menu,
+.dashboard-v2-container .db-v2-sidebar__account.is-open .db-v2-sidebar__account-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.dashboard-v2-container .db-v2-sidebar__account-menu-label {
+  margin: 0;
+  padding: 4px 10px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.dashboard-v2-container .db-v2-sidebar__account-menu .db-v2-sidebar__link {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.dashboard-v2-container .db-v2-sidebar__account-menu .db-v2-sidebar__logout-form {
+  width: 100%;
+}
+
 .dashboard-v2-container .db-v2-sidebar__logo-area {
   display: flex;
   align-items: center;
@@ -371,6 +438,7 @@ html.dashboard-html {
 
 .dashboard-v2-container .db-v2-sidebar__link i {
   width: 18px;
+  flex-shrink: 0;
   text-align: center;
   font-size: 15px;
   color: #64748b;
@@ -412,6 +480,17 @@ html.dashboard-html {
   text-align: left;
 }
 
+.dashboard-v2-container button.db-v2-sidebar__link {
+  width: 100%;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
 .dashboard-v2-container .db-v2-onboarding-nav__logout-form {
   display: contents;
   margin: 0;
@@ -438,11 +517,16 @@ html.dashboard-html {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   padding: 8px;
+  border: none;
   border-radius: 10px;
+  background: transparent;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  font: inherit;
+  text-align: left;
 }
 
 .dashboard-v2-container .db-v2-sidebar__user:hover {
@@ -3116,6 +3200,12 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-upload-zone__e
   border: 1px solid var(--db-card-border);
   box-shadow: var(--db-card-glow);
   overflow: hidden;
+}
+
+.dashboard-v2-container .db-v2-modal__dialog--wide {
+  width: min(560px, 100%);
+  max-height: min(90vh, 720px);
+  overflow-y: auto;
 }
 
 .dashboard-v2-container .db-v2-modal__header {

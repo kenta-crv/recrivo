@@ -106,6 +106,14 @@ function initDashboardSidebar() {
     document.body.style.overflow = '';
   };
 
+  var closeAccountMenus = function() {
+    container.querySelectorAll('[data-sidebar-account].is-open').forEach(function(el) {
+      el.classList.remove('is-open');
+      var toggle = el.querySelector('[data-sidebar-account-toggle]');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    });
+  };
+
   // 委譲なので多重バインドしても open/close が二重になるだけ。ready フラグで死なせない
   if (container.getAttribute('data-dashboard-sidebar-ready') === 'true') return;
   container.setAttribute('data-dashboard-sidebar-ready', 'true');
@@ -127,10 +135,34 @@ function initDashboardSidebar() {
       close();
       return;
     }
+
+    var accountToggle = t.closest('[data-sidebar-account-toggle]');
+    if (accountToggle) {
+      e.preventDefault();
+      e.stopPropagation();
+      var account = accountToggle.closest('[data-sidebar-account]');
+      if (!account) return;
+      var willOpen = !account.classList.contains('is-open');
+      closeAccountMenus();
+      if (willOpen) {
+        account.classList.add('is-open');
+        accountToggle.setAttribute('aria-expanded', 'true');
+      }
+      return;
+    }
+
+    if (!t.closest('[data-sidebar-account]')) {
+      closeAccountMenus();
+    }
+
     var link = t.closest('.db-v2-sidebar__link');
     if (link && window.matchMedia('(max-width: 1023px)').matches) {
       close();
     }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeAccountMenus();
   });
 }
 
@@ -596,6 +628,59 @@ function initQuestionForm() {
   });
 }
 
+var problemModalBound = false;
+
+function initProblemModal() {
+  var modal = document.querySelector('[data-problem-modal]');
+  if (!modal || problemModalBound) return;
+  problemModalBound = true;
+
+  var open = function() {
+    var current = document.querySelector('[data-problem-modal]');
+    if (!current) return;
+    current.classList.add('is-open');
+    current.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    var focusEl = current.querySelector('input, textarea, button');
+    if (focusEl) {
+      window.setTimeout(function() { focusEl.focus(); }, 30);
+    }
+  };
+
+  var close = function() {
+    var current = document.querySelector('[data-problem-modal]');
+    if (!current) return;
+    current.classList.remove('is-open');
+    current.setAttribute('aria-hidden', 'true');
+    var container = document.getElementById('dashboard-v2-container');
+    if (!container || !container.classList.contains('db-v2-sidebar--open')) {
+      document.body.style.overflow = '';
+    }
+  };
+
+  document.addEventListener('click', function(e) {
+    var t = clickEl(e);
+    if (!t) return;
+    if (t.closest('[data-problem-modal-open]')) {
+      e.preventDefault();
+      open();
+      return;
+    }
+    if (t.closest('[data-problem-modal-close]')) {
+      e.preventDefault();
+      close();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    var current = document.querySelector('[data-problem-modal]');
+    if (current && current.classList.contains('is-open')) {
+      close();
+    }
+  });
+}
+
 function bootDashboardUi() {
   if (!document.getElementById('dashboard-v2-container')) return;
   initLoginDropdown();
@@ -605,6 +690,7 @@ function bootDashboardUi() {
   scrollDashboardAnchor();
   initSituationForm();
   initQuestionForm();
+  initProblemModal();
   document.documentElement.setAttribute('data-dashboard-js', 'ready');
 }
 

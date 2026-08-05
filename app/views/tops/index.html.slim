@@ -44,7 +44,7 @@
         span.meetia-section__eyebrow PROBLEMS
         h2.meetia-section__title こんなお悩みありませんか？
         p.meetia-section__lead 日程調整・属人評価・フォロー漏れ——成長のボトルネックをAIで解消します。
-      .meetia-problems__grid.meetia-problems__grid--static
+      .meetia-problems__grid.meetia-problems__grid--static#problems-scroll
         - TopsHelper::PROBLEM_ITEMS.each do |item|
           .meetia-problems__card
             .meetia-problems__icon
@@ -117,7 +117,7 @@
         span.meetia-section__eyebrow HOW IT WORKS
         h2.meetia-section__title これがAI面接・商談の流れ
         p.meetia-section__lead 準備は最小限。リンク共有から分析・フォローまで、3ステップで完結します。
-      .meetia-deal-flow__container.meetia-deal-flow__container--static
+      .meetia-deal-flow__container.meetia-deal-flow__container--static#flow-scroll
         .meetia-deal-flow__step-card
           .meetia-deal-flow__step-num STEP 01
           .meetia-deal-flow__icon-wrap
@@ -149,7 +149,7 @@
           | Recrivoが提供する
           span.meetia-text-accent AI面接
         p.meetia-section__lead 設計から実施、評価・フォローまで。採用の一次対応を一気通貫で自動化します。
-      .meetia-service-concept__grid.meetia-service-concept__grid--static
+      .meetia-service-concept__grid.meetia-service-concept__grid--static#service-scroll
         - TopsHelper::SERVICE_CARDS.each do |card|
           .meetia-service-concept__card
             .meetia-service-concept__media
@@ -168,7 +168,7 @@
         p.meetia-features-page__lead
           | 面接シナリオも商談資料も、同じ基盤で設計・実施・分析できます。
       .meetia-features-showcase
-        .meetia-features-showcase__grid
+        .meetia-features-showcase__grid#features-scroll
           - TopsHelper::FEATURE_ROWS.each do |(num, icon, title, body, _)|
             - if num == "03"
               article.meetia-feature-focus data-feature=num
@@ -266,7 +266,7 @@
           | 他社との違いは、
           span.meetia-text-accent AI面接・商談体験
         p.meetia-section__lead 人が足りない入口業務を、品質を落とさずスケールさせるための設計です。
-      .meetia-compare-table
+      .meetia-compare-table#compare-scroll
         .meetia-compare-table__head
           span.meetia-compare-table__label 比較項目
           span.meetia-compare-table__col.meetia-compare-table__col--meetia
@@ -340,8 +340,13 @@
               i.fa-solid class=icon aria-hidden="true"
               span = label
         .meetia-faq-panel
-          - TopsHelper::FAQ_ITEMS.each_with_index do |item, idx|
-            details.meetia-faq-panel__item class=("is-open-default" if idx.zero?) data-faq-item=item[:category] open=(idx.zero? || nil)
+          - default_faq_category = TopsHelper::FAQ_CATEGORIES.first.first
+          - default_faq_opened = false
+          - TopsHelper::FAQ_ITEMS.each do |item|
+            - is_default_category = item[:category] == default_faq_category
+            - open_default = is_default_category && !default_faq_opened
+            - default_faq_opened = true if open_default
+            details.meetia-faq-panel__item class=[("is-open-default" if open_default), ("is-hidden" unless is_default_category)].compact data-faq-item=item[:category] open=(open_default || nil) style=("display: none;" unless is_default_category)
               summary.meetia-faq-panel__q = item[:q]
               p.meetia-faq-panel__a = item[:a]
 

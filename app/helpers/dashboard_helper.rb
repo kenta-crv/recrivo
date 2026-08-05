@@ -23,6 +23,8 @@ module DashboardHelper
       controller_name == "subscriptions"
     when :account
       controller_name == "accounts"
+    when :problems
+      controller_name == "problems"
     when :management
       controller_name == "management"
     when :admin_interview_results
