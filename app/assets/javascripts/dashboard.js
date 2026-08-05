@@ -57,15 +57,18 @@ var MEETIA_DASHBOARD_THEME_KEY = 'meetia-dashboard-theme';
 function getDashboardTheme() {
   try {
     var stored = localStorage.getItem(MEETIA_DASHBOARD_THEME_KEY);
-    return stored === 'light' ? 'light' : 'dark';
+    if (stored === 'dark') {
+      localStorage.setItem(MEETIA_DASHBOARD_THEME_KEY, 'light');
+    }
+    return 'light';
   } catch (e) {
-    return 'dark';
+    return 'light';
   }
 }
 
 function dashboardThemeBackground(theme) {
   var teal = document.documentElement.getAttribute('data-dashboard-palette') === 'teal';
-  if (theme === 'light') return teal ? '#f1f5f9' : '#e8ebf0';
+  if (theme === 'light') return '#ffffff';
   return teal ? '#0f172a' : '#0a0a12';
 }
 
