@@ -11,7 +11,7 @@ FactoryBot.define do
     allow_resume { true }
     max_resume_count { 3 }
     passing_score { 70 }
-    auto_reject_enabled { true }
+    auto_reject_enabled { false }
     reject_on_required_fail { true }
     min_required_score { 70 }
     max_consecutive_fails { 0 }

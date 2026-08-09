@@ -345,8 +345,11 @@ module Api
 
       data = result.results_data || {}
       lang = @interview.language.to_s
+      hide_eval = @interview.situation.hide_result_from_candidate?
       failure_reason = data['failure_reason'] || data[:failure_reason] || @interview.rejection_reason
-      message = if lang == 'ja'
+      message = if hide_eval
+                  lang == 'ja' ? '面接情報を受け付けました。結果は後日ご連絡します。' : 'We received your interview. We will contact you with the result later.'
+                elsif lang == 'ja'
                   if result.failed? && failure_reason.present?
                     "面接が完了しました。不合格理由: #{failure_reason}"
                   else
@@ -360,11 +363,20 @@ module Api
                   end
                 end
 
-      render json: {
-        success: true,
-        message: message,
-        result: {
-          interview_id: @interview.id,
+      result_payload = {
+        interview_id: @interview.id,
+        judgment_mode: @interview.situation.judgment_mode,
+        candidate_result_visibility: @interview.situation.candidate_result_visibility,
+        preview: @interview.preview?,
+        enable_satisfaction_survey: @interview.situation.enable_satisfaction_survey?,
+        faqs: @interview.situation.situation_faqs.approved.ordered.limit(20).map { |f|
+          { id: f.id, question: f.question, answer: f.answer, category: f.category }
+        },
+        materials_url: @interview.situation.recruitment_material.attached? ? rails_blob_path(@interview.situation.recruitment_material, only_path: true) : nil
+      }
+
+      unless hide_eval
+        result_payload.merge!(
           final_status: result.final_status,
           average_score: data['average_score'] || data[:average_score],
           passing_score: data['passing_score'] || data[:passing_score],
@@ -376,16 +388,14 @@ module Api
           recommendation: data['recommendation'] || data[:recommendation],
           rejected: @interview.rejected?,
           rejection_reason: failure_reason,
-          failure_reason: failure_reason,
-          judgment_mode: @interview.situation.judgment_mode,
-          candidate_result_visibility: @interview.situation.candidate_result_visibility,
-          preview: @interview.preview?,
-          enable_satisfaction_survey: @interview.situation.enable_satisfaction_survey?,
-          faqs: @interview.situation.situation_faqs.approved.ordered.limit(20).map { |f|
-            { id: f.id, question: f.question, answer: f.answer, category: f.category }
-          },
-          materials_url: @interview.situation.recruitment_material.attached? ? rails_blob_path(@interview.situation.recruitment_material, only_path: true) : nil
-        }
+          failure_reason: failure_reason
+        )
+      end
+
+      render json: {
+        success: true,
+        message: message,
+        result: result_payload
       }
     rescue InterviewEngine::SessionManager::SessionError => e
       render_api_error(e.message, status: :unprocessable_entity)
@@ -454,20 +464,28 @@ module Api
 
       state_with_rejection = state.merge(
         language: @interview.language,
-        rejected: @interview.rejected?,
-        rejection_reason: @interview.rejection_reason
+        candidate_result_visibility: @interview.situation.candidate_result_visibility
       )
+
+      unless @interview.situation.hide_result_from_candidate?
+        state_with_rejection = state_with_rejection.merge(
+          rejected: @interview.rejected?,
+          rejection_reason: @interview.rejection_reason
+        )
+      end
 
       if (result = @interview.interview_result)
         data = result.results_data || {}
-        state_with_rejection = state_with_rejection.merge(
-          final_status: result.final_status,
-          average_score: data['average_score'] || data[:average_score],
-          summary: data['summary'] || data[:summary],
-          strengths: data['strengths'] || data[:strengths] || [],
-          weaknesses: data['weaknesses'] || data[:weaknesses] || [],
-          recommendation: data['recommendation'] || data[:recommendation]
-        )
+        unless @interview.situation.hide_result_from_candidate?
+          state_with_rejection = state_with_rejection.merge(
+            final_status: result.final_status,
+            average_score: data['average_score'] || data[:average_score],
+            summary: data['summary'] || data[:summary],
+            strengths: data['strengths'] || data[:strengths] || [],
+            weaknesses: data['weaknesses'] || data[:weaknesses] || [],
+            recommendation: data['recommendation'] || data[:recommendation]
+          )
+        end
       end
 
       render json: {

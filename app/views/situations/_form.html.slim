@@ -13,125 +13,103 @@
     .db-v2-form-group
       = f.label :job_title, "募集職種", class: "db-v2-form-label"
       = f.text_field :job_title, class: "db-v2-form-control", required: true, placeholder: "例: バックエンドエンジニア、営業、カスタマーサクセス"
-      p.db-v2-form-hint 作成後、詳細画面で業種・職種に合う質問をAI提案できます。
 
     .db-v2-form-group
-      = f.label :description, "説明", class: "db-v2-form-label"
-      = f.text_area :description, class: "db-v2-form-control", rows: 3, placeholder: "社内メモや面接の目的（任意）"
-      p.db-v2-form-hint 候補者には表示されません。
+      = f.label :description, "説明（任意）", class: "db-v2-form-label"
+      = f.text_area :description, class: "db-v2-form-control", rows: 2, placeholder: "社内メモ（候補者には表示されません）"
 
     .db-v2-form-group
       = f.label :language, "言語", class: "db-v2-form-label"
       = f.select :language, [["日本語", "ja"], ["English", "en"]], {}, class: "db-v2-form-control"
 
   .db-v2-form-section
-    h3.db-v2-form-section__title 最終の合否（面接終了時）
-    p.db-v2-form-hint style="margin-bottom:12px"
-      | 合否の決め方と、候補者への結果表示を事前に設定します。
-
-    .db-v2-form-group
-      = f.label :judgment_mode, "判定モード", class: "db-v2-form-label"
-      = f.select :judgment_mode, [["自動判定（スコアで合否）", "automatic"], ["面接官が判定（結果は要確認）", "manual"]], {}, class: "db-v2-form-control"
-      p.db-v2-form-hint
-        | 自動: 平均点・ルールで合否を確定。手動: AIスコアは残し、合否はダッシュボードで確定します。
-
-    .db-v2-form-group
-      = f.label :candidate_result_visibility, "候補者への結果表示", class: "db-v2-form-label"
-      = f.select :candidate_result_visibility, [["その場で表示", "immediate"], ["非表示（後日連絡）", "hidden"]], {}, class: "db-v2-form-control"
-      p.db-v2-form-hint
-        | 非表示にすると、受験直後は「受け付けました。結果は後日」のみ表示します。
-
+    h3.db-v2-form-section__title 合否と回答方式
     .db-v2-form-group
       = f.label :passing_score, "合格ライン（平均点）", class: "db-v2-form-label"
       = f.number_field :passing_score, class: "db-v2-form-control", min: 0, max: 100
-      p.db-v2-form-hint
-        | 自動判定のとき使用。例: 60 なら平均 60 点以上で合格。
-
-  .db-v2-form-section
-    h3.db-v2-form-section__title 途中での不合格条件
-    p.db-v2-form-hint style="margin-bottom:12px"
-      | 最終の平均判定とは別に、「明らかに足りない回答」で不合格にする条件です。不要ならオフにしてください。
-
-    .db-v2-form-group
-      .db-v2-form-check
-        = f.check_box :auto_reject_enabled, data: { auto_reject_toggle: "1" }
-        = f.label :auto_reject_enabled, "途中不合格を使う"
-
-    #auto-reject-details data-auto-reject-details="1"
-      .db-v2-page-card
-        p.db-v2-muted style="margin-bottom:12px"
-          | 次の条件に当てはまった場合は不合格になります（平均の合格ラインとは別ルール）。面接は最後まで進め、最終判定で不合格とします。
-
-        .db-v2-form-group
-          .db-v2-form-check
-            = f.check_box :reject_on_required_fail
-            = f.label :reject_on_required_fail, "必須質問が基準未満なら不合格にする"
-          p.db-v2-form-hint
-            | 質問編集画面で「必須」にした設問だけが対象です。
-
-        .db-v2-form-group
-          = f.label :min_required_score, "必須質問の合格ライン（点）", class: "db-v2-form-label"
-          = f.number_field :min_required_score, class: "db-v2-form-control", min: 0, max: 100
-          p.db-v2-form-hint
-            | 必須質問のスコアがこの点数未満なら不合格です。最終の平均合格ラインとは別ルールです（面接は最後まで進みます）。
-
-        .db-v2-form-group
-          = f.label :max_consecutive_fails, "連続で基準未達が続いたら不合格", class: "db-v2-form-label"
-          = f.number_field :max_consecutive_fails, class: "db-v2-form-control", min: 0, max: 50
-          p.db-v2-form-hint
-            | 例: 2 なら「2問連続で不合格」で打ち切り。使わない場合は 0。
-
-        .db-v2-form-group
-          = f.label :reject_notify_method, "途中不合格になったときの通知", class: "db-v2-form-label"
-          = f.select :reject_notify_method, [["アプリ内", "in_app"], ["メール", "email"], ["なし", "none"]], {}, class: "db-v2-form-control"
-
-  .db-v2-form-section
-    h3.db-v2-form-section__title 回答方式
-    p.db-v2-form-hint style="margin-bottom:12px"
-      | 候補者が使える回答手段を事前に指定します。少なくとも一方は有効にしてください。
+      p.db-v2-form-hint 例: 70 なら平均 70 点以上で合格。
 
     .db-v2-form-group
       label.db-v2-form-label 許可する回答手段
       .db-v2-form-check
         = f.check_box :allow_text_answer
-        = f.label :allow_text_answer, "テキスト回答を許可する"
+        = f.label :allow_text_answer, "テキスト"
       .db-v2-form-check
         = f.check_box :allow_voice_answer
-        = f.label :allow_voice_answer, "音声回答を許可する"
-      p.db-v2-form-hint
-        | テキスト不可の場合、テキスト入力欄は表示されません（音声の文字起こしは確認メッセージのみ）。
+        = f.label :allow_voice_answer, "音声"
+      p.db-v2-form-hint 少なくとも一方は有効にしてください。
 
-    .db-v2-form-group
-      label.db-v2-form-label カメラ録画
-      .db-v2-form-check
-        = f.check_box :record_camera
-        = f.label :record_camera, "面接中にカメラ映像を表示・録画する"
-      p.db-v2-form-hint
-        | オンにすると受験画面にカメラが表示され、各回答が動画として結果画面で確認できます。
+  details.db-v2-details
+    summary.db-v2-details__summary 詳細設定（通常は変更不要）
+    .db-v2-details__body
+      .db-v2-form-section
+        h3.db-v2-form-section__title 判定
+        .db-v2-form-group
+          = f.label :judgment_mode, "判定モード", class: "db-v2-form-label"
+          = f.select :judgment_mode, [["自動判定（スコアで合否）", "automatic"], ["面接官が判定（結果は要確認）", "manual"]], {}, class: "db-v2-form-control"
 
-  .db-v2-form-section
-    h3.db-v2-form-section__title セッション
-    .db-v2-form-group
-      = f.label :session_timeout_minutes, "無操作でタイムアウト（分）", class: "db-v2-form-label"
-      = f.number_field :session_timeout_minutes, class: "db-v2-form-control", min: 1, max: 180
+        .db-v2-form-group
+          = f.label :candidate_result_visibility, "候補者への結果表示", class: "db-v2-form-label"
+          = f.select :candidate_result_visibility, [["非表示（推奨・後日連絡）", "hidden"], ["その場で詳細を表示", "immediate"]], {}, class: "db-v2-form-control"
+          p.db-v2-form-hint 総評・推薦は採用側向けです。通常は非表示のままにしてください。
 
-    .db-v2-form-group
-      label.db-v2-form-label 中断からの再開
-      .db-v2-form-check
-        = f.check_box :allow_resume
-        = f.label :allow_resume, "途中離脱しても再開を許可する"
+      .db-v2-form-section
+        h3.db-v2-form-section__title 途中での不合格条件
+        p.db-v2-form-hint style="margin-bottom:12px"
+          | 不要ならオフのままにしてください。
 
-    .db-v2-form-group
-      = f.label :max_resume_count, "再開できる最大回数", class: "db-v2-form-label"
-      = f.number_field :max_resume_count, class: "db-v2-form-control", min: 0, max: 10
+        .db-v2-form-group
+          .db-v2-form-check
+            = f.check_box :auto_reject_enabled, data: { auto_reject_toggle: "1" }
+            = f.label :auto_reject_enabled, "途中不合格を使う"
 
-  - if @situation.persisted?
-    .db-v2-form-section
-      h3.db-v2-form-section__title その他
-      .db-v2-form-group
-        .db-v2-form-check
-          = f.check_box :archived
-          = f.label :archived, "アーカイブする（新規招待を止める）"
+        #auto-reject-details data-auto-reject-details="1"
+          .db-v2-page-card
+            .db-v2-form-group
+              .db-v2-form-check
+                = f.check_box :reject_on_required_fail
+                = f.label :reject_on_required_fail, "必須質問が基準未満なら不合格にする"
+
+            .db-v2-form-group
+              = f.label :min_required_score, "必須質問の合格ライン（点）", class: "db-v2-form-label"
+              = f.number_field :min_required_score, class: "db-v2-form-control", min: 0, max: 100
+
+            .db-v2-form-group
+              = f.label :max_consecutive_fails, "連続で基準未達が続いたら不合格", class: "db-v2-form-label"
+              = f.number_field :max_consecutive_fails, class: "db-v2-form-control", min: 0, max: 50
+              p.db-v2-form-hint 使わない場合は 0。
+
+            .db-v2-form-group
+              = f.label :reject_notify_method, "途中不合格時の通知", class: "db-v2-form-label"
+              = f.select :reject_notify_method, [["アプリ内", "in_app"], ["メール", "email"], ["なし", "none"]], {}, class: "db-v2-form-control"
+
+      .db-v2-form-section
+        h3.db-v2-form-section__title カメラ・セッション
+        .db-v2-form-group
+          .db-v2-form-check
+            = f.check_box :record_camera
+            = f.label :record_camera, "面接中にカメラ映像を表示・録画する"
+
+        .db-v2-form-group
+          = f.label :session_timeout_minutes, "無操作でタイムアウト（分）", class: "db-v2-form-label"
+          = f.number_field :session_timeout_minutes, class: "db-v2-form-control", min: 1, max: 180
+
+        .db-v2-form-group
+          .db-v2-form-check
+            = f.check_box :allow_resume
+            = f.label :allow_resume, "途中離脱しても再開を許可する"
+
+        .db-v2-form-group
+          = f.label :max_resume_count, "再開できる最大回数", class: "db-v2-form-label"
+          = f.number_field :max_resume_count, class: "db-v2-form-control", min: 0, max: 10
+
+      - if @situation.persisted?
+        .db-v2-form-section
+          h3.db-v2-form-section__title その他
+          .db-v2-form-group
+            .db-v2-form-check
+              = f.check_box :archived
+              = f.label :archived, "アーカイブする（新規招待を止める）"
 
   .db-v2-form-actions
     = f.submit @situation.persisted? ? "更新する" : "作成する", class: "db-v2-btn db-v2-btn--primary"

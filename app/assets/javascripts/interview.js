@@ -1253,8 +1253,8 @@
 
     function displayResults(data) {
       var result = data.result || {};
-      var visibility = result.candidate_result_visibility || data.candidate_result_visibility || 'immediate';
-      var hideFromCandidate = visibility === 'hidden';
+      var visibility = result.candidate_result_visibility || data.candidate_result_visibility || 'hidden';
+      var hideFromCandidate = visibility !== 'immediate';
       var finalStatus = result.final_status || '-';
       var isPendingReview = finalStatus === 'pending_review';
       var failureReason = result.failure_reason || result.rejection_reason || '';
@@ -1264,6 +1264,7 @@
           resultStatus.textContent = '面接情報を受け付けました。結果は後日ご連絡します。';
         }
         if (resultDetails) resultDetails.hidden = true;
+        renderPostResultExtras(result);
         return;
       }
 

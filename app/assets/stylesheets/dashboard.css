@@ -316,6 +316,16 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-sidebar {
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
 }
 
+/* ユーザー欄との隙間でもホバーを維持する（メニュー消失防止） */
+.dashboard-v2-container .db-v2-sidebar__account-menu::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 8px;
+}
+
 .dashboard-v2-container .db-v2-sidebar__account:hover .db-v2-sidebar__account-menu,
 .dashboard-v2-container .db-v2-sidebar__account:focus-within .db-v2-sidebar__account-menu,
 .dashboard-v2-container .db-v2-sidebar__account.is-open .db-v2-sidebar__account-menu {
@@ -493,7 +503,10 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-sidebar {
   border: none;
   background: transparent;
   cursor: pointer;
-  font: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: inherit;
   text-align: left;
 }
 
@@ -502,7 +515,10 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-sidebar {
   appearance: none;
   background: transparent;
   border: 1px solid transparent;
-  font: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: inherit;
   text-align: left;
   cursor: pointer;
   box-sizing: border-box;
@@ -2996,6 +3012,57 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-upload-zone__e
 .dashboard-v2-container .db-v2-situation-form #auto-reject-details.is-disabled {
   opacity: 0.45;
   pointer-events: none;
+}
+
+.dashboard-v2-container .db-v2-details {
+  margin-bottom: 10px;
+  border: 1px solid var(--db-table-border);
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.03);
+  overflow: hidden;
+}
+
+.dashboard-v2-container .db-v2-details:last-child {
+  margin-bottom: 0;
+}
+
+.dashboard-v2-container .db-v2-details__summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--db-heading);
+  user-select: none;
+}
+
+.dashboard-v2-container .db-v2-details__summary::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-v2-container .db-v2-details__summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--db-text-muted);
+  transition: transform 0.15s ease;
+}
+
+.dashboard-v2-container .db-v2-details[open] > .db-v2-details__summary::before {
+  transform: rotate(90deg);
+}
+
+.dashboard-v2-container .db-v2-details__body {
+  padding: 0 14px 14px;
+  border-top: 1px solid var(--db-table-border);
+}
+
+.dashboard-v2-container .db-v2-details__body > .db-v2-form-section:first-child,
+.dashboard-v2-container .db-v2-details__body > .db-v2-form-group:first-child,
+.dashboard-v2-container .db-v2-details__body > form > .db-v2-form-group:first-child,
+.dashboard-v2-container .db-v2-details__body > form > .db-v2-form-check:first-child,
+.dashboard-v2-container .db-v2-details__body > p:first-child {
+  margin-top: 12px;
 }
 
 .dashboard-v2-container .db-v2-form-section__title {

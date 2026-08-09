@@ -301,7 +301,7 @@ ActiveRecord::Schema.define(version: 2026_08_08_000001) do
     t.boolean "allow_resume", default: true, null: false
     t.integer "max_resume_count", default: 3, null: false
     t.integer "passing_score", default: 70, null: false
-    t.boolean "auto_reject_enabled", default: true, null: false
+    t.boolean "auto_reject_enabled", default: false, null: false
     t.boolean "reject_on_required_fail", default: true, null: false
     t.integer "min_required_score", default: 70, null: false
     t.integer "max_consecutive_fails", default: 0, null: false
@@ -309,7 +309,7 @@ ActiveRecord::Schema.define(version: 2026_08_08_000001) do
     t.string "industry"
     t.string "job_title"
     t.string "judgment_mode", default: "automatic", null: false
-    t.string "candidate_result_visibility", default: "immediate", null: false
+    t.string "candidate_result_visibility", default: "hidden", null: false
     t.boolean "allow_text_answer", default: true, null: false
     t.boolean "allow_voice_answer", default: true, null: false
     t.boolean "record_camera", default: false, null: false
