@@ -9,11 +9,12 @@ class InterviewProductSchemaCleanup < ActiveRecord::Migration[6.1]
 
     add_column :users, :job_title, :string unless column_exists?(:users, :job_title)
 
+    # Drop dependents before parents (user_progresses FK -> deals).
     %w[
       follow_up_unsubscribes follow_up_deliveries
       deal_presentation_events deal_presentations deal_pages deal_segments
       deal_audios deal_documents deal_evaluations deal_faqs deal_follow_up_templates
-      deal_speeches deal_summaries deal_transcripts deals user_progresses
+      deal_speeches deal_summaries deal_transcripts user_progresses deals
     ].each do |table|
       drop_table table.to_sym if table_exists?(table)
     end
