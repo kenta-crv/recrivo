@@ -1,41 +1,40 @@
 class Dashboard::DashboardController < Dashboard::BaseController
   def index
     if admin_signed_in?
-      situations_scope = Situation.includes(:client, :questions)
+      situations_scope_rel = Situation.includes(:client, :questions)
       results_scope = InterviewResult.includes(interview: [:user, :situation])
-      interviews_scope = Interview.all
+                                    .joins(:interview).where(interviews: { preview: false })
+      interviews_scope = Interview.real
       @display_name = "管理者"
+      situation_ids = situations_scope_rel.pluck(:id)
     else
-      situations_scope = current_client.situations.includes(:questions)
+      situations_scope_rel = current_client.situations.includes(:questions)
       results_scope = InterviewResult
         .joins(interview: :situation)
-        .where(situations: { client_id: current_client.id })
+        .where(situations: { client_id: current_client.id }, interviews: { preview: false })
         .includes(interview: [:user, :situation])
-      interviews_scope = Interview.joins(:situation).where(situations: { client_id: current_client.id })
+      interviews_scope = Interview.real.joins(:situation).where(situations: { client_id: current_client.id })
       @display_name = current_client.name.presence || current_client.email
+      situation_ids = situations_scope_rel.pluck(:id)
+      @unread_notifications = current_client.notifications.unread.count
     end
 
-    @situations_count = situations_scope.count
-    @active_situations_count = situations_scope.active.count
+    @situations_count = situations_scope_rel.count
+    @active_situations_count = situations_scope_rel.active.count
     @results_count = results_scope.count
     @recent_results = results_scope.order(created_at: :desc).limit(8)
-    @recent_situations = situations_scope.order(updated_at: :desc).limit(5)
+    @recent_situations = situations_scope_rel.order(updated_at: :desc).limit(5)
+    @recent_candidates = interviews_scope.includes(:user, :situation).order(updated_at: :desc).limit(8)
 
-    scores = results_scope.pluck(:results_data).filter_map do |raw|
-      data = raw.is_a?(String) ? (JSON.parse(raw) rescue nil) : raw
-      data = JSON.parse(data) rescue data if data.is_a?(String)
-      next unless data.is_a?(Hash)
-
-      score = data['average_score'] || data[:average_score]
-      score.nil? ? nil : score.to_f
-    end
-    @average_score = scores.empty? ? nil : (scores.sum / scores.size).round(1)
-
-    decided_count = interviews_scope.where(status: [:completed, :failed, :abandoned]).count
-    abandoned_count = interviews_scope.where(status: :abandoned).count
-    @abandon_rate = decided_count.zero? ? nil : ((abandoned_count.to_f / decided_count) * 100).round(1)
-    @abandoned_count = abandoned_count
-    @decided_interview_count = decided_count
+    @analytics = InterviewEngine::AnalyticsSummaryService.call(situation_ids: situation_ids)
+    @average_score = @analytics[:average_score]
+    @abandon_rate = if @analytics[:sessions_started].to_i.zero?
+                      nil
+                    else
+                      ((@analytics[:sessions_abandoned].to_f / @analytics[:sessions_started]) * 100).round(1)
+                    end
+    @abandoned_count = @analytics[:sessions_abandoned]
+    @decided_interview_count = @analytics[:sessions_completed]
 
     unless admin_signed_in?
       @interviews_this_month = current_client.interviews_this_month_count

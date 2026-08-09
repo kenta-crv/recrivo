@@ -3,6 +3,12 @@ class Interview < ApplicationRecord
   belongs_to :situation
   has_many :interview_responses, dependent: :destroy
   has_one :interview_result, dependent: :destroy
+  has_many :interview_events, dependent: :nullify
+  has_many :follow_up_deliveries, class_name: "InterviewFollowUpDelivery", dependent: :destroy
+  has_many :follow_up_unsubscribes, class_name: "InterviewFollowUpUnsubscribe", dependent: :destroy
+  has_many :notifications, dependent: :nullify
+
+  OPS_STATUSES = %w[new in_progress completed pending_review passed failed abandoned contacted].freeze
 
   enum status: {
     not_started: 0,
@@ -18,12 +24,51 @@ class Interview < ApplicationRecord
   }
 
   validates :user_id, :situation_id, :language, presence: true
-  validates :user_id, uniqueness: { scope: :situation_id, message: "can only interview once per situation" }
   validates :access_token, uniqueness: true, allow_nil: true
+  validates :ops_status, inclusion: { in: OPS_STATUSES }
+  validates :satisfaction_rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }, allow_nil: true
 
   validate :ensure_no_previous_interview, on: :create
   validate :ensure_situation_has_questions, on: :create
   validate :valid_status_transition, if: :status_changed?
+
+  scope :real, -> { where(preview: false) }
+  scope :preview_only, -> { where(preview: true) }
+
+  def preview?
+    preview
+  end
+
+  def follow_up_unsubscribed?
+    follow_up_unsubscribed_at.present?
+  end
+
+  def ensure_follow_up_unsubscribe_token!
+    return follow_up_unsubscribe_token if follow_up_unsubscribe_token.present?
+
+    update!(follow_up_unsubscribe_token: SecureRandom.urlsafe_base64(24))
+    follow_up_unsubscribe_token
+  end
+
+  def sync_ops_status!
+    new_status =
+      if rejected? || failed?
+        "failed"
+      elsif interview_result&.pending_review?
+        "pending_review"
+      elsif interview_result&.passed?
+        "passed"
+      elsif completed?
+        "completed"
+      elsif abandoned?
+        "abandoned"
+      elsif in_progress?
+        "in_progress"
+      else
+        "new"
+      end
+    update_column(:ops_status, new_status) if ops_status != new_status && ops_status != "contacted"
+  end
 
   VALID_TRANSITIONS = {
     not_started: [:in_progress],
@@ -127,7 +172,9 @@ class Interview < ApplicationRecord
   end
 
   def ensure_no_previous_interview
-    existing = Interview.by_user_and_situation(user, situation).completed_or_failed.exists?
+    return if preview?
+
+    existing = Interview.by_user_and_situation(user, situation).real.completed_or_failed.exists?
     errors.add(:base, "User has already completed this interview") if existing
   end
 

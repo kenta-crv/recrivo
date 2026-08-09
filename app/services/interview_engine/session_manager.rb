@@ -13,34 +13,41 @@ module InterviewEngine
     end
 
     # Start a new interview session
-    def start_interview(language: 'en')
-      # 既存のin_progress面接があればそれを返す（中断復帰の簡易パス）
-      existing_in_progress = Interview.by_user_and_situation(@user, @situation)
-                                      .where(status: :in_progress).first
-      if existing_in_progress
-        existing_in_progress.touch_activity!
-        return existing_in_progress
-      end
+    def start_interview(language: 'en', preview: false)
+      unless preview
+        # 既存のin_progress面接があればそれを返す（中断復帰の簡易パス）
+        existing_in_progress = Interview.by_user_and_situation(@user, @situation)
+                                        .real
+                                        .where(status: :in_progress).first
+        if existing_in_progress
+          existing_in_progress.touch_activity!
+          return existing_in_progress
+        end
 
-      # 完了/失敗済み面接がある場合は再受験不可（1ユーザー1situation = 1回のみ）
-      existing_done = Interview.by_user_and_situation(@user, @situation).completed_or_failed.first
-      raise AlreadyCompletedError, "Interview already completed for this situation" if existing_done
+        # 完了/失敗済み面接がある場合は再受験不可（1ユーザー1situation = 1回のみ）
+        existing_done = Interview.by_user_and_situation(@user, @situation).real.completed_or_failed.first
+        raise AlreadyCompletedError, "Interview already completed for this situation" if existing_done
 
-      # abandoned面接があれば復帰を試みる
-      existing_abandoned = Interview.by_user_and_situation(@user, @situation)
-                                    .where(status: :abandoned).first
-      if existing_abandoned && existing_abandoned.resumable?
-        return resume_interview(existing_abandoned.id)
+        # abandoned面接があれば復帰を試みる
+        existing_abandoned = Interview.by_user_and_situation(@user, @situation)
+                                      .real
+                                      .where(status: :abandoned).first
+        if existing_abandoned && existing_abandoned.resumable?
+          return resume_interview(existing_abandoned.id)
+        end
       end
 
       interview = Interview.create!(
         user: @user,
         situation: @situation,
         status: :not_started,
-        language: language
+        language: language,
+        preview: preview
       )
 
       interview.start!
+      interview.sync_ops_status! unless preview
+      enqueue_incomplete_reminders!(interview) unless preview
       interview
     rescue ActiveRecord::RecordInvalid => e
       raise SessionError, "Failed to start interview: #{e.message}"
@@ -331,22 +338,101 @@ module InterviewEngine
       )
 
       notify_rejection(interview, interview.rejection_reason || rejection.reason) if situation.automatic_judgment? && (early_rejected || rejection.rejected?)
+      notify_completion(interview, result)
+      interview.sync_ops_status!
+      enqueue_follow_ups_after_complete!(interview)
 
       result
     end
 
     def notify_rejection(interview, reason)
+      return if interview.preview?
+
       method = interview.situation.reject_notify_method
+      client = interview.situation.client
 
       case method
       when 'email'
-        # Day 15以降でActionMailer統合予定
-        Rails.logger.info("Rejection notification (email): Interview ##{interview.id} - #{reason}")
+        if interview.user&.email.present? && !interview.user.guest?
+          InterviewNotificationMailer.candidate_rejection(
+            interview: interview,
+            reason: reason
+          ).deliver_later
+        end
+        create_client_notification!(
+          interview,
+          category: "interview_rejected",
+          title: "不合格通知を送信: #{interview.user&.name.presence || interview.user&.email}",
+          body: reason.to_s
+        )
       when 'in_app'
-        Rails.logger.info("Rejection notification (in_app): Interview ##{interview.id} - #{reason}")
+        create_client_notification!(
+          interview,
+          category: "interview_rejected",
+          title: "途中/自動不合格: #{interview.user&.name.presence || interview.user&.email}",
+          body: reason.to_s
+        )
       when 'none'
         # 通知なし
       end
+    rescue StandardError => e
+      Rails.logger.error("[SessionManager] notify_rejection failed: #{e.class}: #{e.message}")
+    end
+
+    def notify_completion(interview, result)
+      return if interview.preview?
+
+      client = interview.situation.client
+      return unless client
+
+      create_client_notification!(
+        interview,
+        category: "interview_completed",
+        title: "面接完了: #{interview.user&.name.presence || interview.user&.email}",
+        body: "判定: #{result.final_status} / シナリオ: #{interview.situation.title}"
+      )
+
+      InterviewNotificationMailer.client_interview_completed(interview: interview).deliver_later
+    rescue StandardError => e
+      Rails.logger.error("[SessionManager] notify_completion failed: #{e.class}: #{e.message}")
+    end
+
+    def create_client_notification!(interview, category:, title:, body:)
+      client = interview.situation.client
+      return unless client
+
+      Notification.create!(
+        client: client,
+        interview: interview,
+        category: category,
+        title: title,
+        body: body
+      )
+    end
+
+    def enqueue_follow_ups_after_complete!(interview)
+      return if interview.preview?
+
+      InterviewFollowUp::CancelRemainingService.call(interview: interview, kind: "incomplete")
+      InterviewFollowUp::EnqueueCampaignService.call(
+        interview: interview,
+        kind: "completed",
+        base_time: Time.current
+      )
+    rescue StandardError => e
+      Rails.logger.error("[SessionManager] follow_up enqueue failed: #{e.class}: #{e.message}")
+    end
+
+    def enqueue_incomplete_reminders!(interview)
+      return if interview.preview?
+
+      InterviewFollowUp::EnqueueCampaignService.call(
+        interview: interview,
+        kind: "incomplete",
+        base_time: interview.started_at || Time.current
+      )
+    rescue StandardError => e
+      Rails.logger.error("[SessionManager] incomplete follow_up enqueue failed: #{e.class}: #{e.message}")
     end
 
     def generate_summary(responses, language)

@@ -4,24 +4,29 @@ RSpec.describe StripePlanValidator do
   describe '.plan_type_for_price_id' do
     before do
       allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with('STRIPE_PRICE_STARTER').and_return('price_starter')
       allow(ENV).to receive(:[]).with('STRIPE_PRICE_STANDARD').and_return('price_standard')
+      allow(ENV).to receive(:[]).with('STRIPE_PRICE_BUSINESS').and_return('price_business')
       allow(ENV).to receive(:[]).with('STRIPE_PRICE_ENTERPRISE').and_return('price_enterprise')
     end
 
     it 'maps price id to plan type' do
-      expect(described_class.plan_type_for_price_id('price_starter')).to eq('starter')
       expect(described_class.plan_type_for_price_id('price_standard')).to eq('standard')
+      expect(described_class.plan_type_for_price_id('price_business')).to eq('business')
+    end
+
+    it 'does not map starter (not purchasable)' do
+      allow(ENV).to receive(:[]).with('STRIPE_PRICE_STARTER').and_return('price_starter')
+      expect(described_class.plan_type_for_price_id('price_starter')).to be_nil
     end
   end
 
   describe '.collect_errors' do
     it 'reports missing env keys' do
       allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with('STRIPE_PRICE_STARTER').and_return(nil)
+      allow(ENV).to receive(:[]).with('STRIPE_PRICE_STANDARD').and_return(nil)
 
-      errors = described_class.collect_errors(:starter)
-      expect(errors.first).to include('STRIPE_PRICE_STARTER')
+      errors = described_class.collect_errors(:standard)
+      expect(errors.first).to include('STRIPE_PRICE_STANDARD')
     end
   end
 end

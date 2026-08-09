@@ -14,6 +14,10 @@
     var allowTextAnswer = root.getAttribute('data-allow-text') !== '0';
     var allowVoiceAnswer = root.getAttribute('data-allow-voice') !== '0';
     var recordCamera = root.getAttribute('data-record-camera') === '1';
+    var previewMode = root.getAttribute('data-preview') === '1';
+    var skipRegistration = root.getAttribute('data-skip-registration') === '1';
+    var enableSatisfaction = root.getAttribute('data-enable-satisfaction') === '1';
+    var candidateExtra = {};
 
     var errorEl = byId('interview-error');
     var phaseIdentity = byId('phase-identity');
@@ -195,12 +199,32 @@
     function enterRoom() {
       clearError();
       unlockAudioPlayback();
-      candidateName = (byId('candidate_name').value || '').trim();
-      candidateEmail = (byId('candidate_email').value || '').trim();
-      candidateTel = (byId('candidate_tel') && byId('candidate_tel').value || '').trim();
-      candidateAddress = (byId('candidate_address') && byId('candidate_address').value || '').trim();
-      if (!candidateName || !candidateEmail || !candidateTel || !candidateAddress) {
-        showError('お名前・メールアドレス・電話番号・住所を入力してください。');
+      if (previewMode || skipRegistration) {
+        candidateName = previewMode ? 'プレビュー' : '';
+        candidateEmail = '';
+        candidateTel = '';
+        candidateAddress = '';
+        candidateExtra = {};
+        showPhase('overlay');
+        return;
+      }
+
+      var missing = [];
+      candidateExtra = {};
+      root.querySelectorAll('[data-candidate-field]').forEach(function(input) {
+        var key = input.getAttribute('data-candidate-field');
+        var val = (input.value || '').trim();
+        if (input.getAttribute('data-required') === '1' && !val) {
+          missing.push(key);
+        }
+        if (key === 'name') candidateName = val;
+        else if (key === 'email') candidateEmail = val;
+        else if (key === 'tel') candidateTel = val;
+        else if (key === 'address') candidateAddress = val;
+        else candidateExtra[key] = val;
+      });
+      if (missing.length) {
+        showError('必須項目を入力してください。');
         return;
       }
       showPhase('overlay');
@@ -237,13 +261,25 @@
             situation_id: situationId,
             invite_token: inviteToken,
             language: language,
+            preview: previewMode,
             candidate_name: candidateName,
             candidate_email: candidateEmail,
             candidate_tel: candidateTel,
-            candidate_address: candidateAddress
+            candidate_address: candidateAddress,
+            candidate_job_title: candidateExtra.job_title || '',
+            candidate_company: candidateExtra.company || '',
+            candidate_url: candidateExtra.url || ''
           })
         });
         var data = result.data;
+
+        if (data.reason === 'monthly_limit') {
+          showError(data.error || '今月の面接上限に達しています。');
+          showPhase('identity');
+          startBtn.disabled = false;
+          startBtn.textContent = '面接を開始';
+          return;
+        }
 
         if (data.reason === 'already_completed') {
           showPhase('result');
@@ -1277,6 +1313,64 @@
       fillList(resultStrengths, result.strengths);
       fillList(resultWeaknesses, result.weaknesses);
       if (resultRecommendation) resultRecommendation.textContent = result.recommendation || '—';
+
+      renderPostResultExtras(result);
+    }
+
+    function renderPostResultExtras(result) {
+      var faqsPanel = byId('result_faqs');
+      var faqsList = byId('result_faqs_list');
+      if (faqsPanel && faqsList && result.faqs && result.faqs.length) {
+        faqsList.innerHTML = '';
+        result.faqs.forEach(function(faq) {
+          var q = document.createElement('p');
+          q.innerHTML = '<strong>' + escapeHtml(faq.question) + '</strong>';
+          var a = document.createElement('p');
+          a.className = 'interview-room__hint';
+          a.textContent = faq.answer || '';
+          faqsList.appendChild(q);
+          faqsList.appendChild(a);
+        });
+        faqsPanel.hidden = false;
+      }
+
+      var materialsPanel = byId('result_materials');
+      var materialsLink = byId('result_materials_link');
+      if (materialsPanel && materialsLink && result.materials_url) {
+        materialsLink.href = result.materials_url;
+        materialsPanel.hidden = false;
+      }
+
+      var satPanel = byId('result_satisfaction');
+      if (satPanel && enableSatisfaction && !previewMode && !result.preview) {
+        satPanel.hidden = false;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function submitSatisfaction(rating) {
+      if (!interviewId || !accessToken) return;
+      var status = byId('satisfaction_status');
+      try {
+        var result = await apiRequest('/api/interviews/' + interviewId + '/evaluate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Interview-Token': accessToken
+          },
+          body: JSON.stringify({ rating: rating, access_token: accessToken })
+        });
+        if (status) status.textContent = result.data && result.data.success ? 'ご評価ありがとうございます。' : (result.data && result.data.error) || '送信に失敗しました';
+      } catch (e) {
+        if (status) status.textContent = '送信に失敗しました';
+      }
     }
 
     if (enterBtn) enterBtn.onclick = enterRoom;
@@ -1285,6 +1379,11 @@
     if (replayBtn) replayBtn.onclick = replayQuestionAudio;
     if (voiceStartBtn) voiceStartBtn.onclick = startVoiceAnswer;
     if (voiceStopBtn) voiceStopBtn.onclick = stopVoiceAnswer;
+    document.querySelectorAll('[data-sat-rating]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        submitSatisfaction(parseInt(btn.getAttribute('data-sat-rating'), 10));
+      });
+    });
     if (confirmCompleteBtn) {
       confirmCompleteBtn.onclick = async function() {
         if (confirmCompleteBtn.disabled) return;

@@ -21,8 +21,10 @@
         .db-v2-subscription-status__row
           span.db-v2-subscription-status__label ステータス
           span.db-v2-subscription-status__value class=("db-v2-subscription-status__value--trial" if is_trial)
-            - if is_trial
+            - if is_trial && @target_client.on_trial?
               | トライアル中
+            - elsif @subscription&.expired? || (@subscription&.trial? && @subscription&.trial_expired?)
+              | トライアル終了（閲覧のみ）
             - elsif @subscription&.cancelled?
               | 解約手続き済み
             - elsif is_active
@@ -50,7 +52,7 @@
           .db-v2-subscription-cancel
             p.db-v2-subscription-cancel__note
               - if is_trial
-                | トライアル期間中でも解約できます。解約後はトライアル終了時の自動課金が停止されます。
+                | トライアルはカード不要です。期間終了時も自動課金されず、スタンダードへのご契約は管理画面から行えます。
               - else
                 | 解約手続き後も、契約期間の終了日まではご利用いただけます。
             = link_to "サブスクリプションを解約する", cancel_confirm_dashboard_subscription_path(subscription_path_options), class: "db-v2-btn db-v2-btn--danger"

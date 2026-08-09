@@ -6,3 +6,9 @@ expire_timed_out_interviews:
   class: "ExpireTimedOutInterviewsJob"
   queue: default
   description: "5分毎に in_progress の面接で last_activity_at がタイムアウトしたものを abandoned へ遷移させる"
+
+send_interview_follow_ups:
+  cron: "*/15 * * * *"
+  class: "SendInterviewFollowUpsJob"
+  queue: default
+  description: "15分毎に予定時刻を迎えた面接フォローメールを送信する"

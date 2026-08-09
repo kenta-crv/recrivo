@@ -1,0 +1,80 @@
+.db-v2-header
+  .db-v2-header__left
+    nav.db-v2-breadcrumb aria-label="パンくず"
+      = link_to "候補者管理", dashboard_candidates_path, class: "db-v2-breadcrumb__link"
+      i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
+      span.db-v2-breadcrumb__current = @interview.user&.name.presence || @interview.user&.email
+    h1.db-v2-header__title = @interview.user&.name.presence || @interview.user&.email
+    p.db-v2-header__subtitle
+      = @interview.situation&.title
+      |  ／ 
+      = @interview.status
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    - if @result
+      = link_to "面接結果", dashboard_interview_result_path(@result), class: "db-v2-btn db-v2-btn--ghost"
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 候補者情報
+  .db-v2-bottom-card__body
+    p メール: #{@interview.user&.email}
+    p 電話: #{@interview.user&.tel.presence || "—"}
+    p 住所: #{@interview.user&.address.presence || "—"}
+    p 満足度: #{@interview.satisfaction_rating.presence || "—"}
+    - if @interview.satisfaction_feedback.present?
+      p フィードバック: #{@interview.satisfaction_feedback}
+
+    = form_with url: update_ops_status_dashboard_candidate_path(@interview), method: :patch, local: true do
+      .db-v2-form-group
+        label.db-v2-form-label 運用ステータス
+        = select_tag :ops_status, options_for_select(Interview::OPS_STATUSES.map { |s| [s, s] }, @interview.ops_status), class: "db-v2-form-control"
+      button.db-v2-btn.db-v2-btn--primary type="submit" 更新
+
+.db-v2-bottom-card style="margin-top:1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title フォロー配信
+  .db-v2-bottom-card__body
+    - if @deliveries.blank?
+      p.db-v2-muted フォロー配信はありません
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table
+          thead
+            tr
+              th 種別
+              th seq
+              th 状態
+              th 予定
+              th 送信
+              th 開封
+          tbody
+            - @deliveries.each do |d|
+              tr
+                td = d.kind
+                td = d.sequence
+                td = d.status
+                td = d.scheduled_at && l(d.scheduled_at, format: :short)
+                td = d.sent_at && l(d.sent_at, format: :short)
+                td = d.opened_at && l(d.opened_at, format: :short)
+
+.db-v2-bottom-card style="margin-top:1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 行動イベント
+  .db-v2-bottom-card__body
+    - if @events.blank?
+      p.db-v2-muted イベントはまだありません
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table
+          thead
+            tr
+              th 種別
+              th 質問
+              th 日時
+          tbody
+            - @events.each do |ev|
+              tr
+                td = ev.event_type
+                td = ev.question_id || "—"
+                td = l(ev.created_at, format: :short)

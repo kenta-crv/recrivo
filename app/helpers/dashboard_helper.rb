@@ -16,9 +16,13 @@ module DashboardHelper
     when :dashboard
       controller_name == "dashboard"
     when :situations
-      controller_name == "situations" || controller_name == "questions"
+      controller_name == "situations" || controller_name == "questions" || controller_name == "situation_faqs"
+    when :candidates
+      controller_path == "dashboard/candidates"
     when :interview_results
       controller_path == "dashboard/interview_results"
+    when :notifications
+      controller_path == "dashboard/notifications"
     when :subscription
       controller_name == "subscriptions"
     when :account

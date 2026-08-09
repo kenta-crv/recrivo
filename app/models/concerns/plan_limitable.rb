@@ -27,7 +27,8 @@ module PlanLimitable
   end
 
   def interviews_this_month_count
-    Interview.joins(:situation)
+    Interview.real
+             .joins(:situation)
              .where(situations: { client_id: id })
              .where(created_at: Time.current.beginning_of_month..Time.current.end_of_month)
              .count

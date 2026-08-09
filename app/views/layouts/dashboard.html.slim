@@ -35,7 +35,7 @@ html.dashboard-html lang="ja"
               .db-v2-alert class=alert_class
                 i.fa-solid class=icon_class aria-hidden="true"
                 p = message
-        - hide_toolbar = (controller_name == "dashboard" && action_name == "index") || controller_name == "situations" || controller_name == "questions" || controller_name == "interview_results" || controller_name == "management" || controller_name == "plans" || controller_path == "admin/interview_results" || controller_name == "accounts" || controller_name == "subscriptions" || controller_name == "problems"
+        - hide_toolbar = (controller_name == "dashboard" && action_name == "index") || controller_name == "situations" || controller_name == "questions" || controller_name == "interview_results" || controller_name == "management" || controller_name == "plans" || controller_path == "admin/interview_results" || controller_name == "accounts" || controller_name == "subscriptions" || controller_name == "problems" || controller_name == "candidates" || controller_name == "notifications" || controller_name == "situation_faqs"
         - unless hide_toolbar
           = render "/dashboard/dashboard_toolbar"
         = yield

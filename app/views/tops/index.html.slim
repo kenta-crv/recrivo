@@ -1,51 +1,53 @@
 - set_meta_tags \
-    title: "AI面接サービス｜人とAIの力で、より良い出会いを", \
-    description: "Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。", \
-    og: { title: "Recrivo｜AI面接サービス", type: "website" }
+    title: t("recrivo.lp.meta_title"), \
+    description: t("recrivo.lp.meta_description"), \
+    og: { title: t("recrivo.lp.meta_og_title"), type: "website" }
 
 .meetia-modern-lp.meetia-modern-lp--drafty
   header.meetia-nav
     .meetia-nav__inner
-      = link_to root_path, class: "meetia-nav__logo" do
+      = link_to locale_root_href, class: "meetia-nav__logo" do
         = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-nav__logo-image"
-      button.meetia-nav__toggle type="button" aria-label="メニュー" data-lp-nav-toggle=""
+      button.meetia-nav__toggle type="button" aria-label=t("recrivo.lp.aria_menu") data-lp-nav-toggle=""
         span
         span
         span
       nav.meetia-nav__menu data-lp-nav-menu=""
-        - TopsHelper::LP_NAV_ITEMS.each do |item|
+        - lp_nav_items.reject { |item| item[:key] == "columns" }.each do |item|
           = link_to item[:label], item[:href], class: "meetia-nav__item"
         .meetia-nav__menu-actions
+          = render "shared/lang_switch"
           = link_to lp_login_label, lp_login_path, class: "meetia-btn meetia-btn--ghost meetia-btn--sm"
-          = link_to "無料トライアル", lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--sm meetia-btn--pill"
+          = link_to t("recrivo.lp.cta_trial"), lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--sm meetia-btn--pill"
 
   section#top.meetia-hero.meetia-hero--drafty
     .meetia-hero__bg aria-hidden="true" style="background-image: url(#{asset_path('background-lp.png')});"
     .meetia-hero__inner
       .meetia-hero__content
-        p.meetia-hero__catch AIで、面接をもっと公平に、効率的に。
+        p.meetia-hero__catch = t("recrivo.lp.hero_catch")
         h1.meetia-hero__brand
           span.recrivo-logo aria-label="Recrivo"
             | Recrivo
-        p.meetia-hero__sub AI面接サービス「リクリボ」
-        h2.meetia-hero__title 人とAIの力で、より良い出会いを。
-        p.meetia-hero__lead Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。
+        p.meetia-hero__sub = t("recrivo.lp.hero_sub")
+        h2.meetia-hero__title = t("recrivo.lp.hero_title")
+        p.meetia-hero__lead = t("recrivo.lp.hero_lead")
         .meetia-hero__actions
           = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill") do
-            span 無料トライアル
+            span = t("recrivo.lp.cta_trial")
             i.fa-solid.fa-arrow-right aria-hidden="true"
-          = link_to "使い方を見る", "#flow", class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill"
+          = link_to t("recrivo.lp.cta_see_flow"), "#flow", class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill"
 
       .meetia-hero__visual
-        = image_tag "background-pc.png", class: "meetia-hero__product", alt: "Recrivo AI面接画面のイメージ"
+        = image_tag "background-pc.png", class: "meetia-hero__product", alt: t("recrivo.lp.hero_image_alt")
+
   section#problems.meetia-section.meetia-problems
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow PROBLEMS
-        h2.meetia-section__title こんなお悩みありませんか？
-        p.meetia-section__lead 日程調整・属人評価・フォロー漏れ——成長のボトルネックをAIで解消します。
+        h2.meetia-section__title = t("recrivo.lp.problems_title")
+        p.meetia-section__lead = t("recrivo.lp.problems_lead")
       .meetia-problems__grid.meetia-problems__grid--static#problems-scroll
-        - TopsHelper::PROBLEM_ITEMS.each do |item|
+        - problem_items.each do |item|
           .meetia-problems__card
             .meetia-problems__icon
               i.fa-solid class=item[:icon] aria-hidden="true"
@@ -57,15 +59,15 @@
       .meetia-problems__solution
         .meetia-problems__solution-copy
           .meetia-problems__solution-lead
-            span.meetia-problems__solution-lead-text そのお悩み、
-            span.meetia-problems__solution-badge AI面接の一気通貫
+            span.meetia-problems__solution-lead-text = t("recrivo.lp.problems_solution_1")
+            span.meetia-problems__solution-badge = t("recrivo.lp.problems_solution_badge")
           .meetia-problems__solution-brand
             span.meetia-problems__solution-mark aria-hidden="true"
               i.fa-solid.fa-microphone-lines
             strong.meetia-problems__solution-name Recrivo
-            span.meetia-problems__solution-suffix がすべて
-            span.meetia-text-gradient 解決
-            span.meetia-problems__solution-suffix します。
+            span.meetia-problems__solution-suffix = t("recrivo.lp.problems_solution_3")
+            span.meetia-text-gradient = t("recrivo.lp.problems_solution_4")
+            span.meetia-problems__solution-suffix = t("recrivo.lp.problems_solution_5")
         .meetia-problems__solution-visual aria-hidden="true"
           .meetia-problems__solution-mock
             .meetia-problems__solution-mock-head
@@ -74,13 +76,13 @@
               span
             .meetia-problems__solution-mock-row
               i.fa-solid.fa-list-check
-              span シナリオ設計
+              span = t("recrivo.lp.mock_scenario")
             .meetia-problems__solution-mock-row
               i.fa-solid.fa-microphone-lines
-              span 音声面接
+              span = t("recrivo.lp.mock_voice")
             .meetia-problems__solution-mock-row
               i.fa-solid.fa-chart-line
-              span 自動評価
+              span = t("recrivo.lp.mock_score")
           .meetia-problems__solution-deco.meetia-problems__solution-deco--sparkle
             i.fa-solid.fa-sparkles
           .meetia-problems__solution-deco.meetia-problems__solution-deco--chat
@@ -93,15 +95,13 @@
       .meetia-section__head
         span.meetia-section__eyebrow What's AI Interview?
         h2.meetia-section__title
-          | 面接と商談を、
+          = t("recrivo.lp.whats_title_1")
           br
-          span.meetia-text-accent ひとつのAI体験に。
-        p.meetia-section__lead
-          | AI Interviewは、採用の一次面接と営業の初回商談を自動化するBtoBプラットフォームです。
-          | 同じルーム体験で、質問シナリオにも提案資料にも対応します。
+          span.meetia-text-accent = t("recrivo.lp.whats_title_accent")
+        p.meetia-section__lead = t("recrivo.lp.whats_lead")
       .meetia-whats-light__grid
         ul.meetia-whats-light__points
-          - TopsHelper::HERO_FEATURE_CARDS.first(4).each do |icon, title, body|
+          - hero_feature_cards.first(4).each do |icon, title, body|
             li
               span.meetia-whats-light__icon
                 i.fa-solid class=icon aria-hidden="true"
@@ -109,48 +109,48 @@
                 strong = title
                 span = body
         .meetia-whats-light__visual
-          = image_tag "recrivo_hero_screen.png", alt: "AI面接・商談体験のイメージ", class: "meetia-whats-light__image"
+          = image_tag "recrivo_hero_screen.png", alt: t("recrivo.lp.whats_image_alt"), class: "meetia-whats-light__image"
 
   section#flow.meetia-section.meetia-section--strip
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow HOW IT WORKS
-        h2.meetia-section__title これがAI面接・商談の流れ
-        p.meetia-section__lead 準備は最小限。リンク共有から分析・フォローまで、3ステップで完結します。
+        h2.meetia-section__title = t("recrivo.lp.flow_title")
+        p.meetia-section__lead = t("recrivo.lp.flow_lead")
       .meetia-deal-flow__container.meetia-deal-flow__container--static#flow-scroll
         .meetia-deal-flow__step-card
           .meetia-deal-flow__step-num STEP 01
           .meetia-deal-flow__icon-wrap
             i.fa-solid.fa-file-lines
-          h3.meetia-deal-flow__step-title シナリオ／資料を用意
-          p.meetia-deal-flow__step-desc 面接質問や営業資料を登録。合格点・トークポイント・フォロールールまで設定できます。
+          h3.meetia-deal-flow__step-title = t("recrivo.lp.flow_step1_title")
+          p.meetia-deal-flow__step-desc = t("recrivo.lp.flow_step1_desc")
         .meetia-deal-flow__arrow
           i.fa-solid.fa-chevron-right
         .meetia-deal-flow__step-card
           .meetia-deal-flow__step-num STEP 02
           .meetia-deal-flow__icon-wrap
             i.fa-solid.fa-link
-          h3.meetia-deal-flow__step-title 招待リンクを共有
-          p.meetia-deal-flow__step-desc 候補者・見込み客はURLから入室。ログイン不要で、音声対話の面接／商談が始まります。
+          h3.meetia-deal-flow__step-title = t("recrivo.lp.flow_step2_title")
+          p.meetia-deal-flow__step-desc = t("recrivo.lp.flow_step2_desc")
         .meetia-deal-flow__arrow
           i.fa-solid.fa-chevron-right
         .meetia-deal-flow__step-card
           .meetia-deal-flow__step-num STEP 03
           .meetia-deal-flow__icon-wrap
             i.fa-solid.fa-chart-pie
-          h3.meetia-deal-flow__step-title 結果を自動で可視化
-          p.meetia-deal-flow__step-desc スコア・合否・関心トピック・次アクションをダッシュボードに反映。フォローも自動化できます。
+          h3.meetia-deal-flow__step-title = t("recrivo.lp.flow_step3_title")
+          p.meetia-deal-flow__step-desc = t("recrivo.lp.flow_step3_desc")
 
   section#service.meetia-section.meetia-service-concept
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow SERVICE
         h2.meetia-section__title
-          | Recrivoが提供する
-          span.meetia-text-accent AI面接
-        p.meetia-section__lead 設計から実施、評価・フォローまで。採用の一次対応を一気通貫で自動化します。
+          = t("recrivo.lp.service_title_1")
+          span.meetia-text-accent = t("recrivo.lp.service_title_accent")
+        p.meetia-section__lead = t("recrivo.lp.service_lead")
       .meetia-service-concept__grid.meetia-service-concept__grid--static#service-scroll
-        - TopsHelper::SERVICE_CARDS.each do |card|
+        - service_cards.each do |card|
           .meetia-service-concept__card
             .meetia-service-concept__media
               = image_tag card[:image], alt: card[:alt], class: "meetia-service-concept__image", loading: "lazy"
@@ -164,12 +164,11 @@
     .meetia-section__inner.meetia-section__inner--wide
       .meetia-features-page__head
         span.meetia-section__eyebrow FEATURES
-        h2.meetia-features-page__title 成果につながる機能
-        p.meetia-features-page__lead
-          | 面接シナリオも商談資料も、同じ基盤で設計・実施・分析できます。
+        h2.meetia-features-page__title = t("recrivo.lp.features_title")
+        p.meetia-features-page__lead = t("recrivo.lp.features_lead")
       .meetia-features-showcase
         .meetia-features-showcase__grid#features-scroll
-          - TopsHelper::FEATURE_ROWS.each do |(num, icon, title, body, _)|
+          - feature_rows.each do |(num, icon, title, body, _)|
             - if num == "03"
               article.meetia-feature-focus data-feature=num
                 .meetia-feature-focus__head
@@ -180,7 +179,7 @@
                     h2.meetia-feature-focus__title = title
                     p.meetia-feature-focus__body = body
                 .meetia-feature-focus__screen
-                  = image_tag "recrivo_candidate.jpg", alt: "音声で進むAI対話のイメージ", class: "meetia-feature-focus__image"
+                  = image_tag "recrivo_candidate.jpg", alt: t("recrivo.lp.features_voice_alt"), class: "meetia-feature-focus__image"
             - else
               article.meetia-feature-card data-feature=num
                 .meetia-feature-card__icon
@@ -194,87 +193,42 @@
           .meetia-features-showcase__cta-icon aria-hidden="true"
             i.fa-solid.fa-rocket
           p.meetia-features-showcase__cta-copy
-            | まずは無料で、
-            span.meetia-text-gradient AI面接
-            | を体験してください。
+            = t("recrivo.lp.features_cta_1")
+            span.meetia-text-gradient = t("recrivo.lp.features_cta_accent")
+            = t("recrivo.lp.features_cta_2")
           .meetia-features-showcase__cta-actions
             = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill" do
-              span 無料で始める
+              span = t("recrivo.lp.cta_start_free")
               i.fa-solid.fa-arrow-right aria-hidden="true"
-            = link_to plans_path, class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill" do
+            = link_to lp_plans_path, class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill" do
               i.fa-solid.fa-tags aria-hidden="true"
-              span 料金を見る
+              span = t("recrivo.lp.cta_see_pricing")
 
   section#pricing.meetia-section.meetia-pricing-section
     .meetia-section__inner.meetia-section__inner--wide
       .meetia-section__head
         span.meetia-section__eyebrow PRICING
-        h2.meetia-section__title 料金プラン
-        p.meetia-section__lead トライアルから始めて、チームの規模に合わせてアップグレードできます。
-      - visible_plans = Subscription.lp_display_plans
-
-      .meetia-pricing__slider data-pricing-slider=""
-        p.meetia-pricing__scroll-hint 左右の矢印でプランを確認できます
-        .meetia-pricing__slider-body
-          button.meetia-pricing__arrow.meetia-pricing__arrow--prev type="button" aria-label="前のプラン" data-pricing-prev=""
-            i.fa-solid.fa-chevron-left aria-hidden="true"
-          .meetia-pricing__viewport
-            .meetia-pricing__track
-              - visible_plans.each do |plan_key, config|
-                - is_trial = plan_key == :trial
-                - card_classes = []
-                - card_classes << 'meetia-pricing__card--popular' if config[:popular]
-                - card_classes << 'meetia-pricing__card--featured' if config[:featured]
-                - card_classes << 'meetia-pricing__card--trial' if is_trial
-                .meetia-pricing__card class=card_classes.join(' ')
-                  .meetia-pricing__badge-slot
-                    - if config[:popular]
-                      .meetia-pricing__badge.meetia-pricing__badge--popular POPULAR
-                    - elsif config[:featured]
-                      .meetia-pricing__badge RECOMMENDED
-                    - elsif is_trial
-                      .meetia-pricing__badge.meetia-pricing__badge--trial FREE TRIAL
-                    - else
-                      span.meetia-pricing__badge.meetia-pricing__badge--spacer aria-hidden="true"
-                  .meetia-pricing__card-head
-                    h3.meetia-pricing__plan = config[:name]
-                    .meetia-pricing__price
-                      span.meetia-pricing__currency ¥
-                      span.meetia-pricing__amount = number_with_delimiter(config[:price])
-                      - if is_trial
-                        span.meetia-pricing__period = " / #{Subscription::TRIAL_DAYS}日間"
-                      - else
-                        span.meetia-pricing__period = " / 月"
-                    p.meetia-pricing__desc = config[:description]
-                  ul.meetia-pricing__features
-                    - Subscription::LP_COMPARISON_FEATURES.each do |feature|
-                      li.meetia-pricing__feature
-                        span.meetia-pricing__feature-label = feature[:label]
-                        span.meetia-pricing__feature-value = Subscription.format_feature_value(plan_key, feature[:key])
-                  .meetia-pricing__card-foot
-                    - cta_label = config[:lp_cta].presence || "このプランで始める"
-                    - btn_class = is_trial ? "meetia-btn meetia-btn--secondary meetia-pricing__card-btn" : "meetia-btn meetia-btn--primary meetia-pricing__card-btn meetia-btn--pill"
-                    = link_to cta_label, new_client_registration_path, class: btn_class
-          button.meetia-pricing__arrow.meetia-pricing__arrow--next type="button" aria-label="次のプラン" data-pricing-next=""
-            i.fa-solid.fa-chevron-right aria-hidden="true"
+        h2.meetia-section__title = t("recrivo.lp.pricing_title")
+        p.meetia-section__lead = t("recrivo.lp.pricing_lead")
+      = render "shared/pricing_plans"
 
   section#compare.meetia-section
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow WHY AI INTERVIEW?
         h2.meetia-section__title
-          | 他社との違いは、
-          span.meetia-text-accent AI面接・商談体験
-        p.meetia-section__lead 人が足りない入口業務を、品質を落とさずスケールさせるための設計です。
+          = t("recrivo.lp.compare_title_1")
+          span.meetia-text-accent = t("recrivo.lp.compare_title_accent")
+        p.meetia-section__lead = t("recrivo.lp.compare_lead")
       .meetia-compare-table#compare-scroll
         .meetia-compare-table__head
-          span.meetia-compare-table__label 比較項目
+          span.meetia-compare-table__label = t("recrivo.lp.compare_label")
           span.meetia-compare-table__col.meetia-compare-table__col--meetia
             span.meetia-compare-table__brand
               i.fa-solid.fa-sparkles aria-hidden="true"
               | AI Interview
-          span.meetia-compare-table__col 従来の面接・商談
-        - TopsHelper::COMPARE_ROWS.each do |row|
+          span.meetia-compare-table__col = t("recrivo.lp.compare_legacy")
+        - compare_rows.each do |row|
           .meetia-compare-table__row
             .meetia-compare-table__topic
               span.meetia-compare-table__icon aria-hidden="true"
@@ -293,56 +247,56 @@
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow REVIEWS
-        h2.meetia-section__title 導入企業の声
-        p.meetia-section__lead AI Interviewをご利用いただいている企業様からのフィードバックです。
+        h2.meetia-section__title = t("recrivo.lp.reviews_title")
+        p.meetia-section__lead = t("recrivo.lp.reviews_lead")
       .meetia-reviews-summary
         .meetia-reviews-summary__stat
           span.meetia-reviews-summary__icon aria-hidden="true"
             i.fa-solid.fa-star
           span.meetia-reviews-summary__value.meetia-text-gradient 4.8/5.0
-          p.meetia-reviews-summary__label 平均評価
+          p.meetia-reviews-summary__label = t("recrivo.lp.reviews_rating_label")
         .meetia-reviews-summary__stat
           span.meetia-reviews-summary__icon aria-hidden="true"
             i.fa-solid.fa-building
-          span.meetia-reviews-summary__value.meetia-text-gradient 1,200+
-          p.meetia-reviews-summary__label 導入企業
+          span.meetia-reviews-summary__value.meetia-text-gradient 500+
+          p.meetia-reviews-summary__label = t("recrivo.lp.reviews_deals_label")
         .meetia-reviews-summary__stat
           span.meetia-reviews-summary__icon aria-hidden="true"
             i.fa-solid.fa-rotate
           span.meetia-reviews-summary__value.meetia-text-gradient 98%
-          p.meetia-reviews-summary__label 継続率
+          p.meetia-reviews-summary__label = t("recrivo.lp.reviews_retention_label")
       .meetia-reviews-slider data-reviews-slider=""
-        button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--prev type="button" aria-label="前のレビュー" data-reviews-prev=""
+        button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--prev type="button" aria-label=t("recrivo.lp.reviews_prev") data-reviews-prev=""
           i.fa-solid.fa-chevron-left aria-hidden="true"
         .meetia-reviews-slider__viewport
           .meetia-reviews-slider__track
-            - TopsHelper::REVIEW_CARDS.each do |card|
+            - review_cards.each do |card|
               .meetia-cases__card
                 .meetia-cases__meta = card[:meta]
                 .meetia-cases__stars ★★★★★
                 h3 = card[:title]
                 p = card[:quote]
                 span.meetia-cases__metric = card[:metric]
-        button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--next type="button" aria-label="次のレビュー" data-reviews-next=""
+        button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--next type="button" aria-label=t("recrivo.lp.reviews_next") data-reviews-next=""
           i.fa-solid.fa-chevron-right aria-hidden="true"
 
   section#faq.meetia-section
     .meetia-section__inner
       .meetia-section__head
         span.meetia-section__eyebrow FAQ
-        h2.meetia-section__title よくあるご質問
-        p.meetia-section__lead AI面接・商談に関してよくいただくご質問にお答えします。
+        h2.meetia-section__title = t("recrivo.lp.faq_title")
+        p.meetia-section__lead = t("recrivo.lp.faq_lead")
       .meetia-faq-layout data-faq-root=""
-        nav.meetia-faq-categories aria-label="FAQカテゴリ"
-          h3 カテゴリ
-          - TopsHelper::FAQ_CATEGORIES.each_with_index do |(key, label, icon), idx|
+        nav.meetia-faq-categories aria-label=t("recrivo.lp.faq_categories_aria")
+          h3 = t("recrivo.lp.faq_categories_heading")
+          - faq_categories.each_with_index do |(key, label, icon), idx|
             button.meetia-faq-categories__btn type="button" class=("is-active" if idx.zero?) data-faq-category=key
               i.fa-solid class=icon aria-hidden="true"
               span = label
         .meetia-faq-panel
-          - default_faq_category = TopsHelper::FAQ_CATEGORIES.first.first
+          - default_faq_category = faq_categories.first.first
           - default_faq_opened = false
-          - TopsHelper::FAQ_ITEMS.each do |item|
+          - faq_items.each do |item|
             - is_default_category = item[:category] == default_faq_category
             - open_default = is_default_category && !default_faq_opened
             - default_faq_opened = true if open_default
@@ -355,19 +309,19 @@
       .meetia-company-profile
         .meetia-company-profile__head
           span.meetia-section__eyebrow ABOUT US
-          h2.meetia-company-profile__title 会社概要
-          p.meetia-company-profile__lead AIと人の対話体験を融合し、面接の取りこぼしをゼロに。
+          h2.meetia-company-profile__title = t("recrivo.lp.company_title")
+          p.meetia-company-profile__lead = t("recrivo.lp.company_lead")
         .meetia-company-profile__grid
           .meetia-company-profile__left
             h3.meetia-company-profile__catch
-              | 対話の入口を、
-              span.meetia-text-accent AIと共に創る。
+              = t("recrivo.lp.company_catch_1")
+              span.meetia-text-accent = t("recrivo.lp.company_catch_accent")
             p.meetia-company-profile__mission-text
-              | Recrivoは、AIが一次面接を代行するBtoBサービスです。
+              = t("recrivo.lp.company_mission_1")
               br
-              | シナリオ設計から評価・フォローまでを支えます。
+              = t("recrivo.lp.company_mission_2")
             .meetia-company-profile__stats
-              - TopsHelper::COMPANY_STATS.each do |stat|
+              - company_stats.each do |stat|
                 .meetia-company-profile__stat
                   .meetia-company-profile__stat-icon
                     i.fa-solid class=stat[:icon] aria-hidden="true"
@@ -377,7 +331,7 @@
                     small = stat[:unit]
           .meetia-company-profile__right
             .meetia-company-profile__facts
-              - TopsHelper::COMPANY_PROFILE.each do |label, value|
+              - company_profile_rows.each do |label, value|
                 .meetia-company-profile__row
                   .meetia-company-profile__th = label
                   .meetia-company-profile__td = value
@@ -389,12 +343,11 @@
           i.fa-solid.fa-bolt aria-hidden="true"
           | TRIAL
         h2.meetia-cta-band__title
-          = "#{Subscription::TRIAL_DAYS}日間の無料トライアルを今すぐ体験"
-        p.meetia-cta-band__lead
-          | Recrivoで、面接の機会を逃さない。シナリオを用意してリンクを送るだけ。24時間、AIが一次対応を担います。
+          = t("recrivo.lp.cta_title", days: Subscription::TRIAL_DAYS)
+        p.meetia-cta-band__lead = t("recrivo.lp.cta_lead")
 
       .meetia-cta-band__features
-        - TopsHelper::TRIAL_FEATURES.each do |feature|
+        - trial_features.each do |feature|
           .meetia-cta-band__feature
             .meetia-cta-band__feature-icon
               i.fa-solid class=feature[:icon] aria-hidden="true"
@@ -404,36 +357,47 @@
       .meetia-cta-band__actions
         = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-cta-band__btn" do
           i.fa-solid.fa-rocket aria-hidden="true"
-          span 無料トライアルを開始
+          span = t("recrivo.lp.cta_start_trial")
+
+  section.meetia-columns-seo#columns-seo
+    .meetia-columns-seo__inner
+      span.meetia-section__eyebrow Resources
+      h2.meetia-columns-seo__title = t("recrivo.lp.columns_title")
+      p.meetia-columns-seo__lead = t("recrivo.lp.columns_lead")
+      ul.meetia-columns-seo__list
+        - featured_columns_for_lp.each do |item|
+          li = link_to item[:title], item[:path]
+      p.meetia-columns-seo__more
+        = link_to t("recrivo.lp.columns_all"), "/columns", class: "meetia-btn meetia-btn--outline meetia-btn--sm"
 
   footer.meetia-footer
     .meetia-footer__glow aria-hidden="true"
     .meetia-footer__inner
       .meetia-footer__brand
-        = link_to root_path, class: "meetia-footer__logo-link" do
+        = link_to locale_root_href, class: "meetia-footer__logo-link" do
           = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
-        p.meetia-footer__tagline シナリオと資料で、AIが面接・商談を代行
-        p.meetia-footer__desc BtoB向けAI面接・商談サービス。設計から実施・評価・フォローまで。
-      nav.meetia-footer__nav aria-label="フッターナビ"
-        h3.meetia-footer__nav-title プロダクト
+        p.meetia-footer__tagline = t("recrivo.lp.footer_tagline")
+        p.meetia-footer__desc = t("recrivo.lp.footer_desc")
+      nav.meetia-footer__nav aria-label=t("recrivo.lp.footer_product")
+        h3.meetia-footer__nav-title = t("recrivo.lp.footer_product")
         .meetia-footer__nav-links
-          - TopsHelper::LP_NAV_ITEMS.first(4).each do |item|
+          - lp_nav_items.reject { |item| item[:key] == "columns" }.first(4).each do |item|
             = link_to item[:label], item[:href], class: "meetia-footer__link"
-      nav.meetia-footer__nav aria-label="サポート"
-        h3.meetia-footer__nav-title サポート
+      nav.meetia-footer__nav aria-label=t("recrivo.lp.footer_support")
+        h3.meetia-footer__nav-title = t("recrivo.lp.footer_support")
         .meetia-footer__nav-links
-          - TopsHelper::LP_NAV_ITEMS.last(3).each do |item|
+          - lp_nav_items.last(3).each do |item|
             = link_to item[:label], item[:href], class: "meetia-footer__link"
       .meetia-footer__cta
-        h3.meetia-footer__nav-title 今すぐ体験
-        p = "#{Subscription::TRIAL_DAYS}日間、無料でAI面接・商談をお試しください。"
+        h3.meetia-footer__nav-title = t("recrivo.lp.footer_try_now")
+        p = t("recrivo.lp.footer_trial_text", days: Subscription::TRIAL_DAYS)
         = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--sm meetia-btn--pill") do
           i.fa-solid.fa-bolt aria-hidden="true"
-          span 無料トライアル
+          span = t("recrivo.lp.cta_trial")
     .meetia-footer__bottom
-      p.meetia-footer__copy © #{Time.current.year} AI Interview Inc.
+      p.meetia-footer__copy © #{Time.current.year} Recrivo / J Work Inc.
       .meetia-footer__bottom-links
         = link_to "#faq", class: "meetia-footer__bottom-link" do
           | FAQ
         = link_to "#company", class: "meetia-footer__bottom-link" do
-          | 会社概要
+          = t("recrivo.lp.footer_company")

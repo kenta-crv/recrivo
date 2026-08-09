@@ -1,0 +1,13 @@
+<p>面接が完了しました。</p>
+
+<ul>
+  <li>シナリオ: <%= @situation.title %></li>
+  <li>候補者: <%= @user.name.presence || "—" %>（<%= @user.email %>）</li>
+  <li>ステータス: <%= @interview.status %></li>
+  <% if @result %>
+    <li>判定: <%= @result.final_status %></li>
+    <li>平均点: <%= (@result.results_data.is_a?(Hash) ? (@result.results_data["average_score"] || @result.results_data[:average_score]) : nil) || "—" %></li>
+  <% end %>
+</ul>
+
+<p>ダッシュボードで詳細をご確認ください。</p>

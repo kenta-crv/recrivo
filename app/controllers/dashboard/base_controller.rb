@@ -29,7 +29,7 @@ class Dashboard::BaseController < ApplicationController
   end
 
   def interview_results_scope
-    scope = InterviewResult.joins(interview: :situation)
+    scope = InterviewResult.joins(interview: :situation).where(interviews: { preview: false })
     if client_signed_in?
       scope.where(situations: { client_id: current_client.id })
     elsif admin_signed_in?

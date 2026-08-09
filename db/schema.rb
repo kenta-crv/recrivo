@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_07_28_135229) do
+ActiveRecord::Schema.define(version: 2026_08_08_000001) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -73,9 +73,84 @@ ActiveRecord::Schema.define(version: 2026_07_28_135229) do
     t.text "hire_email_body"
     t.string "reject_email_subject"
     t.text "reject_email_body"
+    t.string "preferred_locale", default: "ja", null: false
+    t.string "provider"
+    t.string "uid"
     t.index ["email"], name: "index_clients_on_email", unique: true
+    t.index ["provider", "uid"], name: "index_clients_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_clients_on_reset_password_token", unique: true
     t.index ["stripe_customer_id"], name: "index_clients_on_stripe_customer_id", unique: true
+  end
+
+  create_table "interview_events", force: :cascade do |t|
+    t.integer "interview_id"
+    t.integer "situation_id", null: false
+    t.string "event_type", null: false
+    t.string "session_key"
+    t.integer "question_id"
+    t.json "metadata", default: {}
+    t.boolean "preview", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["interview_id"], name: "index_interview_events_on_interview_id"
+    t.index ["session_key"], name: "index_interview_events_on_session_key"
+    t.index ["situation_id", "created_at"], name: "index_interview_events_on_situation_id_and_created_at"
+    t.index ["situation_id", "event_type"], name: "index_interview_events_on_situation_id_and_event_type"
+    t.index ["situation_id"], name: "index_interview_events_on_situation_id"
+  end
+
+  create_table "interview_follow_up_deliveries", force: :cascade do |t|
+    t.integer "interview_id", null: false
+    t.integer "interview_follow_up_template_id", null: false
+    t.integer "sequence", null: false
+    t.string "kind", default: "completed", null: false
+    t.string "status", default: "scheduled", null: false
+    t.string "subject"
+    t.text "body"
+    t.datetime "scheduled_at", null: false
+    t.datetime "sent_at"
+    t.datetime "opened_at"
+    t.datetime "next_step_clicked_at"
+    t.string "tracking_token"
+    t.string "next_step_token"
+    t.string "error_message"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["interview_follow_up_template_id"], name: "index_follow_up_deliveries_on_template_id"
+    t.index ["interview_id", "kind"], name: "index_interview_follow_up_deliveries_on_interview_id_and_kind"
+    t.index ["interview_id"], name: "index_interview_follow_up_deliveries_on_interview_id"
+    t.index ["next_step_token"], name: "index_interview_follow_up_deliveries_on_next_step_token", unique: true
+    t.index ["scheduled_at"], name: "index_interview_follow_up_deliveries_on_scheduled_at"
+    t.index ["status"], name: "index_interview_follow_up_deliveries_on_status"
+    t.index ["tracking_token"], name: "index_interview_follow_up_deliveries_on_tracking_token", unique: true
+  end
+
+  create_table "interview_follow_up_templates", force: :cascade do |t|
+    t.integer "situation_id", null: false
+    t.integer "sequence", null: false
+    t.string "kind", default: "completed", null: false
+    t.boolean "enabled", default: true, null: false
+    t.integer "delay_days", default: 0, null: false
+    t.string "subject", null: false
+    t.text "body", null: false
+    t.boolean "include_next_step_link", default: true, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["situation_id", "kind", "sequence"], name: "index_follow_up_templates_on_situation_kind_sequence", unique: true
+    t.index ["situation_id"], name: "index_interview_follow_up_templates_on_situation_id"
+  end
+
+  create_table "interview_follow_up_unsubscribes", force: :cascade do |t|
+    t.integer "interview_id", null: false
+    t.string "token", null: false
+    t.datetime "unsubscribed_at", null: false
+    t.string "source"
+    t.string "ip"
+    t.string "user_agent"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["interview_id"], name: "index_interview_follow_up_unsubscribes_on_interview_id"
+    t.index ["token"], name: "index_interview_follow_up_unsubscribes_on_token", unique: true
   end
 
   create_table "interview_responses", force: :cascade do |t|
@@ -120,11 +195,36 @@ ActiveRecord::Schema.define(version: 2026_07_28_135229) do
     t.integer "resume_count", default: 0, null: false
     t.string "rejection_reason"
     t.datetime "rejected_at"
+    t.boolean "preview", default: false, null: false
+    t.integer "satisfaction_rating"
+    t.text "satisfaction_feedback"
+    t.string "follow_up_unsubscribe_token"
+    t.datetime "follow_up_unsubscribed_at"
+    t.string "ops_status", default: "new", null: false
     t.index ["access_token"], name: "index_interviews_on_access_token", unique: true
+    t.index ["follow_up_unsubscribe_token"], name: "index_interviews_on_follow_up_unsubscribe_token", unique: true
+    t.index ["ops_status"], name: "index_interviews_on_ops_status"
+    t.index ["preview"], name: "index_interviews_on_preview"
     t.index ["situation_id"], name: "index_interviews_on_situation_id"
     t.index ["status", "created_at"], name: "index_interviews_on_status_and_created_at"
-    t.index ["user_id", "situation_id"], name: "index_interviews_on_user_and_situation", unique: true
+    t.index ["user_id", "situation_id"], name: "index_interviews_on_user_and_situation"
     t.index ["user_id"], name: "index_interviews_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "client_id", null: false
+    t.integer "interview_id"
+    t.string "category", default: "general", null: false
+    t.string "title", null: false
+    t.text "body"
+    t.boolean "read", default: false, null: false
+    t.datetime "read_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["client_id", "created_at"], name: "index_notifications_on_client_id_and_created_at"
+    t.index ["client_id", "read"], name: "index_notifications_on_client_id_and_read"
+    t.index ["client_id"], name: "index_notifications_on_client_id"
+    t.index ["interview_id"], name: "index_notifications_on_interview_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -175,6 +275,19 @@ ActiveRecord::Schema.define(version: 2026_07_28_135229) do
     t.index ["situation_id"], name: "index_questions_on_situation_id"
   end
 
+  create_table "situation_faqs", force: :cascade do |t|
+    t.integer "situation_id", null: false
+    t.string "question", null: false
+    t.text "answer", null: false
+    t.string "category"
+    t.string "status", default: "approved", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["situation_id", "status"], name: "index_situation_faqs_on_situation_id_and_status"
+    t.index ["situation_id"], name: "index_situation_faqs_on_situation_id"
+  end
+
   create_table "situations", force: :cascade do |t|
     t.string "title", null: false
     t.string "invite_token", null: false
@@ -200,6 +313,11 @@ ActiveRecord::Schema.define(version: 2026_07_28_135229) do
     t.boolean "allow_text_answer", default: true, null: false
     t.boolean "allow_voice_answer", default: true, null: false
     t.boolean "record_camera", default: false, null: false
+    t.json "candidate_info_fields", default: {}
+    t.boolean "skip_candidate_registration", default: false, null: false
+    t.string "follow_up_next_step_url"
+    t.integer "page_views_count", default: 0, null: false
+    t.boolean "enable_satisfaction_survey", default: true, null: false
     t.index ["client_id", "archived"], name: "index_situations_on_client_id_and_archived"
     t.index ["client_id"], name: "index_situations_on_client_id"
     t.index ["invite_token"], name: "index_situations_on_invite_token", unique: true
@@ -239,14 +357,23 @@ ActiveRecord::Schema.define(version: 2026_07_28_135229) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "interview_events", "interviews"
+  add_foreign_key "interview_events", "situations"
+  add_foreign_key "interview_follow_up_deliveries", "interview_follow_up_templates"
+  add_foreign_key "interview_follow_up_deliveries", "interviews"
+  add_foreign_key "interview_follow_up_templates", "situations"
+  add_foreign_key "interview_follow_up_unsubscribes", "interviews"
   add_foreign_key "interview_responses", "interviews"
   add_foreign_key "interview_responses", "questions"
   add_foreign_key "interview_results", "interviews"
   add_foreign_key "interviews", "situations"
   add_foreign_key "interviews", "users"
+  add_foreign_key "notifications", "clients"
+  add_foreign_key "notifications", "interviews"
   add_foreign_key "payments", "clients"
   add_foreign_key "question_audios", "questions"
   add_foreign_key "questions", "situations"
+  add_foreign_key "situation_faqs", "situations"
   add_foreign_key "situations", "clients"
   add_foreign_key "subscriptions", "clients"
 end

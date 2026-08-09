@@ -1,7 +1,9 @@
 class SituationsController < Dashboard::BaseController
   before_action :set_situation, only: [
     :show, :edit, :update, :destroy, :regenerate_invite_token,
-    :suggest_questions, :apply_suggested_questions
+    :suggest_questions, :apply_suggested_questions,
+    :update_candidate_registration, :update_follow_up_settings,
+    :upload_recruitment_material, :remove_recruitment_material
   ]
   before_action :ensure_client_can_create!, only: [:new, :create]
   before_action :ensure_service_quota!, only: [:new, :create]
@@ -12,6 +14,10 @@ class SituationsController < Dashboard::BaseController
 
   def show
     @questions = @situation.questions.order(:order)
+    @situation.ensure_follow_up_templates!
+    @follow_up_templates = @situation.interview_follow_up_templates.ordered
+    @faqs = @situation.situation_faqs.ordered
+    @analytics = InterviewEngine::AnalyticsSummaryService.call(situation_ids: [@situation.id])
   end
 
   def new
@@ -46,6 +52,62 @@ class SituationsController < Dashboard::BaseController
   def regenerate_invite_token
     @situation.regenerate_invite_token!
     redirect_to @situation, notice: "招待リンクを再発行しました。"
+  end
+
+  def update_candidate_registration
+    @situation.skip_candidate_registration = ActiveModel::Type::Boolean.new.cast(params.dig(:situation, :skip_candidate_registration))
+    @situation.assign_candidate_info_fields!(params.dig(:situation, :candidate_info_fields) || {})
+    if @situation.save
+      redirect_to @situation, notice: "受験者登録項目を更新しました。"
+    else
+      redirect_to @situation, alert: @situation.errors.full_messages.join(", ")
+    end
+  end
+
+  def update_follow_up_settings
+    @situation.ensure_follow_up_templates!
+    @situation.update(follow_up_next_step_url: params.dig(:situation, :follow_up_next_step_url))
+
+    templates_params = params[:templates]
+    templates_hash =
+      if templates_params.respond_to?(:to_unsafe_h)
+        templates_params.to_unsafe_h
+      elsif templates_params.is_a?(Hash)
+        templates_params
+      else
+        {}
+      end
+
+    templates_hash.each do |id, attrs|
+      template = @situation.interview_follow_up_templates.find_by(id: id)
+      next unless template
+
+      attrs = attrs.to_unsafe_h if attrs.respond_to?(:to_unsafe_h)
+      template.update(
+        enabled: ActiveModel::Type::Boolean.new.cast(attrs["enabled"] || attrs[:enabled]),
+        delay_days: attrs["delay_days"] || attrs[:delay_days],
+        subject: attrs["subject"] || attrs[:subject],
+        body: attrs["body"] || attrs[:body],
+        include_next_step_link: ActiveModel::Type::Boolean.new.cast(attrs["include_next_step_link"] || attrs[:include_next_step_link])
+      )
+    end
+
+    redirect_to @situation, notice: "フォロー設定を更新しました。"
+  end
+
+  def upload_recruitment_material
+    file = params[:recruitment_material]
+    unless file
+      return redirect_to @situation, alert: "ファイルを選択してください。"
+    end
+
+    @situation.recruitment_material.attach(file)
+    redirect_to @situation, notice: "募集資料をアップロードしました。"
+  end
+
+  def remove_recruitment_material
+    @situation.recruitment_material.purge if @situation.recruitment_material.attached?
+    redirect_to @situation, notice: "募集資料を削除しました。"
   end
 
   # POST /situations/:id/suggest_questions
@@ -143,7 +205,9 @@ class SituationsController < Dashboard::BaseController
       :passing_score, :auto_reject_enabled, :reject_on_required_fail,
       :min_required_score, :max_consecutive_fails, :reject_notify_method,
       :judgment_mode, :candidate_result_visibility,
-      :allow_text_answer, :allow_voice_answer, :record_camera
+      :allow_text_answer, :allow_voice_answer, :record_camera,
+      :enable_satisfaction_survey, :follow_up_next_step_url,
+      :skip_candidate_registration
     )
   end
 

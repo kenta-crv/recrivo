@@ -1,0 +1,10 @@
+面接が完了しました。
+
+シナリオ: <%= @situation.title %>
+候補者: <%= @user.name.presence || "—" %>（<%= @user.email %>）
+ステータス: <%= @interview.status %>
+<% if @result %>
+判定: <%= @result.final_status %>
+<% end %>
+
+ダッシュボードで詳細をご確認ください。

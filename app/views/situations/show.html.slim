@@ -30,7 +30,7 @@
   .db-v2-bottom-card__header
     h2.db-v2-bottom-card__title 招待リンク
   .db-v2-bottom-card__body
-    p.db-v2-muted 候補者にこのURLを共有してください（ログイン不要）。
+    p.db-v2-muted 候補者にこのURLを共有してください（ログイン不要）。閲覧数: #{@situation.page_views_count}
     .db-v2-form-group
       input.db-v2-form-control#invite-url-field type="text" readonly=true value=interview_invite_url(@situation.invite_token)
     .db-v2-form-actions
@@ -40,8 +40,97 @@
       = link_to interview_invite_path(@situation.invite_token), class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener", data: { turbo: false } do
         i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
         span 面接ページを開く
+      = link_to interview_invite_path(@situation.invite_token, preview: 1), class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener", data: { turbo: false } do
+        i.fa-solid.fa-eye aria-hidden="true"
+        span プレビュー（記録なし）
       = button_to regenerate_invite_token_situation_path(@situation), method: :post, class: "db-v2-btn db-v2-btn--ghost", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: "既存リンクは無効になります。再発行しますか？", confirm: "既存リンクは無効になります。再発行しますか？" } do
         span リンクを再発行
+
+- if @analytics.present?
+  .db-v2-bottom-card style="margin-top: 1.25rem"
+    .db-v2-bottom-card__header
+      h2.db-v2-bottom-card__title このシナリオのファネル
+    .db-v2-bottom-card__body
+      p.db-v2-muted
+        | 閲覧 #{@analytics[:page_views]} → 登録 #{@analytics[:registered_count]} → 完了 #{@analytics[:sessions_completed]}（完了率 #{@analytics[:completion_rate] || "—"}%）／合格 #{@analytics[:passed_count]}
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 受験者登録項目
+  .db-v2-bottom-card__body
+    = form_with url: update_candidate_registration_situation_path(@situation), method: :patch, local: true do
+      .db-v2-form-check style="margin-bottom:12px"
+        = check_box_tag "situation[skip_candidate_registration]", "1", @situation.skip_candidate_registration?, id: "skip_candidate_registration"
+        = label_tag "skip_candidate_registration", "登録をスキップする"
+      - fields = @situation.resolved_candidate_info_fields
+      - SituationCandidateRegistration::CANDIDATE_INFO_FIELDS.each do |key|
+        .db-v2-form-group
+          label.db-v2-form-label = SituationCandidateRegistration::FIELD_LABELS[key]
+          = select_tag "situation[candidate_info_fields][#{key}]", options_for_select([["必須", "required"], ["任意", "optional"], ["非表示", "hidden"]], fields[key]), class: "db-v2-form-control"
+      button.db-v2-btn.db-v2-btn--primary type="submit" 登録項目を保存
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 募集資料・FAQ
+  .db-v2-bottom-card__body
+    - if @situation.recruitment_material.attached?
+      p
+        = link_to @situation.recruitment_material.filename.to_s, rails_blob_path(@situation.recruitment_material, disposition: "attachment"), class: "db-v2-deals-table__link"
+        = button_to "削除", remove_recruitment_material_situation_path(@situation), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form", style: "display:inline;margin-left:8px" }
+    = form_with url: upload_recruitment_material_situation_path(@situation), method: :post, local: true, html: { multipart: true } do
+      .db-v2-form-group
+        label.db-v2-form-label 募集要項・会社紹介PDFなど
+        = file_field_tag :recruitment_material, class: "db-v2-form-control", accept: ".pdf,.doc,.docx,.png,.jpg"
+      button.db-v2-btn.db-v2-btn--ghost type="submit" 資料をアップロード
+
+    hr style="margin:16px 0;border:none;border-top:1px solid var(--db-v2-border, #e2e8f0)"
+    h3.db-v2-form-section__title style="margin-bottom:8px" FAQ
+    - @faqs.each do |faq|
+      .db-v2-page-card style="margin-bottom:8px"
+        strong = faq.question
+        p.db-v2-muted = faq.answer
+        = button_to "削除", situation_situation_faq_path(@situation, faq), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form" }
+    = form_with model: [@situation, SituationFaq.new], url: situation_situation_faqs_path(@situation), local: true do |f|
+      .db-v2-form-group
+        = f.label :question, "質問", class: "db-v2-form-label"
+        = f.text_field :question, class: "db-v2-form-control", required: true
+      .db-v2-form-group
+        = f.label :answer, "回答", class: "db-v2-form-label"
+        = f.text_area :answer, class: "db-v2-form-control", rows: 3, required: true
+      .db-v2-form-group
+        = f.label :category, "カテゴリ", class: "db-v2-form-label"
+        = f.text_field :category, class: "db-v2-form-control", placeholder: "勤務条件・福利厚生など"
+      button.db-v2-btn.db-v2-btn--primary type="submit" FAQを追加
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title フォロー自動化
+  .db-v2-bottom-card__body
+    - unless @situation.client&.follow_up_automation_enabled?
+      p.db-v2-muted style="margin-bottom:12px" 現在のプランではフォロー自動化は無効です（Standard以上で有効）。設定は保存できます。
+    = form_with url: update_follow_up_settings_situation_path(@situation), method: :patch, local: true do
+      .db-v2-form-group
+        label.db-v2-form-label 次のステップURL（選考案内・日程調整など）
+        = url_field_tag "situation[follow_up_next_step_url]", @situation.follow_up_next_step_url, class: "db-v2-form-control", placeholder: "https://..."
+      - @follow_up_templates.each do |template|
+        .db-v2-page-card style="margin-bottom:12px"
+          .db-v2-form-check
+            = check_box_tag "templates[#{template.id}][enabled]", "1", template.enabled?, id: "tpl_enabled_#{template.id}"
+            = label_tag "tpl_enabled_#{template.id}", "#{template.kind} / #{template.delay_days}日後"
+          .db-v2-form-group
+            = label_tag "templates_#{template.id}_delay", "遅延日数", class: "db-v2-form-label"
+            = number_field_tag "templates[#{template.id}][delay_days]", template.delay_days, class: "db-v2-form-control", min: 0, max: 90
+          .db-v2-form-group
+            = label_tag "templates_#{template.id}_subject", "件名", class: "db-v2-form-label"
+            = text_field_tag "templates[#{template.id}][subject]", template.subject, class: "db-v2-form-control"
+          .db-v2-form-group
+            = label_tag "templates_#{template.id}_body", "本文", class: "db-v2-form-label"
+            = text_area_tag "templates[#{template.id}][body]", template.body, class: "db-v2-form-control", rows: 4
+          .db-v2-form-check
+            = check_box_tag "templates[#{template.id}][include_next_step_link]", "1", template.include_next_step_link?, id: "tpl_link_#{template.id}"
+            = label_tag "tpl_link_#{template.id}", "次のステップリンクを含める"
+          p.db-v2-form-hint 変数: {{candidate_name}} / {{company}} / {{situation_title}} / {{invite_url}}
+      button.db-v2-btn.db-v2-btn--primary type="submit" フォロー設定を保存
 
 .db-v2-bottom-card style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation)
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split

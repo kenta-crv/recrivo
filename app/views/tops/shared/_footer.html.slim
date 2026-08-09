@@ -2,30 +2,30 @@ footer.meetia-footer
   .meetia-footer__glow aria-hidden="true"
   .meetia-footer__inner
     .meetia-footer__brand
-      = link_to root_path, class: "meetia-footer__logo-link" do
+      = link_to locale_root_href, class: "meetia-footer__logo-link" do
         = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
-      p.meetia-footer__tagline シナリオと資料で、AIが面接・商談を代行
-      p.meetia-footer__desc BtoB向けAI面接・商談サービス。設計から実施・評価・フォローまで。
-    nav.meetia-footer__nav aria-label="フッターナビ"
-      h3.meetia-footer__nav-title プロダクト
+      p.meetia-footer__tagline = t("recrivo.lp.footer_tagline")
+      p.meetia-footer__desc = t("recrivo.lp.footer_desc")
+    nav.meetia-footer__nav aria-label=t("recrivo.lp.footer_product")
+      h3.meetia-footer__nav-title = t("recrivo.lp.footer_product")
       .meetia-footer__nav-links
-        - TopsHelper::LP_NAV_ITEMS.first(4).each do |item|
+        - lp_nav_items.reject { |item| item[:key] == "columns" }.first(4).each do |item|
           = link_to item[:label], item[:href], class: "meetia-footer__link"
-    nav.meetia-footer__nav aria-label="サポート"
-      h3.meetia-footer__nav-title サポート
+    nav.meetia-footer__nav aria-label=t("recrivo.lp.footer_support")
+      h3.meetia-footer__nav-title = t("recrivo.lp.footer_support")
       .meetia-footer__nav-links
-        - TopsHelper::LP_NAV_ITEMS.last(3).each do |item|
+        - lp_nav_items.last(3).each do |item|
           = link_to item[:label], item[:href], class: "meetia-footer__link"
     .meetia-footer__cta
-      h3.meetia-footer__nav-title 今すぐ体験
-      p = "#{Subscription::TRIAL_DAYS}日間、無料でAI面接・商談をお試しください。"
+      h3.meetia-footer__nav-title = t("recrivo.lp.footer_try_now")
+      p = t("recrivo.lp.footer_trial_text", days: Subscription::TRIAL_DAYS)
       = link_to lp_trial_experience_path, lp_trial_experience_link_options.merge(class: "meetia-btn meetia-btn--primary meetia-btn--sm meetia-btn--pill") do
         i.fa-solid.fa-bolt aria-hidden="true"
-        span 無料トライアル
+        span = t("recrivo.lp.cta_trial")
   .meetia-footer__bottom
-    p.meetia-footer__copy © #{Time.current.year} AI Interview Inc.
+    p.meetia-footer__copy © #{Time.current.year} Recrivo / J Work Inc.
     .meetia-footer__bottom-links
       = link_to "#faq", class: "meetia-footer__bottom-link" do
         | FAQ
       = link_to "#company", class: "meetia-footer__bottom-link" do
-        | 会社概要
+        = t("recrivo.lp.footer_company")

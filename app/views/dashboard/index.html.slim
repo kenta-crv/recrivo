@@ -76,7 +76,68 @@
           - if @decided_interview_count.to_i.zero?
             | まだ終了した面接がありません
           - else
-            = "途中離脱 #{@abandoned_count}／終了 #{@decided_interview_count}"
+            = "途中離脱 #{@abandoned_count}／開始 #{@analytics[:sessions_started]}"
+
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
+      i.fa-solid.fa-filter aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 完了率
+      .db-v2-summary-card__value-row
+        - if @analytics[:completion_rate]
+          span.db-v2-summary-card__value = @analytics[:completion_rate]
+          span.db-v2-summary-card__unit ％
+        - else
+          span.db-v2-summary-card__value —
+      .db-v2-summary-card__trend
+        span.db-v2-summary-card__trend-label
+          = "閲覧 #{@analytics[:page_views]} → 登録 #{@analytics[:registered_count]} → 完了 #{@analytics[:sessions_completed]}"
+
+- if @analytics[:funnel_segments].present?
+  .db-v2-bottom-card style="margin-top: 1.25rem"
+    .db-v2-bottom-card__header
+      h2.db-v2-bottom-card__title ファネル
+    .db-v2-bottom-card__body
+      .db-v2-funnel-pie__legends style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px"
+        - @analytics[:funnel_segments].each do |seg|
+          .db-v2-funnel-pie__legend
+            span.db-v2-funnel-pie__badge style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#{seg[:color]};margin-right:6px"
+            span.db-v2-funnel-pie__legend-label = seg[:label]
+            span.db-v2-muted = " #{seg[:count]}件（#{seg[:share]}%）"
+      p.db-v2-muted style="margin-top:12px"
+        | 合格 #{@analytics[:passed_count]} ／ 審査待ち #{@analytics[:pending_review_count]} ／ フォロー送信 #{@analytics[:follow_up_sent]}（開封 #{@analytics[:follow_up_opened]}）
+        - if @analytics[:average_satisfaction]
+          |  ／ 満足度平均 #{@analytics[:average_satisfaction]}
+
+.db-v2-bottom-card style="margin-top: 1.25rem"
+  .db-v2-bottom-card__header.db-v2-bottom-card__header--split
+    h2.db-v2-bottom-card__title 最近の候補者
+    = link_to "すべて見る", dashboard_candidates_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+  .db-v2-bottom-card__body
+    - if @recent_candidates.blank?
+      .db-v2-empty-state
+        p.db-v2-empty-state__text まだ候補者がいません
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table.db-v2-deals-table
+          thead
+            tr
+              th 候補者
+              th シナリオ
+              th 状態
+              th 更新
+              th
+          tbody
+            - @recent_candidates.each do |interview|
+              tr
+                td = interview.user&.name.presence || interview.user&.email
+                td = interview.situation&.title
+                td
+                  span.db-v2-status-badge = interview.ops_status
+                td = l(interview.updated_at, format: :short)
+                td
+                  = link_to dashboard_candidate_path(interview), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
+                    span 詳細
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split

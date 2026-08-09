@@ -1,0 +1,52 @@
+.db-v2-header
+  .db-v2-header__left
+    h1.db-v2-header__title 候補者管理
+    p.db-v2-header__subtitle 面接セッション単位の候補者一覧
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__body
+    = form_with url: dashboard_candidates_path, method: :get, local: true, html: { class: "db-v2-suggest-grid", style: "margin-bottom:16px" } do
+      .db-v2-form-group
+        label.db-v2-form-label シナリオ
+        = select_tag :situation_id, options_from_collection_for_select(@situations, :id, :title, @situation_filter), include_blank: "すべて", class: "db-v2-form-control"
+      .db-v2-form-group
+        label.db-v2-form-label 運用ステータス
+        = select_tag :ops_status, options_for_select(Interview::OPS_STATUSES.map { |s| [s, s] }, @ops_filter), include_blank: "すべて", class: "db-v2-form-control"
+      .db-v2-form-group
+        label.db-v2-form-label &nbsp;
+        button.db-v2-btn.db-v2-btn--primary type="submit" 絞り込み
+
+    - if @interviews.blank?
+      .db-v2-empty-state
+        p.db-v2-empty-state__text 候補者がまだいません
+    - else
+      .db-v2-leads-table-wrap
+        table.db-v2-leads-table.db-v2-deals-table
+          thead
+            tr
+              th ID
+              th 候補者
+              th メール
+              th シナリオ
+              th 面接
+              th 運用
+              th スコア
+              th 更新
+              th
+          tbody
+            - @interviews.each do |interview|
+              - result = interview.interview_result
+              tr
+                td = interview.id
+                td = interview.user&.name.presence || "—"
+                td = interview.user&.email
+                td = interview.situation&.title
+                td = interview.status
+                td
+                  span.db-v2-status-badge = interview.ops_status
+                td = result&.average_score || "—"
+                td = l(interview.updated_at, format: :short)
+                td
+                  = link_to "詳細", dashboard_candidate_path(interview), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"

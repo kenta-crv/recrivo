@@ -10,7 +10,7 @@ module Api
     before_action :authenticate_by_token_or_user!, except: [:start, :start_by_token]
     before_action :authenticate_or_create_guest!, only: [:start]
     
-    before_action :set_interview, only: [:next_question, :submit_answer, :transcribe, :complete, :status, :resume]
+    before_action :set_interview, only: [:next_question, :submit_answer, :transcribe, :complete, :status, :resume, :track_event, :evaluate, :faqs]
     before_action :check_session_timeout!, only: [:next_question, :submit_answer, :transcribe]
 
     # POST /api/interviews/start
@@ -25,18 +25,42 @@ module Api
         return render_api_error('Invalid or missing invite token', status: :forbidden)
       end
 
-      unless apply_candidate_identity!
+      preview = preview_request?(situation)
+      unless preview
+        client = situation.client
+        unless client&.can_start_interview?
+          return render_api_error(
+            client&.interview_limit_message || 'Monthly interview limit reached',
+            status: :forbidden,
+            reason: 'monthly_limit'
+          )
+        end
+      end
+
+      unless preview || apply_candidate_identity!(situation)
         return # error already rendered
+      end
+
+      if preview
+        @current_user = find_or_create_preview_user(situation)
       end
 
       language = params[:language].presence || situation.language || 'en'
 
       session_manager = InterviewEngine::SessionManager.new(@current_user, situation)
-      interview = session_manager.start_interview(language: language)
+      interview = session_manager.start_interview(language: language, preview: preview)
+
+      InterviewEvent.track!(
+        situation: situation,
+        interview: interview,
+        event_type: preview ? 'preview_start' : 'interview_start',
+        session_key: interview.access_token,
+        preview: preview
+      )
 
       greeting = build_interview_greeting(
         situation: situation,
-        candidate_name: params[:candidate_name].to_s.strip,
+        candidate_name: preview ? 'プレビュー' : params[:candidate_name].to_s.strip,
         language: language
       )
 
@@ -50,7 +74,13 @@ module Api
         session_timeout_minutes: situation.session_timeout_minutes,
         remaining_seconds: interview.remaining_seconds,
         greeting: greeting,
-        answer_settings: answer_settings_payload(situation)
+        answer_settings: answer_settings_payload(situation),
+        preview: preview,
+        enable_satisfaction_survey: situation.enable_satisfaction_survey?,
+        faqs: situation.situation_faqs.approved.ordered.limit(20).map { |f|
+          { id: f.id, question: f.question, answer: f.answer, category: f.category }
+        },
+        materials_url: situation.recruitment_material.attached? ? rails_blob_path(situation.recruitment_material, only_path: true) : nil
       }, status: :created
     rescue InterviewEngine::SessionManager::AlreadyCompletedError => e
       # 1回のみ仕様: 受験済みは「エラー」ではなく「案内」として返す
@@ -147,6 +177,15 @@ module Api
       end
 
       @interview.touch_activity!
+
+      InterviewEvent.track!(
+        situation: @interview.situation,
+        interview: @interview,
+        event_type: "question_view",
+        question_id: question.id,
+        session_key: @interview.access_token,
+        preview: @interview.preview?
+      )
 
       render json: {
         success: true,
@@ -258,6 +297,16 @@ module Api
       end
       @interview.touch_activity!
 
+      InterviewEvent.track!(
+        situation: @interview.situation,
+        interview: @interview,
+        event_type: "answer_submit",
+        question_id: question.id,
+        session_key: @interview.access_token,
+        preview: @interview.preview?,
+        metadata: { response_id: response.id }
+      )
+
       render json: {
         success: true,
         message: 'Response submitted for evaluation',
@@ -285,6 +334,14 @@ module Api
       result = session_manager.complete_interview(@interview.id)
 
       @interview.reload
+
+      InterviewEvent.track!(
+        situation: @interview.situation,
+        interview: @interview,
+        event_type: "interview_complete",
+        session_key: @interview.access_token,
+        preview: @interview.preview?
+      )
 
       data = result.results_data || {}
       lang = @interview.language.to_s
@@ -321,11 +378,73 @@ module Api
           rejection_reason: failure_reason,
           failure_reason: failure_reason,
           judgment_mode: @interview.situation.judgment_mode,
-          candidate_result_visibility: @interview.situation.candidate_result_visibility
+          candidate_result_visibility: @interview.situation.candidate_result_visibility,
+          preview: @interview.preview?,
+          enable_satisfaction_survey: @interview.situation.enable_satisfaction_survey?,
+          faqs: @interview.situation.situation_faqs.approved.ordered.limit(20).map { |f|
+            { id: f.id, question: f.question, answer: f.answer, category: f.category }
+          },
+          materials_url: @interview.situation.recruitment_material.attached? ? rails_blob_path(@interview.situation.recruitment_material, only_path: true) : nil
         }
       }
     rescue InterviewEngine::SessionManager::SessionError => e
       render_api_error(e.message, status: :unprocessable_entity)
+    end
+
+    # POST /api/interviews/:id/track_event
+    def track_event
+      event_type = params[:event_type].to_s
+      unless InterviewEvent::EVENT_TYPES.include?(event_type)
+        return render_api_error('Invalid event_type', status: :bad_request)
+      end
+
+      InterviewEvent.track!(
+        situation: @interview.situation,
+        interview: @interview,
+        event_type: event_type,
+        question_id: params[:question_id],
+        session_key: @interview.access_token,
+        preview: @interview.preview? || ActiveModel::Type::Boolean.new.cast(params[:preview]),
+        metadata: params[:metadata].presence || {}
+      )
+
+      render json: { success: true }
+    end
+
+    # POST /api/interviews/:id/evaluate — 満足度
+    def evaluate
+      if @interview.preview?
+        return render json: { success: true, message: 'preview', ok: true }
+      end
+
+      rating = params[:rating].to_i
+      unless (1..5).cover?(rating)
+        return render_api_error('rating must be 1-5', status: :bad_request)
+      end
+
+      @interview.update!(
+        satisfaction_rating: rating,
+        satisfaction_feedback: params[:feedback].to_s.truncate(2000)
+      )
+
+      InterviewEvent.track!(
+        situation: @interview.situation,
+        interview: @interview,
+        event_type: "satisfaction_submit",
+        session_key: @interview.access_token,
+        metadata: { rating: rating }
+      )
+
+      render json: { success: true }
+    end
+
+    # GET /api/interviews/:id/faqs
+    def faqs
+      list = @interview.situation.situation_faqs.approved.ordered
+      render json: {
+        success: true,
+        faqs: list.map { |f| { id: f.id, question: f.question, answer: f.answer, category: f.category } }
+      }
     end
 
     # GET /api/interviews/:id/status
@@ -451,24 +570,49 @@ module Api
       @current_user = find_or_create_browser_guest_user
     end
 
-    # 氏名・メール・電話・住所で受験者を特定（結果一覧で誰か分かるようにする）
-    def apply_candidate_identity!
-      name = params[:candidate_name].to_s.strip
-      email = params[:candidate_email].to_s.strip.downcase
-      tel = params[:candidate_tel].to_s.strip
-      address = params[:candidate_address].to_s.strip
+    # 氏名・メール等で受験者を特定（シナリオの登録項目設定に従う）
+    def apply_candidate_identity!(situation = nil)
+      situation ||= Situation.active.find_by(id: params[:situation_id])
+      return false unless situation
 
-      if name.blank? || email.blank? || tel.blank? || address.blank?
-        render_api_error('お名前・メールアドレス・電話番号・住所は必須です', status: :bad_request)
+      if situation.skip_candidate_registration?
+        @current_user ||= find_or_create_browser_guest_user
+        return true
+      end
+
+      values = {
+        "name" => params[:candidate_name].to_s.strip,
+        "email" => params[:candidate_email].to_s.strip.downcase,
+        "tel" => params[:candidate_tel].to_s.strip,
+        "address" => params[:candidate_address].to_s.strip,
+        "job_title" => params[:candidate_job_title].to_s.strip,
+        "company" => params[:candidate_company].to_s.strip,
+        "url" => params[:candidate_url].to_s.strip
+      }
+
+      missing = situation.required_candidate_info_fields.select { |key| values[key].blank? }
+      if missing.any?
+        labels = missing.map { |k| SituationCandidateRegistration::FIELD_LABELS[k] || k }.join("・")
+        render_api_error("#{labels}は必須です", status: :bad_request)
         return false
       end
 
-      unless email.match?(URI::MailTo::EMAIL_REGEXP)
+      email = values["email"]
+      if email.present? && !email.match?(URI::MailTo::EMAIL_REGEXP)
         render_api_error('メールアドレスの形式が正しくありません', status: :bad_request)
         return false
       end
 
-      attrs = { name: name, tel: tel, address: address }
+      attrs = {}
+      situation.visible_candidate_info_fields.each do |key|
+        next if key == "email"
+        attrs[key.to_sym] = values[key] if values[key].present?
+      end
+
+      if email.blank?
+        render_api_error('メールアドレスは必須です', status: :bad_request)
+        return false
+      end
 
       existing = User.find_by(email: email)
       if existing
@@ -481,14 +625,37 @@ module Api
           attrs.merge(
             email: email,
             password: SecureRandom.hex(16),
-            job_title: 'Candidate'
+            job_title: attrs[:job_title].presence || 'Candidate'
           )
         )
       end
+
+      InterviewEvent.track!(
+        situation: situation,
+        event_type: "registration_submit",
+        metadata: { fields: situation.visible_candidate_info_fields }
+      )
       true
     rescue ActiveRecord::RecordInvalid => e
       render_api_error(e.message, status: :unprocessable_entity)
       false
+    end
+
+    def preview_request?(situation)
+      return false unless ActiveModel::Type::Boolean.new.cast(params[:preview])
+      return true if admin_signed_in?
+      return true if client_signed_in? && situation.client_id == current_client.id
+
+      false
+    end
+
+    def find_or_create_preview_user(situation)
+      email = "preview_client_#{situation.client_id}@interview.local"
+      User.find_or_create_by!(email: email) do |u|
+        u.name = "プレビュー"
+        u.password = SecureRandom.hex(16)
+        u.job_title = "Preview"
+      end
     end
 
     # ブラウザ単位で一意なゲストユーザーを払い出す（共有ゲスト問題の解消）

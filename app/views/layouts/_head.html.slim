@@ -7,6 +7,10 @@ meta name="format-detection" content="telephone=no"
 = display_meta_tags default_meta_tags
 = favicon_link_tag "favicon.ico"
 link rel="apple-touch-icon" href=image_path("favicon.ico")
+- if respond_to?(:href_for_locale)
+  link rel="alternate" hreflang="ja" href="#{request.base_url}#{href_for_locale(:ja)}"
+  link rel="alternate" hreflang="en" href="#{request.base_url}#{href_for_locale(:en)}"
+  link rel="alternate" hreflang="x-default" href="#{request.base_url}#{href_for_locale(:ja)}"
 / LP 以外用。LP は layouts/lp.html.slim 側で Drafty フォントを読み込む
 - unless controller_name == "tops"
   link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet"

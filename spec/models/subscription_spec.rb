@@ -2,24 +2,28 @@ require 'rails_helper'
 
 RSpec.describe Subscription, type: :model do
   describe 'PLAN_CATALOG' do
-    it 'returns LP display plans in catalog order' do
-      expect(Subscription.lp_display_plans.map(&:first)).to eq(%i[trial starter standard business enterprise])
+    it 'returns LP display plans without starter' do
+      expect(Subscription.lp_display_plans.map(&:first)).to eq(%i[trial standard business enterprise])
     end
 
     it 'has expected trial limits' do
       config = Subscription.plan_config(:trial)
       expect(config[:price]).to eq(0)
-      expect(config[:situation_limit]).to eq(3)
-      expect(config[:monthly_interview_limit]).to eq(20)
+      expect(config[:situation_limit]).to eq(1)
+      expect(config[:monthly_interview_limit]).to eq(5)
+      expect(config[:follow_up_automation]).to be false
       expect(config[:post_trial_plan]).to eq(:standard)
     end
 
-    it 'has expected starter limits and price' do
+    it 'hides starter from purchase and LP' do
       config = Subscription.plan_config(:starter)
-      expect(config[:price]).to eq(29_800)
-      expect(config[:situation_limit]).to eq(3)
-      expect(config[:monthly_interview_limit]).to eq(100)
-      expect(config[:voice_ai_interview]).to be true
+      expect(config[:purchasable]).to be false
+      expect(config[:public_on_lp]).to be false
+    end
+
+    it 'has multi-currency standard prices' do
+      expect(Subscription.price_for(:standard, currency: :jpy)).to eq(59_800)
+      expect(Subscription.price_for(:standard, currency: :usd)).to eq(399)
     end
 
     it 'marks standard as popular (blue highlight on LP)' do
@@ -27,6 +31,7 @@ RSpec.describe Subscription, type: :model do
       expect(config[:popular]).to be true
       expect(config[:featured]).to be false
       expect(config[:follow_up_automation]).to be true
+      expect(config[:intro_coupon_env]).to eq("STRIPE_COUPON_STANDARD_INTRO")
     end
 
     it 'has expected business limits and featured flag' do
@@ -54,7 +59,7 @@ RSpec.describe Subscription, type: :model do
 
   describe '.format_feature_value' do
     it 'formats numeric limits' do
-      expect(Subscription.format_feature_value(:trial, :situation_limit)).to eq('3')
+      expect(Subscription.format_feature_value(:trial, :situation_limit)).to eq('1')
       expect(Subscription.format_feature_value(:enterprise, :monthly_interview_limit)).to eq('無制限')
     end
 
@@ -64,6 +69,7 @@ RSpec.describe Subscription, type: :model do
 
     it 'shows cross for excluded boolean features' do
       expect(Subscription.format_feature_value(:trial, :priority_support)).to eq('✕')
+      expect(Subscription.format_feature_value(:trial, :follow_up_automation)).to eq('✕')
     end
   end
 
@@ -71,7 +77,7 @@ RSpec.describe Subscription, type: :model do
     let(:client) { create(:client, email: "no-sub@example.com") }
 
     it 'falls back to trial plan config' do
-      expect(client.current_plan_config[:situation_limit]).to eq(3)
+      expect(client.current_plan_config[:situation_limit]).to eq(1)
     end
   end
 end

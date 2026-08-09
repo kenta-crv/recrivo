@@ -96,6 +96,7 @@ html.meetia-lp-html,
   --lp-purple-soft: #eff6ff;
   --lp-accent: #2f6fed;
   --lp-gradient: linear-gradient(135deg, #0c2d6b 0%, #1f56b8 42%, #2f6fed 78%, #60a5fa 100%);
+  --lp-btn-gradient: linear-gradient(135deg, #2f6fed 0%, #3b82f6 48%, #60a5fa 100%);
   --lp-shadow-card: 0 14px 40px rgba(12, 45, 107, 0.08);
   --lp-shadow-btn: 0 12px 28px rgba(47, 111, 237, 0.28);
   --lp-neon-purple: 0 8px 24px rgba(47, 111, 237, 0.16);
@@ -180,7 +181,7 @@ html.meetia-lp-html,
 }
 
 .meetia-btn--primary {
-  background: var(--lp-gradient);
+  background: var(--lp-btn-gradient);
   color: #ffffff !important;
   box-shadow: var(--lp-shadow-btn);
 }
@@ -261,13 +262,13 @@ html.meetia-lp-html,
   padding: 8px 20px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
 }
 
 .meetia-nav__logo {
   display: flex;
   align-items: center;
-  margin-right: auto;
+  flex-shrink: 0;
 }
 
 .meetia-nav__logo-image {
@@ -300,7 +301,9 @@ html.meetia-lp-html,
   display: flex;
   align-items: center;
   gap: 2px;
-  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
   padding: 4px 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
@@ -310,7 +313,8 @@ html.meetia-lp-html,
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .meetia-nav__item {
@@ -1248,12 +1252,19 @@ html.meetia-lp-html,
   border: 1px solid var(--lp-card-border);
   box-shadow: var(--lp-shadow-card);
   position: relative;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.meetia-pricing__card--popular,
+.meetia-pricing__card--popular {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 18px 44px rgba(14, 165, 233, 0.16);
+}
+
 .meetia-pricing__card--featured {
-  border-color: rgba(47, 111, 237, 0.28);
-  box-shadow: 0 18px 44px rgba(12, 45, 107, 0.12);
+  border: 2px solid #2f6fed;
+  box-shadow: 0 18px 44px rgba(12, 45, 107, 0.14);
 }
 
 .meetia-pricing__badge-slot {
@@ -1261,10 +1272,16 @@ html.meetia-lp-html,
   margin-bottom: 12px;
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
 }
 
 .meetia-pricing__badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  flex: 0 0 auto;
   padding: 4px 10px;
   border-radius: 999px;
   background: var(--lp-gradient);
@@ -1273,13 +1290,19 @@ html.meetia-lp-html,
   font-weight: 800;
   letter-spacing: 0.06em;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
-.meetia-pricing__badge--spacer {
-  visibility: hidden;
-  background: transparent;
-  padding-top: 4px;
-  padding-bottom: 4px;
+.meetia-pricing__badge--trial {
+  background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.meetia-pricing__badge--featured {
+  background: var(--lp-gradient);
+}
+
+.meetia-pricing__badge--popular {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
 }
 
 .meetia-pricing__plan {
@@ -1292,9 +1315,23 @@ html.meetia-lp-html,
 
 .meetia-pricing__price {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px;
+  justify-content: flex-start;
+  gap: 2px 4px;
+  min-height: 72px;
   margin-bottom: 8px;
+  text-align: left;
+}
+
+.meetia-pricing__price--sale {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  column-gap: 10px;
+  row-gap: 4px;
 }
 
 .meetia-pricing__currency,
@@ -1303,23 +1340,88 @@ html.meetia-lp-html,
   color: var(--lp-heading);
 }
 
-.meetia-pricing__amount {
-  font-size: 2rem;
-  font-weight: 500;
+.meetia-pricing__currency {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
-.meetia-pricing__period,
+.meetia-pricing__amount {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.meetia-pricing__list,
+.meetia-pricing__sale,
+.meetia-pricing__sale-note {
+  margin: 0;
+}
+
+.meetia-pricing__list {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--lp-muted);
+  text-decoration: line-through;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.meetia-pricing__amount--list {
+  color: var(--lp-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.meetia-pricing__sale {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  line-height: 1;
+}
+
+.meetia-pricing__currency--sale,
+.meetia-pricing__amount--sale {
+  color: #dc2626;
+}
+
+.meetia-pricing__amount--sale {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.meetia-pricing__sale-note {
+  flex: 1 0 100%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #dc2626;
+  line-height: 1.25;
+}
+
+.meetia-pricing__period {
+  color: var(--lp-muted);
+  font-size: 0.88rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .meetia-pricing__desc {
   color: var(--lp-muted);
   font-size: 0.88rem;
+  min-height: 2.4em;
 }
 
 .meetia-pricing__features {
   list-style: none;
-  margin: 18px 0;
+  margin: 18px 0 0;
   padding: 0;
   display: grid;
   gap: 10px;
+  flex: 1 1 auto;
 }
 
 .meetia-pricing__feature {
@@ -1337,6 +1439,8 @@ html.meetia-lp-html,
 
 .meetia-pricing__card-foot {
   margin-top: auto;
+  padding-top: 16px;
+  flex: 0 0 auto;
 }
 
 .meetia-pricing__card-btn {
@@ -2069,8 +2173,10 @@ html.meetia-lp-html,
     top: calc(100% + 8px);
     left: 16px;
     right: 16px;
+    flex: none;
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: wrap;
     border-radius: 18px;
     padding: 12px;
     background: #ffffff;
@@ -2327,4 +2433,71 @@ html.meetia-lp-html,
   .meetia-reviews-slider {
     grid-template-columns: 36px 1fr 36px;
   }
+}
+
+/* Columns / Articles (LP) */
+.meetia-columns-seo {
+  position: relative;
+  padding: 72px 20px 64px;
+  border-top: 1px solid rgba(47, 111, 237, 0.1);
+  background: var(--lp-bg-strip, #f0f6ff);
+}
+
+.meetia-columns-seo__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.meetia-columns-seo__title {
+  margin: 10px 0 12px;
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+  font-weight: 800;
+  color: var(--lp-heading, #0b1333);
+  letter-spacing: 0.02em;
+}
+
+.meetia-columns-seo__lead {
+  margin: 0 0 24px;
+  max-width: 640px;
+  color: var(--lp-muted, #64748b);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.meetia-columns-seo__list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  width: 100%;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.meetia-columns-seo__list a {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--lp-card-border, rgba(47, 111, 237, 0.12));
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--lp-text, #0a1e3f);
+  text-decoration: none;
+  font-size: 0.95rem;
+  box-shadow: 0 8px 20px rgba(12, 45, 107, 0.04);
+  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.meetia-columns-seo__list a:hover {
+  border-color: rgba(47, 111, 237, 0.35);
+  background: rgba(47, 111, 237, 0.04);
+  color: var(--lp-purple-deep, #0c2d6b);
+  box-shadow: 0 10px 24px rgba(47, 111, 237, 0.1);
+}
+
+.meetia-columns-seo__more {
+  margin: 0;
 }

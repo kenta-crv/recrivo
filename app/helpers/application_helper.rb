@@ -1,7 +1,7 @@
 module ApplicationHelper
   SITE_NAME = "Recrivo".freeze
-  DEFAULT_TITLE = "AI Interview System".freeze
-  DEFAULT_DESCRIPTION = "Automate first-round hiring interviews with AI. Create scenarios, send invite links, evaluate voice answers, and decide pass/fail end to end.".freeze
+  DEFAULT_TITLE = "AI面接サービス｜人とAIの力で、より良い出会いを".freeze
+  DEFAULT_DESCRIPTION = "Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。".freeze
 
   def default_meta_tags
     {
@@ -23,7 +23,7 @@ module ApplicationHelper
         type: "website",
         url: :canonical,
         image: site_og_image_url,
-        locale: "ja_JP",
+        locale: (I18n.locale.to_s == "en" ? "en_US" : "ja_JP"),
       },
       twitter: {
         card: "summary_large_image",
@@ -46,6 +46,46 @@ module ApplicationHelper
     host = ENV["APP_HOST"].presence || "https://#{ENV.fetch('RAILS_ALLOWED_HOST', 'recrivo.pro')}"
     host = "https://#{host}" unless host.match?(%r{\Ahttps?://}i)
     host.chomp("/")
+  end
+
+  def english_ui?
+    I18n.locale.to_s == "en"
+  end
+
+  def client_sign_in_path_for_locale
+    english_ui? ? new_client_session_en_path(locale: :en) : new_client_session_path
+  end
+
+  def client_sign_up_path_for_locale
+    english_ui? ? new_client_registration_en_path(locale: :en) : new_client_registration_path
+  end
+
+  def client_password_new_path_for_locale
+    english_ui? ? new_client_password_en_path(locale: :en) : new_client_password_path
+  end
+
+  def client_session_url_for_locale
+    english_ui? ? client_session_en_path(locale: :en) : session_path(:client)
+  end
+
+  def client_registration_url_for_locale
+    english_ui? ? client_registration_en_path(locale: :en) : registration_path(:client)
+  end
+
+  def client_password_url_for_locale
+    english_ui? ? client_password_en_path(locale: :en) : password_path(:client)
+  end
+
+  def client_password_update_url_for_locale
+    english_ui? ? client_password_en_path(locale: :en) : password_path(:client)
+  end
+
+  def plans_path_for_locale
+    english_ui? ? localized_plans_path(locale: :en) : plans_path
+  end
+
+  def select_plan_path_for_locale
+    english_ui? ? localized_select_plan_path(locale: :en) : select_plan_path
   end
 
   # LP 用 JSON-LD（Organization / WebSite / SoftwareApplication / FAQPage）
@@ -73,7 +113,7 @@ module ApplicationHelper
           "@type" => "WebSite",
           "name" => SITE_NAME,
           "url" => host,
-          "inLanguage" => "ja",
+          "inLanguage" => I18n.locale.to_s,
           "publisher" => { "@type" => "Organization", "name" => "株式会社J Work" },
         },
         {
@@ -86,12 +126,12 @@ module ApplicationHelper
             "@type" => "Offer",
             "price" => "0",
             "priceCurrency" => "JPY",
-            "description" => "無料トライアルあり",
+            "description" => I18n.t("recrivo.lp.cta_trial", default: "無料トライアルあり"),
           },
         },
         {
           "@type" => "FAQPage",
-          "mainEntity" => TopsHelper::FAQ_ITEMS.map do |item|
+          "mainEntity" => faq_items.map do |item|
             {
               "@type" => "Question",
               "name" => item[:q],

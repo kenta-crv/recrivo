@@ -90,6 +90,8 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
       reply_to: client.email
     ).deliver_now
 
+    @result.interview.update!(ops_status: "contacted")
+
     redirect_back fallback_location: dashboard_interview_result_path(@result),
                   notice: "#{label}通知メールを #{user.email} へ送信しました。"
   rescue StandardError => e

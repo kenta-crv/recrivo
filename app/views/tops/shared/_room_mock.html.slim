@@ -1,19 +1,19 @@
-- slide_title = local_assigns[:slide_title] || "Meetiaで商談を次のステージへ"
-- slide_tags = local_assigns[:slide_tags] || %w[資料理解 自然な対話 成約加速]
-- chat_ai = local_assigns[:chat_ai] || "資料に基づき、導入フローと料金体系をご説明します。"
-- chat_user = local_assigns[:chat_user] || "セキュリティ面について詳しく知りたいです。"
+- slide_title = local_assigns[:slide_title] || "Recrivoで一次面接を自動化"
+- slide_tags = local_assigns[:slide_tags] || %w[シナリオ設計 自然な対話 公平な評価]
+- chat_ai = local_assigns[:chat_ai] || "これまでのご経験について、もう少し詳しく教えてください。"
+- chat_user = local_assigns[:chat_user] || "前職ではチームリーダーとして採用にも関わっていました。"
 .meetia-room-mock
   .meetia-room-mock__chrome
     span.meetia-room-mock__dot
     span.meetia-room-mock__dot
     span.meetia-room-mock__dot
-    span.meetia-room-mock__title Meetia — AI商談ルーム
+    span.meetia-room-mock__title Recrivo — AI面接ルーム
     span.meetia-room-mock__status
       span.meetia-room-mock__status-dot aria-hidden="true"
       | 接続中
   .meetia-room-mock__body
     .meetia-room-mock__main
-      .meetia-room-mock__slide-label 商談資料
+      .meetia-room-mock__slide-label 面接シナリオ
       .meetia-room-mock__slide
         p.meetia-room-mock__slide-title = slide_title
         .meetia-room-mock__slide-icons
@@ -29,7 +29,7 @@
           i
         span AIが話しています…
     .meetia-room-mock__side
-      = image_tag "avatar_2_trim.png", alt: "AIアシスタント", class: "meetia-room-mock__avatar"
+      = image_tag "avatar_2_trim.png", alt: "AIインタビュアー", class: "meetia-room-mock__avatar"
       .meetia-room-mock__chat
         .meetia-room-mock__bubble.meetia-room-mock__bubble--ai
           span AI

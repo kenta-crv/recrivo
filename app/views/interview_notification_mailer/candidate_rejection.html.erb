@@ -1,0 +1,21 @@
+<p>こんにちは、<%= @user.name.presence || "候補者" %> 様</p>
+
+<p>
+  <%= @client.company.presence || @client.name %> 採用担当です。<br>
+  「<%= @situation.title %>」の選考結果についてご連絡いたします。
+</p>
+
+<p>
+  慎重に選考を進めた結果、誠に残念ながら、今回は採用を見送らせていただくこととなりました。
+</p>
+
+<% if @reason.present? %>
+  <p style="color:#64748b;font-size:14px">参考情報: <%= @reason %></p>
+<% end %>
+
+<p>
+  貴重なお時間をいただき、誠にありがとうございました。<br>
+  今後ますますのご活躍を心よりお祈りしております。
+</p>
+
+<p><%= @client.company.presence || @client.name %><br>採用担当</p>

@@ -4145,7 +4145,7 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  min-height: 460px;
+  min-height: 0;
   padding: 26px 20px 20px;
   border-radius: 16px;
   background: var(--db-card-bg);
@@ -4154,12 +4154,13 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
 }
 
 .dashboard-v2-container .db-v2-pricing__card--popular {
-  border-color: rgba(56, 189, 248, 0.5);
+  border: 2px solid #38bdf8;
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2), var(--db-card-glow);
 }
 
 .dashboard-v2-container .db-v2-pricing__card--featured {
-  border-color: rgba(59, 130, 246, 0.55);
+  border: 2px solid #2f6fed;
+  box-shadow: 0 0 0 1px rgba(47, 111, 237, 0.18), var(--db-card-glow);
 }
 
 .dashboard-v2-container .db-v2-pricing__card--current {
@@ -4214,10 +4215,23 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
 
 .dashboard-v2-container .db-v2-pricing__price {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: center;
-  gap: 2px;
+  gap: 2px 4px;
+  min-height: 72px;
   margin-bottom: 10px;
+  text-align: center;
+}
+
+.dashboard-v2-container .db-v2-pricing__price--sale {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 10px;
+  row-gap: 4px;
 }
 
 .dashboard-v2-container .db-v2-pricing__currency {
@@ -4245,6 +4259,56 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
   line-height: 1.55;
   text-align: center;
   color: var(--db-text-muted);
+}
+
+.dashboard-v2-container .db-v2-pricing__list,
+.dashboard-v2-container .db-v2-pricing__sale,
+.dashboard-v2-container .db-v2-pricing__sale-note {
+  margin: 0;
+}
+
+.dashboard-v2-container .db-v2-pricing__list {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--db-text-muted);
+  text-decoration: line-through;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dashboard-v2-container .db-v2-pricing__amount--list {
+  font-size: 11px;
+  color: var(--db-text-muted);
+}
+
+.dashboard-v2-container .db-v2-pricing__sale {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1;
+}
+
+.dashboard-v2-container .db-v2-pricing__currency--sale,
+.dashboard-v2-container .db-v2-pricing__amount--sale {
+  color: #dc2626;
+}
+
+.dashboard-v2-container .db-v2-pricing__amount--sale {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.dashboard-v2-container .db-v2-pricing__sale-note {
+  flex: 1 0 100%;
+  font-size: 11px;
+  font-weight: 700;
+  color: #dc2626;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .dashboard-v2-container .db-v2-pricing__features {
@@ -4282,7 +4346,9 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
 }
 
 .dashboard-v2-container .db-v2-pricing__card-foot {
-  margin-top: 16px;
+  margin-top: auto;
+  padding-top: 16px;
+  flex: 0 0 auto;
 }
 
 .dashboard-v2-container .db-v2-pricing__compare {

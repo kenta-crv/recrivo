@@ -1,8 +1,15 @@
 class Situation < ApplicationRecord
+  include SituationCandidateRegistration
+  include SituationFollowUpTemplateDefaults
+
   belongs_to :client
   has_many :questions, dependent: :destroy
   has_many :interviews, dependent: :destroy
   has_many :interview_results, through: :interviews
+  has_many :interview_events, dependent: :destroy
+  has_many :situation_faqs, dependent: :destroy
+  has_many :interview_follow_up_templates, dependent: :destroy
+  has_one_attached :recruitment_material
 
   validates :title, presence: true
   validates :industry, :job_title, presence: true
@@ -20,8 +27,21 @@ class Situation < ApplicationRecord
   enum language: { en: 'en', ja: 'ja' }
 
   before_validation :ensure_invite_token, on: :create
+  after_create :ensure_follow_up_templates!
 
   scope :active, -> { where(archived: false) }
+
+  def skip_candidate_registration?
+    skip_candidate_registration
+  end
+
+  def enable_satisfaction_survey?
+    enable_satisfaction_survey
+  end
+
+  def increment_page_views!
+    increment!(:page_views_count)
+  end
 
   def allow_resume?
     allow_resume

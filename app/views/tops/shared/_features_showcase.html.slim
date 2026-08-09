@@ -25,11 +25,14 @@
 
   - if local_assigns.fetch(:show_cta, false)
     .meetia-features-showcase__cta
-      p.meetia-features-showcase__cta-copy すべての機能を体験して、営業の未来を変えましょう。
+      p.meetia-features-showcase__cta-copy
+        | まずは無料で、
+        span.meetia-text-gradient AI面接
+        | を体験してください。
       .meetia-features-showcase__cta-actions
         = link_to lp_sign_up_path, class: "meetia-btn meetia-btn--primary meetia-btn--lg meetia-btn--pill" do
-          | 無料でMeetiaを始める
+          | 無料で始める
           i.fa-solid.fa-chevron-right aria-hidden="true"
         = link_to plans_path, class: "meetia-btn meetia-btn--outline meetia-btn--lg meetia-btn--pill" do
-          i.fa-solid.fa-download aria-hidden="true"
-          | 資料をダウンロード
+          i.fa-solid.fa-tags aria-hidden="true"
+          | 料金を見る

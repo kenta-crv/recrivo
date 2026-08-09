@@ -1,25 +1,22 @@
 .meetia-modern-lp
   = render "tops/shared/nav"
 
-  / --- 画像のメインビジュアル & 4つの魅力セクション ---
   section.meetia-hero-section
     .meetia-hero-inner
-      / 上部：メインビジュアル
       .meetia-main-visual
         .meetia-mv-text
-          span.meetia-badge What's Meetia?
+          span.meetia-badge What's AI Interview?
           h1.meetia-mv-title
-            | Meetia
+            | AI Interview
             span とは？
-          p.meetia-mv-catch AIが変える営業の未来
+          p.meetia-mv-catch AIが変える、一次面接の未来
           p.meetia-mv-desc
-            | Meetiaは、最先端のAI技術を活用したAIセールスエージェントです。
+            | AI Interviewは、採用の一次面接を自動化するBtoBプラットフォームです。
             br
-            | 人間のような自然な対話で、24時間365日、見込み客との商談を自動で行います。
+            | 人間のような自然な対話で、24時間365日、候補者との面接を自動で行います。
             br
-            | 営業資料の送付から、アポイント獲得まで、すべてAIにお任せいただけます。
+            | シナリオ設計から評価・フォローまで、すべてAIにお任せいただけます。
 
-          / 実績・数値
           .meetia-stats-grid
             .meetia-stat-card
               .meetia-stat-icon
@@ -27,110 +24,105 @@
                 span 24h
               .meetia-stat-info
                 span.meetia-stat-label 24時間365日
-                strong.meetia-stat-value いつでも稼働
+                strong.meetia-stat-value いつでも受験
             .meetia-stat-card
               .meetia-stat-icon
                 i.fa-solid.fa-users
               .meetia-stat-info
-                span.meetia-stat-label 見込み客対応数
-                strong.meetia-stat-value 300%向上
+                span.meetia-stat-label 一次対応工数
+                strong.meetia-stat-value 大幅削減
             .meetia-stat-card
               .meetia-stat-icon
                 i.fa-solid.fa-chart-line
               .meetia-stat-info
-                span.meetia-stat-label アポイント獲得率
-                strong.meetia-stat-value 250%向上
+                span.meetia-stat-label 評価の公平性
+                strong.meetia-stat-value 基準を統一
 
         .meetia-mv-image
-          / 指示通りイメージ画像はSample.pngとして配置
-          img src="Sample.png" alt="Meetia AI Agent" class="meetia-agent-img"
+          img src="Sample.png" alt="AI Interview エージェント" class="meetia-agent-img"
 
-      / 下部：Meetiaの魅力（4つのカード）
       .meetia-features-section
-        h2.meetia-features-title Meetiaの魅力
+        h2.meetia-features-title AI Interviewの魅力
         .meetia-features-grid
           .meetia-feature-card
             .meetia-feature-icon
               i.fa-solid.fa-comments
             h3.meetia-feature-name 自然な対話力
-            p.meetia-feature-text 人間のような自然な会話で、見込み客との信頼関係を構築します。
+            p.meetia-feature-text 人間のような自然な会話で、候補者の回答を深掘りします。
           .meetia-feature-card
             .meetia-feature-icon
               i.fa-solid.fa-circle-notch
               span.meetia-inner-icon-text 24
             h3.meetia-feature-name 24時間稼働
-            p.meetia-feature-text 時間や場所を問わず、いつでも見込み客にアプローチ。
+            p.meetia-feature-text 時間や場所を問わず、候補者が都合の良いタイミングで受験できます。
           .meetia-feature-card
             .meetia-feature-icon
               i.fa-solid.fa-bullseye
-            h3.meetia-feature-name 高精度なアプローチ
-            p.meetia-feature-text AIが見込み客の興味・関心を分析し、最適なアプローチを実行。
+            h3.meetia-feature-name 公平な評価
+            p.meetia-feature-text 同一シナリオ・同一基準で採点し、面接官ごとのばらつきを抑えます。
           .meetia-feature-card
             .meetia-feature-icon
               i.fa-solid.fa-chart-pie
             h3.meetia-feature-name 成果の可視化
-            p.meetia-feature-text リアルタイムで成果を可視化、営業活動の改善に活用できます。
+            p.meetia-feature-text スコア・合否・回答ログを可視化し、選考改善に活用できます。
 
-  / --- 既存のステップフロー・商談セクション ---
   section.meetia-ai-deal-flow
     .meetia-ai-deal-flow__inner
       .meetia-ai-deal-flow__head
-        h2.meetia-ai-deal-flow__title これがMeetiaのAI商談
+        h2.meetia-ai-deal-flow__title これがAI Interviewの面接
         p.meetia-ai-deal-flow__subtitle
-          span 資料提示
+          span シナリオ設計
           span.meetia-ai-deal-flow__subtitle-x ×
           span 音声対話
           span.meetia-ai-deal-flow__subtitle-x ×
-          span 自動分析
+          span 自動評価
 
       .meetia-ai-deal-flow__steps
-        / ステップ 1
         .meetia-ai-deal-flow__step
           .meetia-ai-deal-flow__step-label
             span.meetia-ai-deal-flow__step-num 1
-            p Webサイトから「商談を始める」をクリック
+            p 招待リンクから「面接を始める」をクリック
           .meetia-ai-deal-flow__panel.meetia-ai-deal-flow__panel--entry
             .meetia-ai-deal-flow__phone
               .meetia-ai-deal-flow__phone-notch aria-hidden="true"
               .meetia-ai-deal-flow__phone-screen
                 .meetia-ai-deal-flow__phone-logo
                   span.meetia-ai-deal-flow__phone-logo-mark aria-hidden="true"
-                  | Meetia
+                  | Recrivo
                 h3.meetia-ai-deal-flow__phone-title
-                  | AIが、商談を
+                  | AIが、一次面接を
                   br
-                  | もっと成果に。
-                p.meetia-ai-deal-flow__phone-lead Meetiaは、AIが商談を代行するワンストッププラットフォームです。
+                  | もっと公平に。
+                p.meetia-ai-deal-flow__phone-lead Recrivoは、AIが一次面接を代行するワンストッププラットフォームです。
                 .meetia-ai-deal-flow__phone-cta
-                  | 商談を始める
+                  | 面接を始める
                   i.fa-solid.fa-arrow-pointer.meetia-ai-deal-flow__phone-cursor aria-hidden="true"
                 ul.meetia-ai-deal-flow__phone-list
                   li
                     i.fa-solid.fa-file-lines aria-hidden="true"
-                    | 資料をそのまま提示
+                    | シナリオに沿って進行
                   li
                     i.fa-solid.fa-microphone-lines aria-hidden="true"
-                    | AIが音声でご案内
+                    | AIが音声で質問
                   li
                     i.fa-solid.fa-chart-line aria-hidden="true"
-                    | 自動で分析・記録
+                    | 自動で評価・記録
 
         span.meetia-ai-deal-flow__arrow aria-hidden="true"
           i.fa-solid.fa-chevron-right
 
-        / ステップ 2 (インライン化統合)
         .meetia-ai-deal-flow__step.meetia-ai-deal-flow__step--room
           .meetia-ai-deal-flow__step-label
             span.meetia-ai-deal-flow__step-num 2
-            p Meetiaの商談ルームで、AIとリアルタイムに商談
+            p AI面接ルームで、リアルタイムに対話
           .meetia-ai-deal-flow__panel.meetia-ai-deal-flow__panel--room
             .meetia-room-mock
               .meetia-room-header
-                span.meetia-room-status ● AI Agent Connected
+                span.meetia-room-status ● AI Interviewer Connected
               .meetia-room-body
                 .meetia-room-doc-share
-                  i.fa-solid.fa-file-pdf
-                  span 提案資料.pdf
+                  i.fa-solid.fa-list-check
+                  span 一次面接シナリオ
                 .meetia-room-wave
                   span
                   span
@@ -144,49 +136,48 @@
         span.meetia-ai-deal-flow__arrow aria-hidden="true"
           i.fa-solid.fa-chevron-right
 
-        / ステップ 3
         .meetia-ai-deal-flow__step
           .meetia-ai-deal-flow__step-label
             span.meetia-ai-deal-flow__step-num 3
             p
-              | AIが商談内容を自動で分析
+              | AIが面接内容を自動で評価
               br
               | 結果をダッシュボードで確認
           .meetia-ai-deal-flow__panel.meetia-ai-deal-flow__panel--dashboard
             .meetia-ai-deal-flow__dash-card
               .meetia-ai-deal-flow__dash-head
-                span 見込み度
-                strong A
-              p.meetia-ai-deal-flow__dash-grade 非常に高い関心を示しています
+                span 合否
+                strong 合格
+              p.meetia-ai-deal-flow__dash-grade 基準スコアを満たしています
               .meetia-ai-deal-flow__dash-bar aria-hidden="true"
                 span
-            h4.meetia-ai-deal-flow__dash-section 商談サマリー
+            h4.meetia-ai-deal-flow__dash-section 面接サマリー
             ul.meetia-ai-deal-flow__dash-list
               li
                 i.fa-solid.fa-check aria-hidden="true"
-                span 課題：営業プロセスの非効率・属人化
+                span 志望動機：明確で具体的
               li
                 i.fa-solid.fa-check aria-hidden="true"
-                span 関心：AIによる自動化・可視化
+                span 経験・スキル：要件を充足
               li
                 i.fa-solid.fa-check aria-hidden="true"
-                span 検討：料金体系・導入スケジュール
+                span コミュニケーション：良好
               li
                 i.fa-solid.fa-check aria-hidden="true"
-                span 次アクション：トライアル申込
+                span 次アクション：本面接へ案内
             .meetia-ai-deal-flow__dash-follow
               span.meetia-ai-deal-flow__dash-follow-label フォローアップ（自動実行）
               .meetia-ai-deal-flow__dash-follow-box
                 i.fa-solid.fa-envelope aria-hidden="true"
                 p
-                  strong フォローメール
-                  |  2025/05/28（水）15:00 予約済み
+                  strong 結果通知メール
+                  |  送信済み
             button.meetia-ai-deal-flow__dash-btn type="button" tabindex="-1" 詳細レポートを表示
 
       p.meetia-ai-deal-flow__foot
-        | 資料を見せながら、AIが音声でご案内。
+        | シナリオに沿って、AIが音声で面接。
         br
-        | リアルな商談体験で、成果につながる。
+        | 公平な評価体験で、選考の取りこぼしをゼロに。
 
   = render "tops/shared/cta_band"
   = render "tops/shared/footer"

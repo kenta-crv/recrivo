@@ -12,12 +12,22 @@
         = link_to dashboard_index_path, class: sidebar_link_class(:dashboard) do
           i.fa-solid.fa-gauge-high aria-hidden="true"
           span ダッシュボード
+        - if client_signed_in? && !admin_signed_in?
+          = link_to dashboard_notifications_path, class: sidebar_link_class(:notifications) do
+            i.fa-solid.fa-bell aria-hidden="true"
+            span 通知
+            - unread = current_client.notifications.unread.count
+            - if unread.positive?
+              span.db-v2-sidebar__hint = unread
 
       .db-v2-sidebar__section
         p.db-v2-sidebar__section-label 面接
         = link_to situations_path, class: sidebar_link_class(:situations) do
           i.fa-solid.fa-list-check aria-hidden="true"
           span シナリオ管理
+        = link_to dashboard_candidates_path, class: sidebar_link_class(:candidates) do
+          i.fa-solid.fa-users aria-hidden="true"
+          span 候補者管理
         = link_to dashboard_interview_results_path, class: sidebar_link_class(:interview_results) do
           i.fa-solid.fa-clipboard-check aria-hidden="true"
           span 面接結果
