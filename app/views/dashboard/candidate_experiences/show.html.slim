@@ -1,0 +1,62 @@
+.db-v2-header
+  .db-v2-header__left
+    h1.db-v2-header__title 候補者体験の充実度
+    p.db-v2-header__subtitle 有効シナリオごとの整備状況（任意項目含む）
+  .db-v2-header__right
+    = render "/dashboard/theme_switch"
+    = link_to dashboard_index_path, class: "db-v2-btn db-v2-btn--ghost" do
+      span ダッシュボードへ戻る
+
+.db-v2-summary-grid.db-v2-summary-grid--3
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--teal
+      i.fa-solid.fa-chart-pie aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 平均充実度
+      .db-v2-summary-card__value-row
+        - if @experience_score
+          span.db-v2-summary-card__value = @experience_score
+          span.db-v2-summary-card__unit ／100
+        - else
+          span.db-v2-summary-card__value —
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
+      i.fa-solid.fa-list-check aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 対象シナリオ
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value = @situations_count
+  .db-v2-summary-card
+    .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--rose
+      i.fa-solid.fa-triangle-exclamation aria-hidden="true"
+    .db-v2-summary-card__content
+      .db-v2-summary-card__label 不足項目
+      .db-v2-summary-card__value-row
+        span.db-v2-summary-card__value = @experience_gaps.size
+
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title 不足している項目
+  .db-v2-bottom-card__body
+    - if @experience_items.blank?
+      .db-v2-empty-state
+        p.db-v2-empty-state__text 有効なシナリオがありません
+        p.db-v2-muted シナリオを作成・有効化すると、充実度を確認できます。
+        - unless admin_signed_in?
+          = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
+            span シナリオを作成
+    - elsif @experience_gaps.blank?
+      .db-v2-empty-state
+        p.db-v2-empty-state__text 不足はありません
+        p.db-v2-muted 求人情報・FAQ・案内URLなどが揃っています。
+    - else
+      .db-v2-experience-issue-list
+        - @experience_gaps.each do |gap|
+          = link_to situation_experience_gap_path(gap), class: "db-v2-experience-issue" do
+            span.db-v2-experience-issue__mark aria-hidden="true" !
+            .db-v2-experience-issue__body
+              span.db-v2-experience-issue__situation = gap.situation_title
+              span.db-v2-experience-issue__label
+                = gap.label
+                - if gap.optional
+                  span.db-v2-experience-issue__optional  （任意）

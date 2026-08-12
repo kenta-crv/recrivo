@@ -30,13 +30,18 @@
   .db-v2-bottom-card__header
     h2.db-v2-bottom-card__title 招待リンク
   .db-v2-bottom-card__body
-    p.db-v2-muted 候補者にこのURLを共有してください（ログイン不要）。閲覧数: #{@situation.page_views_count}
-    .db-v2-form-group
-      input.db-v2-form-control#invite-url-field type="text" readonly=true value=interview_invite_url(@situation.invite_token)
-    .db-v2-form-actions
-      button.db-v2-btn.db-v2-btn--primary type="button" data-copy-text-from="#invite-url-field"
-        i.fa-solid.fa-copy aria-hidden="true"
-        span リンクをコピー
+    p.db-v2-muted.db-v2-invite__lead
+      | 候補者にこのURLを共有してください（ログイン不要）。閲覧数: #{@situation.page_views_count}
+    .db-v2-share-strip.db-v2-invite__strip
+      span.db-v2-share-strip__label
+        i.fa-solid.fa-link aria-hidden="true"
+        | URL
+      .db-v2-copy-row
+        input.db-v2-form-control#invite-url-field type="text" readonly=true value=interview_invite_url(@situation.invite_token) aria-label="招待URL"
+        button.db-v2-btn.db-v2-btn--primary type="button" data-copy-text-from="#invite-url-field"
+          i.fa-solid.fa-copy aria-hidden="true"
+          span リンクをコピー
+    .db-v2-form-actions.db-v2-invite__actions
       = link_to interview_invite_path(@situation.invite_token), class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener", data: { turbo: false } do
         i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
         span 面接ページを開く
@@ -53,41 +58,63 @@
   .db-v2-bottom-card__body
     p.db-v2-muted = situation_judgment_summary(@situation)
 
-.db-v2-bottom-card style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation)
+.db-v2-bottom-card#questions style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation)
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title AIで質問を提案
-    span.db-v2-deals-count 業種・職種から自動生成
+    h2.db-v2-bottom-card__title 質問を提案・追加
+    span.db-v2-deals-count 基礎質問 ＋ 業種・職種向け
   .db-v2-bottom-card__body
-    p.db-v2-muted style="margin-bottom:12px"
-      | 業種と募集職種をもとに、面接で使いやすい質問をいくつか提案します。必要なものだけチェックして追加してください。
-    .db-v2-suggest-grid
-      .db-v2-form-group
-        label.db-v2-form-label for="suggest-industry" 業種
-        input#suggest-industry.db-v2-form-control type="text" value=(@situation.industry.to_s) placeholder="例: IT・Web" data-ai-suggest-industry="1"
-      .db-v2-form-group
-        label.db-v2-form-label for="suggest-job-title" 募集職種
-        input#suggest-job-title.db-v2-form-control type="text" value=(@situation.job_title.to_s) placeholder="例: カスタマーサクセス" data-ai-suggest-job="1"
-      .db-v2-form-group
-        label.db-v2-form-label for="suggest-count" 提案数
-        select#suggest-count.db-v2-form-control data-ai-suggest-count="1"
-          option value="3" 3問
-          option value="5" selected="selected" 5問
-          option value="8" 8問
-    .db-v2-form-actions style="margin-top:4px"
-      button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-run="1"
-        i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
-        span 質問を提案する
-      span.db-v2-muted data-ai-suggest-status="1"
+    details.db-v2-details
+      summary.db-v2-details__summary = "基礎質問から選ぶ（#{basic_interview_questions.size}問）"
+      .db-v2-details__body
+        p.db-v2-muted style="margin-bottom:12px"
+          | どの職種でも使いやすい定番質問です。必要なものを選んで追加できます。
+        .db-v2-suggest-list data-basic-suggest-list="1"
+          - basic_interview_questions.each_with_index do |q, idx|
+            label.db-v2-suggest-item.db-v2-suggest-item--selectable
+              input.db-v2-suggest-item__input type="checkbox" data-question=( { question_text: q[:question_text], question_type: "open", required: q[:required], category: q[:category] }.to_json )
+              span.db-v2-suggest-item__check aria-hidden="true"
+              span.db-v2-suggest-item__body
+                span.db-v2-suggest-item__text = "#{idx + 1}. #{q[:question_text]}"
+                span.db-v2-suggest-item__meta = [q[:category], (q[:required] ? "必須" : "任意"), q[:reason]].compact.join(" ／ ")
+        .db-v2-form-actions style="margin-top:12px"
+          button.db-v2-btn.db-v2-btn--primary type="button" data-basic-suggest-apply="1" disabled=true
+            i.fa-solid.fa-plus aria-hidden="true"
+            span 選択した基礎質問を追加
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-basic-suggest-select-all="1" すべて選択
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-basic-suggest-clear="1" 選択解除
 
-    .db-v2-suggest-results data-ai-suggest-results="1" hidden=true
-      p.db-v2-muted style="margin:16px 0 8px" 提案結果（追加したい質問にチェック）
-      .db-v2-suggest-list data-ai-suggest-list="1"
-      .db-v2-form-actions style="margin-top:12px"
-        button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
-          i.fa-solid.fa-plus aria-hidden="true"
-          span 選択した質問を追加
-        button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" すべて選択
-        button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" 選択解除
+    .db-v2-form-section style="margin-top:1.25rem"
+      h3.db-v2-form-section__title 業種・職種向けにAIで提案
+      p.db-v2-muted style="margin-bottom:12px"
+        | 業種と募集職種をもとに、その仕事ならではの質問を提案します。
+      .db-v2-suggest-grid
+        .db-v2-form-group
+          label.db-v2-form-label for="suggest-industry" 業種
+          input#suggest-industry.db-v2-form-control type="text" value=(@situation.industry.to_s) placeholder="例: IT・Web" data-ai-suggest-industry="1"
+        .db-v2-form-group
+          label.db-v2-form-label for="suggest-job-title" 募集職種
+          input#suggest-job-title.db-v2-form-control type="text" value=(@situation.job_title.to_s) placeholder="例: カスタマーサクセス" data-ai-suggest-job="1"
+        .db-v2-form-group
+          label.db-v2-form-label for="suggest-count" 提案数
+          select#suggest-count.db-v2-form-control data-ai-suggest-count="1"
+            option value="3" 3問
+            option value="5" selected="selected" 5問
+            option value="8" 8問
+      .db-v2-form-actions style="margin-top:4px"
+        button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-run="1"
+          i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
+          span 質問を提案する
+        span.db-v2-muted data-ai-suggest-status="1"
+
+      .db-v2-suggest-results data-ai-suggest-results="1" hidden=true
+        p.db-v2-muted style="margin:16px 0 8px" 提案結果（追加したい質問を選んでください）
+        .db-v2-suggest-list data-ai-suggest-list="1"
+        .db-v2-form-actions style="margin-top:12px"
+          button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
+            i.fa-solid.fa-plus aria-hidden="true"
+            span 選択した質問を追加
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" すべて選択
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" 選択解除
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
@@ -137,7 +164,7 @@
   .db-v2-bottom-card__body
     - if @analytics.present?
       details.db-v2-details
-        summary.db-v2-details__summary このシナリオのファネル
+        summary.db-v2-details__summary このシナリオの進捗
         .db-v2-details__body
           p.db-v2-muted
             | 閲覧 #{@analytics[:page_views]} → 登録 #{@analytics[:registered_count]} → 完了 #{@analytics[:sessions_completed]}（完了率 #{@analytics[:completion_rate] || "—"}%）／合格 #{@analytics[:passed_count]}
@@ -156,21 +183,67 @@
               = select_tag "situation[candidate_info_fields][#{key}]", options_for_select([["必須", "required"], ["任意", "optional"], ["非表示", "hidden"]], fields[key]), class: "db-v2-form-control"
           button.db-v2-btn.db-v2-btn--primary type="submit" 登録項目を保存
 
-    details.db-v2-details
-      summary.db-v2-details__summary 募集資料・FAQ
+    details#job-info.db-v2-details open=situation_section_open?("job-info")
+      summary.db-v2-details__summary 求人基本情報
       .db-v2-details__body
-        - if @situation.recruitment_material.attached?
-          p
-            = link_to @situation.recruitment_material.filename.to_s, rails_blob_path(@situation.recruitment_material, disposition: "attachment"), class: "db-v2-deals-table__link"
-            = button_to "削除", remove_recruitment_material_situation_path(@situation), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form", style: "display:inline;margin-left:8px" }
-        = form_with url: upload_recruitment_material_situation_path(@situation), method: :post, local: true, html: { multipart: true } do
+        p.db-v2-muted style="margin-bottom:12px"
+          | 候補者が面接中に確認できる求人情報です（任意）。URL優先で読み取り、取得できない場合はテキスト貼り付けに切り替えてください。媒体専用のスクレイピングではありません。
+        = form_with url: import_job_info_situation_path(@situation), method: :post, local: true do
           .db-v2-form-group
-            label.db-v2-form-label 募集要項・会社紹介PDFなど
-            = file_field_tag :recruitment_material, class: "db-v2-form-control", accept: ".pdf,.doc,.docx,.png,.jpg"
-          button.db-v2-btn.db-v2-btn--ghost type="submit" 資料をアップロード
+            label.db-v2-form-label 求人ページURL
+            = url_field_tag :job_source_url, @situation.job_source_url, class: "db-v2-form-control", placeholder: "https://..."
+            p.db-v2-form-hint 公開ページのHTMLから本文を取得し、AIが基本情報とFAQ候補を下書きします。JS描画やログイン壁のページでは失敗することがあります。
+          .db-v2-form-group
+            label.db-v2-form-label 求人テキスト（貼り付け）
+            = text_area_tag :job_source_text, nil, class: "db-v2-form-control", rows: 5, placeholder: "URLが読めない場合は、求人票の本文をここに貼り付けてください"
+          .db-v2-form-check
+            = check_box_tag :apply_faqs, "1", true, id: "import_apply_faqs"
+            = label_tag "import_apply_faqs", "抽出したFAQ候補も追加する"
+          button.db-v2-btn.db-v2-btn--ghost type="submit" URL / テキストから取り込む
 
         hr style="margin:16px 0;border:none;border-top:1px solid var(--db-v2-border, #e2e8f0)"
-        h3.db-v2-form-section__title style="margin-bottom:8px" FAQ
+
+        = form_with url: update_job_info_situation_path(@situation), method: :patch, local: true do
+          .db-v2-form-group
+            label.db-v2-form-label 雇用形態
+            = text_field_tag "situation[employment_type]", @situation.employment_type, class: "db-v2-form-control", placeholder: "正社員・契約社員など"
+          .db-v2-form-group
+            label.db-v2-form-label 勤務地
+            = text_field_tag "situation[location]", @situation.location, class: "db-v2-form-control", placeholder: "東京都渋谷区 / リモート可 など"
+          .db-v2-form-group
+            label.db-v2-form-label 給与
+            = text_field_tag "situation[salary_text]", @situation.salary_text, class: "db-v2-form-control", placeholder: "年収○○万〜 / 月給○○万 など"
+          .db-v2-form-group
+            label.db-v2-form-label 仕事内容（候補者向け）
+            = text_area_tag "situation[job_summary]", @situation.job_summary, class: "db-v2-form-control", rows: 4, placeholder: "候補者に見せる業務概要"
+          .db-v2-form-group
+            label.db-v2-form-label 応募条件
+            = text_area_tag "situation[requirements_text]", @situation.requirements_text, class: "db-v2-form-control", rows: 3
+          .db-v2-form-group
+            label.db-v2-form-label 選考の流れ
+            = text_area_tag "situation[selection_flow]", @situation.selection_flow, class: "db-v2-form-control", rows: 3
+          .db-v2-form-group
+            label.db-v2-form-label 取り込み元URL
+            = url_field_tag "situation[job_source_url]", @situation.job_source_url, class: "db-v2-form-control", placeholder: "https://..."
+          button.db-v2-btn.db-v2-btn--primary type="submit" 求人基本情報を保存
+
+    details#materials-faqs.db-v2-details open=situation_section_open?("materials", "faqs")
+      summary.db-v2-details__summary 募集資料・FAQ
+      .db-v2-details__body
+        #materials
+          - if @situation.recruitment_material.attached?
+            p
+              = link_to @situation.recruitment_material.filename.to_s, rails_blob_path(@situation.recruitment_material, disposition: "attachment"), class: "db-v2-deals-table__link"
+              = button_to "削除", remove_recruitment_material_situation_path(@situation), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form", style: "display:inline;margin-left:8px" }
+          = form_with url: upload_recruitment_material_situation_path(@situation), method: :post, local: true, html: { multipart: true } do
+            .db-v2-form-group
+              label.db-v2-form-label 募集要項・会社紹介など（任意）
+              = file_field_tag :recruitment_material, class: "db-v2-form-control", accept: ".pdf,.doc,.docx,.png,.jpg"
+              p.db-v2-form-hint 未設定の場合、面接終了画面には資料欄を表示しません。
+            button.db-v2-btn.db-v2-btn--ghost type="submit" 資料をアップロード
+
+        hr style="margin:16px 0;border:none;border-top:1px solid var(--db-v2-border, #e2e8f0)"
+        h3#faqs.db-v2-form-section__title style="margin-bottom:8px" FAQ
         - @faqs.each do |faq|
           .db-v2-page-card style="margin-bottom:8px"
             strong = faq.question
@@ -188,22 +261,23 @@
             = f.text_field :category, class: "db-v2-form-control", placeholder: "勤務条件・福利厚生など"
           button.db-v2-btn.db-v2-btn--primary type="submit" FAQを追加
 
-    details.db-v2-details
+    details#follow-up.db-v2-details open=situation_section_open?("follow-up")
       summary.db-v2-details__summary フォロー自動化
       .db-v2-details__body
         - unless @situation.client&.follow_up_automation_enabled?
           p.db-v2-muted style="margin-bottom:12px" 現在のプランではフォロー自動化は無効です（Standard以上で有効）。設定は保存できます。
         = form_with url: update_follow_up_settings_situation_path(@situation), method: :patch, local: true do
           .db-v2-form-group
-            label.db-v2-form-label 次のステップURL（選考案内・日程調整など）
+            label.db-v2-form-label 案内先URL
             = url_field_tag "situation[follow_up_next_step_url]", @situation.follow_up_next_step_url, class: "db-v2-form-control", placeholder: "https://..."
+            p.db-v2-form-hint 日程調整ページや選考案内ページなど、候補者に案内したいURLを設定します。
           - @follow_up_templates.each do |template|
             .db-v2-page-card style="margin-bottom:12px"
               .db-v2-form-check
                 = check_box_tag "templates[#{template.id}][enabled]", "1", template.enabled?, id: "tpl_enabled_#{template.id}"
-                = label_tag "tpl_enabled_#{template.id}", "#{template.kind} / #{template.delay_days}日後"
+                = label_tag "tpl_enabled_#{template.id}", follow_up_template_label(template)
               .db-v2-form-group
-                = label_tag "templates_#{template.id}_delay", "遅延日数", class: "db-v2-form-label"
+                = label_tag "templates_#{template.id}_delay", "送信タイミング（遅延日数）", class: "db-v2-form-label"
                 = number_field_tag "templates[#{template.id}][delay_days]", template.delay_days, class: "db-v2-form-control", min: 0, max: 90
               .db-v2-form-group
                 = label_tag "templates_#{template.id}_subject", "件名", class: "db-v2-form-label"
@@ -213,6 +287,6 @@
                 = text_area_tag "templates[#{template.id}][body]", template.body, class: "db-v2-form-control", rows: 4
               .db-v2-form-check
                 = check_box_tag "templates[#{template.id}][include_next_step_link]", "1", template.include_next_step_link?, id: "tpl_link_#{template.id}"
-                = label_tag "tpl_link_#{template.id}", "次のステップリンクを含める"
+                = label_tag "tpl_link_#{template.id}", "メールに案内先URLへのリンクを入れる"
               p.db-v2-form-hint 変数: {{candidate_name}} / {{company}} / {{situation_title}} / {{invite_url}}
           button.db-v2-btn.db-v2-btn--primary type="submit" フォロー設定を保存

@@ -8,7 +8,7 @@ class ProblemsController < ApplicationController
   end
 
   def new
-    @problem = build_problem
+    redirect_to dashboard_index_path
   end
 
   def create

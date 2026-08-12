@@ -7,76 +7,101 @@ module SituationFollowUpTemplateDefaults
     {
       kind: "incomplete",
       delay_days: 1,
-      subject: "【リマインド】「{{situation_title}}」の面接がまだ完了していません",
+      subject: "【{{company}}】「{{situation_title}}」面接のご案内",
       body: <<~BODY.strip,
         {{candidate_name}} 様
 
-        {{company}} 採用担当です。
-        「{{situation_title}}」のAI面接がまだ完了していないようです。
+        お世話になっております。{{company}} 採用担当です。
 
-        下記リンクから続き（または再開）が可能です。お早めのご受験をお願いいたします。
+        「{{situation_title}}」の面接につきまして、まだご対応が完了していないようです。
+        ご都合の良いお時間に、下記よりお進みいただけますと幸いです。
 
         {{invite_url}}
+
+        ご不明点がございましたら、本メールへご返信ください。
+        どうぞよろしくお願いいたします。
+
+        {{company}}
+        採用担当
       BODY
       include_next_step_link: false
     },
     {
       kind: "incomplete",
       delay_days: 3,
-      subject: "【最終リマインド】「{{situation_title}}」面接受験のお願い",
+      subject: "【{{company}}】「{{situation_title}}」面接の再案内",
       body: <<~BODY.strip,
         {{candidate_name}} 様
 
-        {{company}} 採用担当です。
-        「{{situation_title}}」のAI面接について、改めてご案内いたします。
+        お世話になっております。{{company}} 採用担当です。
 
-        ご都合の良いタイミングで、下記よりご受験ください。
+        先日ご案内いたしました「{{situation_title}}」の面接について、改めてご連絡いたします。
+        ご多忙のところ恐れ入りますが、下記よりご対応いただけますと幸いです。
 
         {{invite_url}}
+
+        何卒よろしくお願いいたします。
+
+        {{company}}
+        採用担当
       BODY
       include_next_step_link: false
     },
     {
       kind: "completed",
       delay_days: 0,
-      subject: "「{{situation_title}}」ご受験ありがとうございました",
+      subject: "【{{company}}】「{{situation_title}}」面接へのお礼",
       body: <<~BODY.strip,
         {{candidate_name}} 様
 
-        {{company}} 採用担当です。
-        「{{situation_title}}」のAI面接にご受験いただき、誠にありがとうございました。
+        お世話になっております。{{company}} 採用担当です。
 
-        選考結果や次のステップについては、追ってご連絡いたします。
+        このたびは「{{situation_title}}」の面接にご参加いただき、誠にありがとうございました。
+        選考結果および今後の流れにつきましては、改めてご連絡いたします。
+
         ご不明点がございましたら、本メールへご返信ください。
+        どうぞよろしくお願いいたします。
+
+        {{company}}
+        採用担当
       BODY
       include_next_step_link: true
     },
     {
       kind: "completed",
       delay_days: 3,
-      subject: "「{{situation_title}}」選考の次のご案内",
+      subject: "【{{company}}】「{{situation_title}}」選考のご案内",
       body: <<~BODY.strip,
         {{candidate_name}} 様
 
-        {{company}} 採用担当です。
-        先日は「{{situation_title}}」の面接にご参加いただきありがとうございました。
+        お世話になっております。{{company}} 採用担当です。
 
-        選考の進捗に合わせて、次のステップをご案内できる場合がございます。
-        下記リンクから詳細をご確認ください。
+        先日は「{{situation_title}}」の面接にご参加いただきありがとうございました。
+        選考の進捗に応じて、次のステップをご案内できる場合がございます。
+
+        詳細は追ってご連絡いたします。ご不明点がございましたら、お気軽にご連絡ください。
+
+        {{company}}
+        採用担当
       BODY
       include_next_step_link: true
     },
     {
       kind: "completed",
       delay_days: 7,
-      subject: "選考状況のご確認 — {{situation_title}}",
+      subject: "【{{company}}】選考状況についてのご連絡",
       body: <<~BODY.strip,
         {{candidate_name}} 様
 
-        {{company}} 採用担当です。
-        「{{situation_title}}」の選考から少しお時間が経ちました。
+        お世話になっております。{{company}} 採用担当です。
 
-        状況のご確認や追加のご質問がございましたら、お気軽にご連絡ください。
+        「{{situation_title}}」の選考についてご連絡いたします。
+        状況のご確認やご質問がございましたら、本メールへご返信ください。
+
+        引き続き、どうぞよろしくお願いいたします。
+
+        {{company}}
+        採用担当
       BODY
       include_next_step_link: true
     }
@@ -89,10 +114,10 @@ module SituationFollowUpTemplateDefaults
       interview_follow_up_templates.create!(
         sequence: idx + 1,
         kind: attrs[:kind],
-        enabled: true,
         delay_days: attrs[:delay_days],
         subject: attrs[:subject],
         body: attrs[:body],
+        enabled: true,
         include_next_step_link: attrs[:include_next_step_link]
       )
     end

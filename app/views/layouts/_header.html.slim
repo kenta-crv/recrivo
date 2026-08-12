@@ -12,7 +12,7 @@ header.custom-navbar.py-2
           li
             = link_to "シナリオ管理", situations_path, class: "nav-link-custom"
           li
-            = link_to "面接結果", dashboard_interview_results_path, class: "nav-link-custom"
+            = link_to "面接管理", dashboard_candidates_path, class: "nav-link-custom"
           li
             = link_to "ダッシュボード", dashboard_index_path, class: "nav-link-custom"
         - elsif admin_signed_in?
@@ -38,7 +38,7 @@ header.custom-navbar.py-2
             li
               = link_to "シナリオ管理", situations_path, class: "nav-link-custom"
             li
-              = link_to "面接結果", dashboard_interview_results_path, class: "nav-link-custom"
+              = link_to "面接管理", dashboard_candidates_path, class: "nav-link-custom"
             li
               = link_to "ダッシュボード", dashboard_index_path, class: "nav-link-custom"
           - elsif admin_signed_in?

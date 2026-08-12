@@ -17,6 +17,16 @@ class Client < ApplicationRecord
 
   validates :preferred_locale, inclusion: { in: LOCALES }
 
+  def admin_select_label
+    company_name = company.to_s.strip
+    email_name = email.to_s.strip
+    if company_name.present? && email_name.present?
+      "#{company_name}（#{email_name}）"
+    else
+      company_name.presence || email_name.presence || "Client ##{id}"
+    end
+  end
+
   def self.from_omniauth(auth, preferred_locale: "ja")
     email = auth.info.email.to_s.downcase.presence
     raise ArgumentError, "OAuth email missing" if email.blank?
@@ -146,8 +156,8 @@ class Client < ApplicationRecord
 
     お世話になっております。{{company}} 採用担当です。
 
-    このたびは「{{situation_title}}」の採用選考にご応募いただき、誠にありがとうございました。
-    書類・面接を通じた選考の結果、ぜひ{{candidate_name}}様を採用させていただきたくご連絡申し上げます。
+    このたびは「{{situation_title}}」の選考にご応募いただき、誠にありがとうございました。
+    選考の結果、ぜひ{{candidate_name}}様に仲間になっていただきたく、ご連絡申し上げます。
 
     今後の手続きやご案内につきましては、改めて担当よりご連絡いたします。
     ご不明な点がございましたら、本メールへご返信ください。
@@ -165,8 +175,8 @@ class Client < ApplicationRecord
 
     お世話になっております。{{company}} 採用担当です。
 
-    このたびは「{{situation_title}}」の採用選考にご応募いただき、誠にありがとうございました。
-    慎重に選考を進めた結果、誠に残念ながら、今回は採用を見送らせていただくこととなりました。
+    このたびは「{{situation_title}}」の選考にご応募いただき、誠にありがとうございました。
+    慎重に検討した結果、誠に残念ながら、今回は採用を見送らせていただくこととなりました。
 
     {{candidate_name}}様の貴重なお時間とご検討に、心より感謝申し上げます。
     末筆ながら、今後ますますのご活躍を心よりお祈りしております。

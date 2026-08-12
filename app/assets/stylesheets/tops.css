@@ -480,12 +480,56 @@ html.meetia-lp-html,
   animation: lpFadeUp 0.7s ease 0.18s both;
 }
 
+.meetia-hero__cta-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 12px;
+  animation: lpFadeUp 0.7s ease 0.24s both;
+}
+
 .meetia-hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 28px;
-  animation: lpFadeUp 0.7s ease 0.24s both;
+  margin-bottom: 0;
+}
+
+.meetia-btn--stacked {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.25;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.meetia-btn__sub {
+  display: block;
+  font-size: 0.72em;
+  font-weight: 600;
+  opacity: 0.9;
+  letter-spacing: 0.02em;
+}
+
+.meetia-hero__trial-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 0 16px;
+  color: var(--lp-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+.meetia-hero__trial-note i {
+  color: inherit;
+  font-size: 0.85em;
+  flex-shrink: 0;
 }
 
 .meetia-hero__stats {
@@ -2346,6 +2390,15 @@ html.meetia-lp-html,
     width: 100%;
   }
   .meetia-hero--drafty { padding: 36px 16px 32px; }
+  .meetia-hero__cta-block {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .meetia-hero__trial-note {
+    margin-left: 0;
+    justify-content: center;
+  }
   .meetia-hero__stats {
     grid-template-columns: 1fr;
     gap: 12px;

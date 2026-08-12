@@ -57,10 +57,7 @@ var MEETIA_DASHBOARD_THEME_KEY = 'meetia-dashboard-theme';
 function getDashboardTheme() {
   try {
     var stored = localStorage.getItem(MEETIA_DASHBOARD_THEME_KEY);
-    if (stored === 'dark') {
-      localStorage.setItem(MEETIA_DASHBOARD_THEME_KEY, 'light');
-    }
-    return 'light';
+    return stored === 'dark' ? 'dark' : 'light';
   } catch (e) {
     return 'light';
   }
@@ -68,7 +65,7 @@ function getDashboardTheme() {
 
 function dashboardThemeBackground(theme) {
   var teal = document.documentElement.getAttribute('data-dashboard-palette') === 'teal';
-  if (theme === 'light') return '#ffffff';
+  if (theme === 'light') return teal ? '#f1f5f9' : '#ffffff';
   return teal ? '#0f172a' : '#0a0a12';
 }
 
@@ -178,13 +175,30 @@ var DEAL_SHOW_TAB_ALIASES = {
 };
 
 function scrollDashboardAnchor() {
-  if (!document.getElementById('dashboard-v2-container') || !window.location.hash) return;
-  var el = document.querySelector(window.location.hash);
-  if (el) {
-    window.setTimeout(function() {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 80);
+  if (!document.getElementById('dashboard-v2-container')) return;
+
+  var hash = (window.location.hash || '').replace(/^#/, '');
+  var section = '';
+  try {
+    section = new URLSearchParams(window.location.search).get('section') || '';
+  } catch (e) {
+    section = '';
   }
+  var id = hash || section;
+  if (!id) return;
+
+  var el = document.getElementById(id);
+  if (!el) return;
+
+  var details = el.tagName === 'DETAILS' ? el : el.closest('details');
+  if (details) {
+    details.open = true;
+    details.setAttribute('open', '');
+  }
+
+  window.setTimeout(function() {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
 }
 
 function resolveDealShowTabId(raw) {
@@ -280,14 +294,28 @@ function copyTextToClipboard(text) {
   });
 }
 
-function refreshSuggestApplyState(card) {
-  var list = card.querySelector('[data-ai-suggest-list]');
-  var applyBtn = card.querySelector('[data-ai-suggest-apply]');
+function refreshSuggestApplyState(card, listSelector, applySelector, emptyLabel, selectedLabel) {
+  var list = card.querySelector(listSelector || '[data-ai-suggest-list]');
+  var applyBtn = card.querySelector(applySelector || '[data-ai-suggest-apply]');
   if (!list || !applyBtn) return;
   var n = list.querySelectorAll('input[type="checkbox"]:checked').length;
   applyBtn.disabled = n === 0;
   var span = applyBtn.querySelector('span');
-  if (span) span.textContent = n > 0 ? ('選択した質問を追加（' + n + '）') : '選択した質問を追加';
+  if (span) {
+    var base = emptyLabel || '選択した質問を追加';
+    var withCount = selectedLabel || '選択した質問を追加';
+    span.textContent = n > 0 ? (withCount + '（' + n + '）') : base;
+  }
+}
+
+function refreshBasicSuggestApplyState(card) {
+  refreshSuggestApplyState(
+    card,
+    '[data-basic-suggest-list]',
+    '[data-basic-suggest-apply]',
+    '選択した基礎質問を追加',
+    '選択した基礎質問を追加'
+  );
 }
 
 function renderSuggestedQuestions(card, questions) {
@@ -298,10 +326,11 @@ function renderSuggestedQuestions(card, questions) {
   list.innerHTML = '';
   (questions || []).forEach(function(q, idx) {
     var item = document.createElement('label');
-    item.className = 'db-v2-suggest-item';
+    item.className = 'db-v2-suggest-item db-v2-suggest-item--selectable';
 
     var cb = document.createElement('input');
     cb.type = 'checkbox';
+    cb.className = 'db-v2-suggest-item__input';
     cb.checked = true;
     cb.dataset.question = JSON.stringify({
       question_text: q.question_text,
@@ -309,6 +338,10 @@ function renderSuggestedQuestions(card, questions) {
       required: !!q.required,
       category: q.category || '一般'
     });
+
+    var check = document.createElement('span');
+    check.className = 'db-v2-suggest-item__check';
+    check.setAttribute('aria-hidden', 'true');
 
     var body = document.createElement('span');
     body.className = 'db-v2-suggest-item__body';
@@ -328,6 +361,7 @@ function renderSuggestedQuestions(card, questions) {
     body.appendChild(text);
     body.appendChild(meta);
     item.appendChild(cb);
+    item.appendChild(check);
     item.appendChild(body);
     list.appendChild(item);
   });
@@ -341,12 +375,61 @@ function setSuggestStatus(card, text) {
   if (statusEl) statusEl.textContent = text || '';
 }
 
-function selectedSuggestedQuestions(card) {
-  var list = card.querySelector('[data-ai-suggest-list]');
+function selectedQuestionsFromList(list) {
   if (!list) return [];
   return Array.prototype.slice.call(list.querySelectorAll('input[type="checkbox"]:checked')).map(function(cb) {
     return JSON.parse(cb.dataset.question);
   });
+}
+
+function selectedSuggestedQuestions(card) {
+  return selectedQuestionsFromList(card.querySelector('[data-ai-suggest-list]'));
+}
+
+function applyQuestionsFromList(card, listSelector, applyBtn, statusText) {
+  var applyUrl = card.getAttribute('data-apply-url');
+  var list = card.querySelector(listSelector);
+  var questions = selectedQuestionsFromList(list);
+  if (!applyUrl || !questions.length) return;
+
+  if (applyBtn) applyBtn.disabled = true;
+  if (statusText) setSuggestStatus(card, statusText);
+
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = applyUrl;
+
+  var token = document.createElement('input');
+  token.type = 'hidden';
+  token.name = 'authenticity_token';
+  token.value = csrfToken();
+  form.appendChild(token);
+
+  var field = document.createElement('input');
+  field.type = 'hidden';
+  field.name = 'questions';
+  field.value = JSON.stringify(questions);
+  form.appendChild(field);
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+function applySuggestedQuestions(card) {
+  applyQuestionsFromList(
+    card,
+    '[data-ai-suggest-list]',
+    card.querySelector('[data-ai-suggest-apply]'),
+    '質問を追加中…'
+  );
+}
+
+function applyBasicSuggestedQuestions(card) {
+  applyQuestionsFromList(
+    card,
+    '[data-basic-suggest-list]',
+    card.querySelector('[data-basic-suggest-apply]')
+  );
 }
 
 function runAiSuggest(card) {
@@ -374,10 +457,12 @@ function runAiSuggest(card) {
 
   fetch(suggestUrl, {
     method: 'POST',
+    credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-CSRF-Token': csrfToken()
+      'X-CSRF-Token': csrfToken(),
+      'X-Requested-With': 'XMLHttpRequest'
     },
     body: JSON.stringify({
       industry: industry,
@@ -386,8 +471,21 @@ function runAiSuggest(card) {
       persist: '1'
     })
   }).then(function(res) {
-    return res.json().then(function(data) {
-      return { ok: res.ok, data: data };
+    return res.text().then(function(text) {
+      var data = null;
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (err) {
+          data = null;
+        }
+      }
+      if (!data) {
+        var err = new Error('non_json');
+        err.status = res.status;
+        throw err;
+      }
+      return { ok: res.ok, status: res.status, data: data };
     });
   }).then(function(result) {
     if (!result.ok || !result.data.success) {
@@ -397,40 +495,21 @@ function runAiSuggest(card) {
     var questions = result.data.questions || [];
     setSuggestStatus(card, questions.length + '問を提案しました。必要なものだけ選んで追加できます。');
     renderSuggestedQuestions(card, questions);
-  }).catch(function() {
-    setSuggestStatus(card, '通信エラーが発生しました。');
+  }).catch(function(err) {
+    if (err && err.message === 'non_json') {
+      if (err.status === 401 || err.status === 403) {
+        setSuggestStatus(card, 'ログインの有効期限が切れました。再ログインしてください。');
+      } else if (err.status >= 500) {
+        setSuggestStatus(card, 'サーバーエラーが発生しました。しばらくして再試行してください。');
+      } else {
+        setSuggestStatus(card, '応答の解析に失敗しました。ページを再読み込みして再試行してください。');
+      }
+      return;
+    }
+    setSuggestStatus(card, '通信エラーが発生しました。ネットワークを確認して再試行してください。');
   }).finally(function() {
     if (btn) btn.disabled = false;
   });
-}
-
-function applySuggestedQuestions(card) {
-  var applyUrl = card.getAttribute('data-apply-url');
-  var questions = selectedSuggestedQuestions(card);
-  var applyBtn = card.querySelector('[data-ai-suggest-apply]');
-  if (!applyUrl || !questions.length) return;
-
-  if (applyBtn) applyBtn.disabled = true;
-  setSuggestStatus(card, '質問を追加中…');
-
-  var form = document.createElement('form');
-  form.method = 'POST';
-  form.action = applyUrl;
-
-  var token = document.createElement('input');
-  token.type = 'hidden';
-  token.name = 'authenticity_token';
-  token.value = csrfToken();
-  form.appendChild(token);
-
-  var field = document.createElement('input');
-  field.type = 'hidden';
-  field.name = 'questions';
-  field.value = JSON.stringify(questions);
-  form.appendChild(field);
-
-  document.body.appendChild(form);
-  form.submit();
 }
 
 // ダッシュボード操作はすべて document 委譲（インライン Slim JS 禁止）
@@ -475,12 +554,26 @@ document.addEventListener('click', function(e) {
       applySuggestedQuestions(suggestCard);
       return;
     }
+    if (t.closest('[data-basic-suggest-apply]')) {
+      e.preventDefault();
+      applyBasicSuggestedQuestions(suggestCard);
+      return;
+    }
     if (t.closest('[data-ai-suggest-select-all]')) {
       e.preventDefault();
       var listAll = suggestCard.querySelector('[data-ai-suggest-list]');
       if (listAll) {
         listAll.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = true; });
         refreshSuggestApplyState(suggestCard);
+      }
+      return;
+    }
+    if (t.closest('[data-basic-suggest-select-all]')) {
+      e.preventDefault();
+      var basicListAll = suggestCard.querySelector('[data-basic-suggest-list]');
+      if (basicListAll) {
+        basicListAll.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = true; });
+        refreshBasicSuggestApplyState(suggestCard);
       }
       return;
     }
@@ -493,6 +586,15 @@ document.addEventListener('click', function(e) {
       }
       return;
     }
+    if (t.closest('[data-basic-suggest-clear]')) {
+      e.preventDefault();
+      var basicListClear = suggestCard.querySelector('[data-basic-suggest-list]');
+      if (basicListClear) {
+        basicListClear.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+        refreshBasicSuggestApplyState(suggestCard);
+      }
+      return;
+    }
   }
 });
 
@@ -501,7 +603,12 @@ document.addEventListener('change', function(e) {
   if (!t) return;
   var card = t.closest('[data-ai-suggest-card]');
   if (!card) return;
-  if (e.target.matches('input[type="checkbox"]')) {
+  if (!e.target.matches('input[type="checkbox"]')) return;
+  if (e.target.closest('[data-basic-suggest-list]')) {
+    refreshBasicSuggestApplyState(card);
+    return;
+  }
+  if (e.target.closest('[data-ai-suggest-list]')) {
     refreshSuggestApplyState(card);
   }
 });
@@ -698,6 +805,12 @@ function bootDashboardUi() {
 }
 
 onReady(bootDashboardUi);
+window.addEventListener('pageshow', function() {
+  scrollDashboardAnchor();
+});
+window.addEventListener('hashchange', function() {
+  scrollDashboardAnchor();
+});
 
 document.addEventListener('turbo:before-cache', function() {
   var container = document.getElementById('dashboard-v2-container');

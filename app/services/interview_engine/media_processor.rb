@@ -82,7 +82,7 @@ module InterviewEngine
       end
     end
 
-    # 音声フォーマットを WAV 16kHz mono に変換（STT最適化）
+    # 音声フォーマットを WAV 16kHz mono に変換（STT最適化 + 音量正規化）
     def self.normalize_audio(audio_path)
       ensure_ffmpeg!
       raise MediaError, "File not found: #{audio_path}" unless File.exist?(audio_path)
@@ -94,6 +94,8 @@ module InterviewEngine
         '-acodec', 'pcm_s16le',
         '-ar', '16000',
         '-ac', '1',
+        # 低域ノイズ除去 + 自動ゲイン。無音寄りマイク入力でも Whisper に届くレベルへ
+        '-af', 'highpass=f=80,dynaudnorm=f=75:g=15:p=0.9',
         output_path
       ]
 
@@ -104,6 +106,33 @@ module InterviewEngine
       end
 
       output_path
+    end
+
+    # 平均音量が極端に低い（ほぼ無音）場合は STT 前に弾く
+    # Whisper は無音で「ご視聴ありがとうございました」等をハルシネーションしやすい
+    def self.validate_audio_level!(audio_path)
+      ensure_ffmpeg!
+      raise MediaError, "File not found: #{audio_path}" unless File.exist?(audio_path)
+
+      cmd = [
+        'ffmpeg', '-i', audio_path,
+        '-af', 'volumedetect',
+        '-f', 'null',
+        '-'
+      ]
+      _stdout, stderr, status = execute_with_timeout(cmd)
+      unless status&.success?
+        Rails.logger.warn("volumedetect failed: #{stderr.to_s.truncate(200)}")
+        return
+      end
+
+      mean = stderr.to_s[/mean_volume:\s*(-?[\d.]+)\s*dB/, 1]&.to_f
+      return if mean.nil?
+
+      threshold = config.stt_min_mean_volume_db
+      if mean < threshold
+        raise MediaError, "Audio too quiet (mean #{mean.round(1)} dB, min #{threshold} dB)"
+      end
     end
 
     def self.validate_input!(path)

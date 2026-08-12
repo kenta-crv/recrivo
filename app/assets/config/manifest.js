@@ -3,6 +3,7 @@
 //= link application.css
 //= link application.js
 //= link interview.js
+//= link dashboard.js
 //= link db_v2_pricing_slider.js
 //= link admin_common.css
 //= link auth.css

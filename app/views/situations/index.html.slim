@@ -13,10 +13,9 @@
           | プラン: #{plan[:name]} ／ シナリオ #{current_client.active_services_count} 件（無制限）
   .db-v2-header__right
     = render "/dashboard/theme_switch"
-    - unless acting_as_admin?
-      = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
-        i.fa-solid.fa-plus aria-hidden="true"
-        span シナリオを新規作成
+    = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
+      i.fa-solid.fa-plus aria-hidden="true"
+      span シナリオを新規作成
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
@@ -29,10 +28,9 @@
         .db-v2-empty-state__icon
           i.fa-solid.fa-list-check aria-hidden="true"
         p.db-v2-empty-state__text まだ面接シナリオがありません
-        - unless acting_as_admin?
-          = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
-            i.fa-solid.fa-plus aria-hidden="true"
-            span 最初のシナリオを作成
+        = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
+          i.fa-solid.fa-plus aria-hidden="true"
+          span 最初のシナリオを作成
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table.db-v2-deals-table

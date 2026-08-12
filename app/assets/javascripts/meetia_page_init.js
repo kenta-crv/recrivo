@@ -288,8 +288,22 @@
         categoryBtns.forEach(function(btn) {
           btn.classList.toggle('is-active', btn.getAttribute('data-faq-category') === activeCategory);
         });
+        items.forEach(function(item) {
+          if (item.open && item.getAttribute('data-faq-item') !== activeCategory) {
+            item.open = false;
+          }
+        });
         applyFilters();
       }
+
+      items.forEach(function(item) {
+        item.addEventListener('toggle', function() {
+          if (!item.open) return;
+          items.forEach(function(other) {
+            if (other !== item) other.open = false;
+          });
+        });
+      });
 
       categoryBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {

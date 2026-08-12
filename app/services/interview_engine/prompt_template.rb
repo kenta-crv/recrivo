@@ -42,6 +42,14 @@ module InterviewEngine
         { system: system_message, user: user_message }
       end
 
+      # 求人テキストからの基本情報・FAQ抽出
+      def job_posting_extraction(source_text:, language: 'ja')
+        lang = normalize_language(language)
+        system_message = build_system_message(:job_posting_extraction, lang)
+        user_message = build_job_posting_extraction_message(source_text: source_text, language: lang)
+        { system: system_message, user: user_message }
+      end
+
       # 期待するJSONスキーマの定義
       def expected_schema(type)
         case type
@@ -63,6 +71,12 @@ module InterviewEngine
           {
             required_keys: %w[questions],
             array_keys: %w[questions]
+          }
+        when :job_posting_extraction
+          {
+            required_keys: %w[job_summary],
+            string_keys: %w[job_title industry employment_type location salary_text job_summary requirements_text selection_flow],
+            array_keys: %w[faqs]
           }
         else
           raise ArgumentError, "Unknown schema type: #{type}"
@@ -108,13 +122,32 @@ module InterviewEngine
         when :question_suggestions
           if language == 'ja'
             <<~MSG.strip
-              あなたは採用面接の設計専門家です。業種と募集職種に合う面接質問を提案してください。
+              あなたは採用企業の一次面接を設計する専門家です。
+              提案する質問は、企業が求職者（応募者）に聞く面接質問のみです。
+              すでにその職に就いている人への業務確認・人事評価・同僚ヒアリングの質問は禁止です。
               絶対にJSON形式のみで回答してください。会話や説明は一切禁止です。
             MSG
           else
             <<~MSG.strip
-              You are an expert in designing hiring interviews. Suggest interview questions for the given industry and role.
+              You are an expert designing first-round hiring interviews for employers.
+              Suggest ONLY questions that a company asks job applicants (candidates).
+              Do NOT suggest questions that assume the person already holds the role (performance review or on-the-job checks).
               You MUST respond with valid JSON only. No conversation outside JSON.
+            MSG
+          end
+        when :job_posting_extraction
+          if language == 'ja'
+            <<~MSG.strip
+              あなたは採用向けの求人情報整理アシスタントです。
+              与えられた求人ページ本文から、候補者向けの基本情報とFAQ候補を抽出してください。
+              書いていない内容は推測で埋めず、空文字にしてください。
+              絶対にJSON形式のみで回答してください。会話や説明は一切禁止です。
+            MSG
+          else
+            <<~MSG.strip
+              You extract structured job posting facts and FAQ candidates for job applicants.
+              Do not invent facts that are not in the source text; use empty strings instead.
+              Respond with valid JSON only.
             MSG
           end
         end
@@ -250,7 +283,8 @@ module InterviewEngine
         title = situation_title.to_s.presence || job_title
         if language == 'ja'
           <<~PROMPT.strip
-            次の採用面接向けに、実践的な質問を#{count}問提案してください。
+            次の採用面接向けに、求職者（応募者）へ聞く質問を#{count}問提案してください。
+            AI面接官が候補者に口頭で尋ねる一文として自然な日本語にしてください。
 
             【業種】
             #{sanitize(industry)}
@@ -262,7 +296,11 @@ module InterviewEngine
             #{sanitize(title)}
 
             ルール:
-            - 行動面接（具体経験）と、職種固有の実務確認を混ぜる
+            - 話し手は企業の面接官、聞き手は求職者（まだ採用されていない応募者）
+            - 「現在その業務をどう行っているか」「業務でどんな工夫をしているか」など、在職・現職前提の質問は禁止
+            - 「〜していますか？」のような現在進行の業務確認ではなく、経験・考え方・意欲・適性を聞く
+            - 未経験でも答えられる質問と、関連経験がある人向けの行動面接（具体経験）を混ぜる
+            - 職種固有の実務理解は「この仕事で大切だと思うこと」「もし任されたらどう進めるか」など応募者視点で聞く
             - 抽象的すぎる質問や差別につながりうる質問は避ける
             - question_type は原則 "open"
             - 最初の2問は required: true、残りは false を基本とする
@@ -273,7 +311,8 @@ module InterviewEngine
           PROMPT
         else
           <<~PROMPT.strip
-            Suggest #{count} practical interview questions for this hiring scenario.
+            Suggest #{count} interview questions that a company asks job applicants for this hiring scenario.
+            Write them as natural spoken questions an AI interviewer would ask a candidate.
 
             INDUSTRY:
             #{sanitize(industry)}
@@ -285,7 +324,11 @@ module InterviewEngine
             #{sanitize(title)}
 
             Rules:
-            - Mix behavioral questions and role-specific practical checks
+            - Speaker is the employer interviewer; listener is a job applicant (not yet hired)
+            - Do NOT assume the candidate already works in this role (no on-the-job / performance-review questions)
+            - Avoid present-tense "how do you currently do this job?" framing; ask about experience, judgment, motivation, and fit
+            - Mix questions answerable by less experienced applicants with behavioral questions for related experience
+            - For role-specific checks, use applicant framing such as "what would matter in this job" or "how would you approach..."
             - Avoid vague or discriminatory questions
             - question_type should be "open"
             - First two questions required:true, others false
@@ -297,15 +340,58 @@ module InterviewEngine
         end
       end
 
+      def build_job_posting_extraction_message(source_text:, language:)
+        body = sanitize_long(source_text, limit: 15_000)
+        if language == 'ja'
+          <<~PROMPT.strip
+            次の求人ページ／求人票の本文から、候補者が確認すべき基本情報とFAQ候補を抽出してください。
+
+            【本文】
+            #{body}
+
+            ルール:
+            - 本文にない情報は空文字にする（推測しない）
+            - job_summary は候補者向けに2〜5文で要約
+            - employment_type は正社員・契約社員・業務委託・インターン等があればそのまま
+            - location / salary_text は原文に近い短い文言
+            - requirements_text は必須・歓迎条件の要点
+            - selection_flow は選考ステップがあれば要約
+            - faqs は候補者が迷いやすい点を最大5件（勤務地、リモート、給与、休日、選考など）。根拠のないFAQは作らない
+
+            次のJSONのみを返すこと:
+            {"job_title":"","industry":"","employment_type":"","location":"","salary_text":"","job_summary":"","requirements_text":"","selection_flow":"","faqs":[{"question":"...","answer":"...","category":"..."}]}
+          PROMPT
+        else
+          <<~PROMPT.strip
+            Extract structured job facts and up to 5 FAQ candidates from this posting text.
+
+            SOURCE:
+            #{body}
+
+            Rules:
+            - Use empty strings when the source does not contain the fact
+            - job_summary should be 2-5 sentences for applicants
+            - Do not invent FAQs without support in the source
+
+            Return ONLY this JSON:
+            {"job_title":"","industry":"","employment_type":"","location":"","salary_text":"","job_summary":"","requirements_text":"","selection_flow":"","faqs":[{"question":"...","answer":"...","category":"..."}]}
+          PROMPT
+        end
+      end
+
       # ユーザー入力のサニタイズ（プロンプトインジェクション対策）
       # delimiter方式でユーザー入力を囲み、プロンプトとの境界を明確にする
       def sanitize(text)
+        sanitize_long(text, limit: 2000)
+      end
+
+      def sanitize_long(text, limit: 2000)
         return '' if text.nil?
 
         sanitized = text.to_s
                         .gsub(/```/, '\'\'\'')
                         .strip
-                        .truncate(2000)
+                        .truncate(limit)
 
         "---BEGIN USER INPUT---\n#{sanitized}\n---END USER INPUT---"
       end

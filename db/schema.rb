@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_08_08_000001) do
+ActiveRecord::Schema.define(version: 2026_08_11_000001) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -312,12 +312,19 @@ ActiveRecord::Schema.define(version: 2026_08_08_000001) do
     t.string "candidate_result_visibility", default: "hidden", null: false
     t.boolean "allow_text_answer", default: true, null: false
     t.boolean "allow_voice_answer", default: true, null: false
-    t.boolean "record_camera", default: false, null: false
-    t.json "candidate_info_fields", default: {}
+    t.boolean "record_camera", default: true, null: false
+    t.json "candidate_info_fields", default: "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"{}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\"\\\"\""
     t.boolean "skip_candidate_registration", default: false, null: false
     t.string "follow_up_next_step_url"
     t.integer "page_views_count", default: 0, null: false
     t.boolean "enable_satisfaction_survey", default: true, null: false
+    t.text "job_summary"
+    t.string "employment_type"
+    t.string "location"
+    t.string "salary_text"
+    t.text "requirements_text"
+    t.text "selection_flow"
+    t.string "job_source_url"
     t.index ["client_id", "archived"], name: "index_situations_on_client_id_and_archived"
     t.index ["client_id"], name: "index_situations_on_client_id"
     t.index ["invite_token"], name: "index_situations_on_invite_token", unique: true

@@ -1,14 +1,14 @@
 class Dashboard::DashboardController < Dashboard::BaseController
   def index
     if admin_signed_in?
-      situations_scope_rel = Situation.includes(:client, :questions)
+      situations_scope_rel = Situation.all
       results_scope = InterviewResult.includes(interview: [:user, :situation])
                                     .joins(:interview).where(interviews: { preview: false })
       interviews_scope = Interview.real
       @display_name = "管理者"
       situation_ids = situations_scope_rel.pluck(:id)
     else
-      situations_scope_rel = current_client.situations.includes(:questions)
+      situations_scope_rel = current_client.situations
       results_scope = InterviewResult
         .joins(interview: :situation)
         .where(situations: { client_id: current_client.id }, interviews: { preview: false })
@@ -22,9 +22,7 @@ class Dashboard::DashboardController < Dashboard::BaseController
     @situations_count = situations_scope_rel.count
     @active_situations_count = situations_scope_rel.active.count
     @results_count = results_scope.count
-    @recent_results = results_scope.order(created_at: :desc).limit(8)
-    @recent_situations = situations_scope_rel.order(updated_at: :desc).limit(5)
-    @recent_candidates = interviews_scope.includes(:user, :situation).order(updated_at: :desc).limit(8)
+    @recent_candidates = interviews_scope.includes(:user, :situation, :interview_result).order(updated_at: :desc).limit(5)
 
     @analytics = InterviewEngine::AnalyticsSummaryService.call(situation_ids: situation_ids)
     @average_score = @analytics[:average_score]
@@ -35,9 +33,15 @@ class Dashboard::DashboardController < Dashboard::BaseController
                     end
     @abandoned_count = @analytics[:sessions_abandoned]
     @decided_interview_count = @analytics[:sessions_completed]
+    @interviews_this_month = interviews_scope.where(created_at: Time.current.all_month).count
+
+    experience = CandidateExperienceScore.for_situations(
+      situations_scope_rel.active.with_attached_recruitment_material.includes(:situation_faqs, :questions)
+    )
+    @experience_score = experience[:average_score]
+    @experience_has_gaps = experience[:items].any? { |item| item.gaps.any? }
 
     unless admin_signed_in?
-      @interviews_this_month = current_client.interviews_this_month_count
       @monthly_limit = current_client.monthly_interview_limit
     end
 

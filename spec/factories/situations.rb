@@ -18,7 +18,7 @@ FactoryBot.define do
     reject_notify_method { 'in_app' }
     allow_text_answer { true }
     allow_voice_answer { true }
-    record_camera { false }
+    record_camera { true }
 
     trait :with_questions do
       after(:create) do |situation|

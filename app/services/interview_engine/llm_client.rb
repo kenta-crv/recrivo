@@ -84,11 +84,40 @@ module InterviewEngine
         situation_title: situation_title
       )
 
-      result = call_with_retry(prompt, :question_suggestions)
+      # 提案UIは同期fetchのため、長時間リトライせず1回でフォールバックする
+      raw_response = call_llm(prompt, max_tokens: [config.llm_max_tokens, 1600].max)
+      result = ResponseValidator.extract_json(raw_response)
+      raise ResponseValidator::InvalidResponseError, 'invalid JSON' if result.blank?
+
       normalize_question_suggestions!(result, count)
     rescue ResponseValidator::InvalidResponseError, LLMError, StandardError => e
       Rails.logger.error("LLM Question Suggestion Error: #{e.class}: #{e.message}")
       fallback_question_suggestions(industry, job_title, language, count)
+    end
+
+    # API障害時などに使えるテンプレート提案（公開）
+    def fallback_suggestions(industry, job_title, language = 'ja', count = 5)
+      fallback_question_suggestions(industry, job_title, language, count)
+    end
+
+    # 求人テキストから基本情報・FAQ候補を抽出
+    def extract_job_posting(source_text, language: 'ja')
+      source_text = source_text.to_s.strip
+      raise LLMValidationError, 'source text blank' if source_text.blank?
+
+      if llm_unavailable?
+        return heuristic_job_posting(source_text)
+      end
+
+      prompt = PromptTemplate.job_posting_extraction(source_text: source_text, language: language)
+      raw_response = call_llm(prompt, max_tokens: [config.llm_max_tokens, 2000].max)
+      result = ResponseValidator.extract_json(raw_response)
+      raise ResponseValidator::InvalidResponseError, 'invalid JSON' if result.blank?
+
+      normalize_job_posting!(result)
+    rescue ResponseValidator::InvalidResponseError, LLMError, StandardError => e
+      Rails.logger.error("LLM Job Posting Extraction Error: #{e.class}: #{e.message}")
+      heuristic_job_posting(source_text)
     end
 
     # 汎用チャットメソッド（要約生成などで使用）
@@ -137,31 +166,76 @@ module InterviewEngine
       { 'questions' => normalized }.with_indifferent_access
     end
 
+    def normalize_job_posting!(result)
+      h = result.is_a?(Hash) ? result.with_indifferent_access : {}.with_indifferent_access
+      faqs = Array(h[:faqs]).filter_map do |item|
+        next unless item.is_a?(Hash)
+
+        item = item.with_indifferent_access
+        q = item[:question].to_s.strip
+        a = item[:answer].to_s.strip
+        next if q.blank? || a.blank?
+
+        {
+          'question' => q.truncate(200),
+          'answer' => a.truncate(1000),
+          'category' => item[:category].to_s.strip.presence || '求人情報'
+        }
+      end.first(5)
+
+      {
+        'job_title' => h[:job_title].to_s.strip.truncate(100),
+        'industry' => h[:industry].to_s.strip.truncate(100),
+        'employment_type' => h[:employment_type].to_s.strip.truncate(80),
+        'location' => h[:location].to_s.strip.truncate(120),
+        'salary_text' => h[:salary_text].to_s.strip.truncate(200),
+        'job_summary' => h[:job_summary].to_s.strip.truncate(2000),
+        'requirements_text' => h[:requirements_text].to_s.strip.truncate(2000),
+        'selection_flow' => h[:selection_flow].to_s.strip.truncate(1000),
+        'faqs' => faqs
+      }.with_indifferent_access
+    end
+
+    def heuristic_job_posting(source_text)
+      text = source_text.to_s.strip
+      {
+        'job_title' => '',
+        'industry' => '',
+        'employment_type' => '',
+        'location' => '',
+        'salary_text' => '',
+        'job_summary' => text.truncate(800),
+        'requirements_text' => '',
+        'selection_flow' => '',
+        'faqs' => []
+      }.with_indifferent_access
+    end
+
     def fallback_question_suggestions(industry, job_title, language, count)
       role = job_title.presence || (language.to_s == 'ja' ? 'この職種' : 'this role')
       industry_label = industry.presence || (language.to_s == 'ja' ? 'この業種' : 'this industry')
 
       templates = if language.to_s == 'ja'
                     [
-                      { text: "これまでのご経験の中で、#{role}として最も成果を出せた事例を教えてください。", category: '経歴', required: true, reason: '実績の具体性を確認します。' },
-                      { text: "#{industry_label}の現場で、困難な状況をどう乗り越えたか具体的に教えてください。", category: '課題解決', required: true, reason: '業種文脈での対応力を見ます。' },
-                      { text: "#{role}の業務で大切にしている優先順位の付け方を教えてください。", category: '働き方', required: false, reason: '判断基準の傾向を把握します。' },
-                      { text: 'チームで意見が割れたとき、どのように合意形成しましたか？', category: 'チームワーク', required: false, reason: '協調性とコミュニケーションを確認します。' },
-                      { text: "今後#{role}として伸ばしたいスキルと、その理由を教えてください。", category: '意欲', required: false, reason: '成長意欲と自己理解を見ます。' },
-                      { text: "#{industry_label}で働くうえで、お客様や関係者への配慮で意識していることを教えてください。", category: '顧客志向', required: false, reason: '対人姿勢を確認します。' },
-                      { text: '締め切りが厳しい案件で、品質を保つために工夫したことを教えてください。', category: '実務', required: false, reason: '実務遂行力を確認します。' },
-                      { text: '入社後90日で取り組みたいことを、優先度順に教えてください。', category: '意欲', required: false, reason: '短期目標の具体性を見ます。' }
+                      { text: "これまでのご経験の中で、#{role}に活かせそうな成果や取り組みがあれば教えてください。", category: '経歴', required: true, reason: '関連経験と実績の具体性を確認します。' },
+                      { text: "#{industry_label}の仕事に興味を持った理由を、ご自身の経験とあわせて教えてください。", category: '意欲', required: true, reason: '志望動機と業種理解を確認します。' },
+                      { text: "#{role}として働くうえで大切にしたい優先順位があれば、理由とあわせて教えてください。", category: '働き方', required: false, reason: '判断基準と適性を把握します。' },
+                      { text: 'チームで意見が割れたとき、どのように合意形成した経験がありますか？', category: 'チームワーク', required: false, reason: '協調性とコミュニケーションを確認します。' },
+                      { text: "今後#{role}として身につけたいスキルと、その理由を教えてください。", category: '意欲', required: false, reason: '成長意欲と自己理解を見ます。' },
+                      { text: "#{industry_label}で働くうえで、お客様や関係者への対応で意識したいことを教えてください。", category: '顧客志向', required: false, reason: '対人姿勢を確認します。' },
+                      { text: '締め切りが厳しい場面で、品質を保つために工夫した経験を教えてください。', category: '実務', required: false, reason: '実務遂行力を確認します。' },
+                      { text: 'もし採用された場合、最初の90日で取り組みたいことを優先度順に教えてください。', category: '意欲', required: false, reason: '短期目標の具体性を見ます。' }
                     ]
                   else
                     [
-                      { text: "Tell me about a time you delivered strong results as a #{role}.", category: 'Experience', required: true, reason: 'Checks concrete achievement.' },
-                      { text: "Describe how you handled a difficult situation in #{industry_label}.", category: 'Problem solving', required: true, reason: 'Assesses industry-context resilience.' },
-                      { text: "How do you prioritize work in a #{role} role?", category: 'Work style', required: false, reason: 'Reveals judgment criteria.' },
-                      { text: 'How do you resolve disagreements within a team?', category: 'Teamwork', required: false, reason: 'Checks collaboration.' },
-                      { text: "What skill do you want to grow next as a #{role}, and why?", category: 'Motivation', required: false, reason: 'Checks growth mindset.' },
-                      { text: "What do you keep in mind when working with stakeholders in #{industry_label}?", category: 'Stakeholder', required: false, reason: 'Checks interpersonal focus.' },
-                      { text: 'How do you protect quality under a tight deadline?', category: 'Execution', required: false, reason: 'Checks practical delivery.' },
-                      { text: 'What would you focus on in your first 90 days?', category: 'Motivation', required: false, reason: 'Checks short-term planning.' }
+                      { text: "Tell me about experience you could apply as a #{role}.", category: 'Experience', required: true, reason: 'Checks transferable achievements.' },
+                      { text: "Why are you interested in working in #{industry_label}, based on your background?", category: 'Motivation', required: true, reason: 'Checks motivation and industry fit.' },
+                      { text: "What priorities would matter most to you in a #{role} role, and why?", category: 'Work style', required: false, reason: 'Reveals judgment criteria.' },
+                      { text: 'Tell me about a time you helped a team reach agreement when opinions differed.', category: 'Teamwork', required: false, reason: 'Checks collaboration.' },
+                      { text: "What skill do you want to grow next for a #{role} role, and why?", category: 'Motivation', required: false, reason: 'Checks growth mindset.' },
+                      { text: "What would you keep in mind when working with customers or stakeholders in #{industry_label}?", category: 'Stakeholder', required: false, reason: 'Checks interpersonal focus.' },
+                      { text: 'Tell me about a time you protected quality under a tight deadline.', category: 'Execution', required: false, reason: 'Checks practical delivery.' },
+                      { text: 'If hired, what would you focus on in your first 90 days?', category: 'Motivation', required: false, reason: 'Checks short-term planning.' }
                     ]
                   end
 
@@ -210,19 +284,19 @@ module InterviewEngine
     end
 
     # LLM API呼び出し（モデル切替）
-    def call_llm(prompt)
+    def call_llm(prompt, max_tokens: nil)
       case @model
       when 'openai'
-        call_openai(prompt)
+        call_openai(prompt, max_tokens: max_tokens)
       when 'claude'
-        call_claude(prompt)
+        call_claude(prompt, max_tokens: max_tokens)
       else
         raise LLMError, "Unknown model: #{@model}"
       end
     end
 
     # OpenAI API呼び出し
-    def call_openai(prompt)
+    def call_openai(prompt, max_tokens: nil)
       api_key = ENV['OPENAI_API_KEY']
       raise LLMError, "OPENAI_API_KEY is not set" if api_key.blank?
 
@@ -243,7 +317,7 @@ module InterviewEngine
           { role: 'user', content: formatted_prompt[:user] }
         ],
         temperature: config.llm_temperature,
-        max_tokens: config.llm_max_tokens,
+        max_tokens: max_tokens || config.llm_max_tokens,
         response_format: { type: 'json_object' }
       }
 
@@ -264,7 +338,7 @@ module InterviewEngine
     end
 
     # Claude API呼び出し
-    def call_claude(prompt)
+    def call_claude(prompt, max_tokens: nil)
       api_key = ENV['ANTHROPIC_API_KEY']
       raise LLMError, "ANTHROPIC_API_KEY is not set" if api_key.blank?
 
@@ -284,7 +358,7 @@ module InterviewEngine
 
       body = {
         model: claude_model_name,
-        max_tokens: config.llm_max_tokens || 4000,
+        max_tokens: max_tokens || config.llm_max_tokens || 4000,
         system: formatted_prompt[:system],
         messages: [
           { role: 'user', content: formatted_prompt[:user] }

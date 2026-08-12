@@ -177,13 +177,13 @@ module TopsHelper
 
   COMPANY_STATS = [
     { icon: "fa-face-smile", label: "顧客満足度", num: "97.5", unit: "%" },
-    { icon: "fa-building", label: "取引実績", num: "500", unit: "+" },
+    { icon: "fa-building", label: "累計導入社数", num: "500", unit: "+社" },
     { icon: "fa-clock", label: "対応体制", num: "24", unit: "時間" }
   ].freeze
 
   COMPANY_STATS_EN = [
     { icon: "fa-face-smile", label: "Satisfaction", num: "97.5", unit: "%" },
-    { icon: "fa-building", label: "Track record", num: "500", unit: "+" },
+    { icon: "fa-building", label: "Adopting companies", num: "500", unit: "+" },
     { icon: "fa-clock", label: "Coverage", num: "24", unit: "h" }
   ].freeze
 
@@ -218,14 +218,14 @@ module TopsHelper
   ].freeze
 
   TRIAL_FEATURES = [
+    { icon: "fa-credit-card", label: "クレジットカード不要", desc: "カード登録なしでトライアル開始。終了後の自動課金もありません。" },
     { icon: "fa-rocket", label: "即日スタート", desc: "シナリオを用意してリンクを送るだけで、すぐに体験できます。" },
-    { icon: "fa-shield-halved", label: "セキュア設計", desc: "トークン認証と暗号化で、企業利用にも安心の環境を提供します。" },
     { icon: "fa-chart-simple", label: "成果を可視化", desc: "合否・スコア・回答ログをダッシュボードで確認できます。" }
   ].freeze
 
   TRIAL_FEATURES_EN = [
+    { icon: "fa-credit-card", label: "No credit card", desc: "Start the trial without a card. No auto-charge when it ends." },
     { icon: "fa-rocket", label: "Start today", desc: "Prepare a scenario, send a link, and try it right away." },
-    { icon: "fa-shield-halved", label: "Secure design", desc: "Token auth and encryption for business use." },
     { icon: "fa-chart-simple", label: "Visible results", desc: "Review pass/fail, scores, and logs on the dashboard." }
   ].freeze
 

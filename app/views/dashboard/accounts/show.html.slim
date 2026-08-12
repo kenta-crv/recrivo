@@ -1,16 +1,18 @@
-.db-v2-bottom-card
-  .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title
-      i.fa-solid.fa-building aria-hidden="true"
-      |  企業情報
-  .db-v2-bottom-card__body
-    = form_with model: @client, url: dashboard_account_path, method: :patch, local: true do |f|
-      - if @client.errors.any?
+= form_with model: @client, url: dashboard_account_path, method: :patch, local: true do |f|
+  - if @client.errors.any?
+    .db-v2-bottom-card style="margin-bottom:1.25rem"
+      .db-v2-bottom-card__body
         .db-v2-alert.db-v2-alert--danger
           ul
             - @client.errors.full_messages.each do |message|
               li = message
 
+  .db-v2-bottom-card
+    .db-v2-bottom-card__header
+      h2.db-v2-bottom-card__title
+        i.fa-solid.fa-building aria-hidden="true"
+        |  企業情報
+    .db-v2-bottom-card__body
       .db-v2-form-group
         = f.label :company, "会社名", class: "db-v2-form-label"
         = f.text_field :company, class: "db-v2-form-control", required: true
@@ -35,13 +37,18 @@
         = f.label :url, "URL", class: "db-v2-form-label"
         = f.url_field :url, class: "db-v2-form-control", placeholder: "https://example.com"
 
-      hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--db-border, #e2e8f0);"
-      h3.db-v2-panel__title 採用・不採用メール文面
-      p.db-v2-muted style="margin-bottom:1rem;"
-        | 空欄の項目は、システム標準の採用通知・不採用通知文面を使います。本文中で使える差し込み変数は次のとおりです（そのままコピーして使えます）。
-        br
-        - vars_help = "{{candidate_name}} {{candidate_email}} {{company}} {{situation_title}} {{average_score}}"
-        code = vars_help
+  .db-v2-bottom-card style="margin-top:1.25rem"
+    .db-v2-bottom-card__header
+      h2.db-v2-bottom-card__title
+        i.fa-solid.fa-envelope aria-hidden="true"
+        |  採用・不採用メール文面
+    .db-v2-bottom-card__body
+      p.db-v2-muted.db-v2-account-email__lead
+        | 面接管理から送る採用・不採用メールの文面です。空欄の項目はシステム標準文面を使います。
+      p.db-v2-muted.db-v2-account-email__vars-label 差し込み変数（そのままコピーして使えます）
+      .db-v2-account-email__vars
+        - %w[{{candidate_name}} {{candidate_email}} {{company}} {{situation_title}} {{average_score}}].each do |var|
+          code.db-v2-account-email__var = var
 
       - hire_subject_ph = "空欄でデフォルト（【採用のご連絡】{{company}}）"
       - reject_subject_ph = "空欄でデフォルト（【選考結果のご連絡】{{company}}）"
@@ -64,19 +71,3 @@
 
       .db-v2-form-actions
         = f.submit "保存する", class: "db-v2-btn db-v2-btn--primary"
-
-.db-v2-bottom-card
-  .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title
-      i.fa-solid.fa-bug aria-hidden="true"
-      |  問題報告
-  .db-v2-bottom-card__body
-    p.db-v2-muted style="margin-bottom:1.25rem;"
-      | サービス利用中に不具合や問題が発生した場合は、こちらからご報告ください。
-    .db-v2-problem-actions style="display:flex;flex-wrap:wrap;gap:10px;"
-      button.db-v2-btn.db-v2-btn--primary type="button" data-problem-modal-open=""
-        i.fa-solid.fa-bug aria-hidden="true"
-        span 問題を報告する
-      = link_to new_problem_path, class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener noreferrer" do
-        i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
-        span 新しいウィンドウで開く

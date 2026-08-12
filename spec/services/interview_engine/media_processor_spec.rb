@@ -236,4 +236,35 @@ RSpec.describe InterviewEngine::MediaProcessor do
       }.to raise_error(InterviewEngine::MediaProcessor::MediaError, /timed out/)
     end
   end
+
+  describe '.validate_audio_level!' do
+    let(:audio_path) { '/tmp/test_audio.wav' }
+    let(:success_status) { instance_double(Process::Status, success?: true) }
+
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with(audio_path).and_return(true)
+      allow(described_class).to receive(:system).and_return(true)
+    end
+
+    it '十分な音量ならエラーにしない' do
+      allow(Open3).to receive(:capture3).and_return(
+        ['', "mean_volume: -18.5 dB\nmax_volume: -3.0 dB\n", success_status]
+      )
+
+      expect {
+        described_class.validate_audio_level!(audio_path)
+      }.not_to raise_error
+    end
+
+    it 'ほぼ無音ならMediaErrorを発生する' do
+      allow(Open3).to receive(:capture3).and_return(
+        ['', "mean_volume: -91.0 dB\nmax_volume: -91.0 dB\n", success_status]
+      )
+
+      expect {
+        described_class.validate_audio_level!(audio_path)
+      }.to raise_error(InterviewEngine::MediaProcessor::MediaError, /Audio too quiet/)
+    end
+  end
 end

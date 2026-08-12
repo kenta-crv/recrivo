@@ -80,7 +80,8 @@ module Api
         faqs: situation.situation_faqs.approved.ordered.limit(20).map { |f|
           { id: f.id, question: f.question, answer: f.answer, category: f.category }
         },
-        materials_url: situation.recruitment_material.attached? ? rails_blob_path(situation.recruitment_material, only_path: true) : nil
+        materials_url: situation.recruitment_material.attached? ? rails_blob_path(situation.recruitment_material, only_path: true) : nil,
+        job_info: situation.candidate_job_info(detail: true)
       }, status: :created
     rescue InterviewEngine::SessionManager::AlreadyCompletedError => e
       # 1回のみ仕様: 受験済みは「エラー」ではなく「案内」として返す
@@ -372,7 +373,8 @@ module Api
         faqs: @interview.situation.situation_faqs.approved.ordered.limit(20).map { |f|
           { id: f.id, question: f.question, answer: f.answer, category: f.category }
         },
-        materials_url: @interview.situation.recruitment_material.attached? ? rails_blob_path(@interview.situation.recruitment_material, only_path: true) : nil
+        materials_url: @interview.situation.recruitment_material.attached? ? rails_blob_path(@interview.situation.recruitment_material, only_path: true) : nil,
+        job_info: @interview.situation.candidate_job_info(detail: true)
       }
 
       unless hide_eval

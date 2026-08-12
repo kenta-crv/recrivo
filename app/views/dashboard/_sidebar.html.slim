@@ -25,12 +25,9 @@
         = link_to situations_path, class: sidebar_link_class(:situations) do
           i.fa-solid.fa-list-check aria-hidden="true"
           span シナリオ管理
-        = link_to dashboard_candidates_path, class: sidebar_link_class(:candidates) do
-          i.fa-solid.fa-users aria-hidden="true"
-          span 候補者管理
-        = link_to dashboard_interview_results_path, class: sidebar_link_class(:interview_results) do
+        = link_to dashboard_candidates_path, class: sidebar_link_class(:interviews) do
           i.fa-solid.fa-clipboard-check aria-hidden="true"
-          span 面接結果
+          span 面接管理
 
       .db-v2-sidebar__section
         p.db-v2-sidebar__section-label アカウント

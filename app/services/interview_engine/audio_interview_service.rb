@@ -53,6 +53,7 @@ module InterviewEngine
 
       begin
         MediaProcessor.validate_audio_duration!(stt_path)
+        MediaProcessor.validate_audio_level!(stt_path)
       rescue InterviewEngine::MediaProcessor::MediaError => e
         raise AudioError, humanize_media_error(e.message)
       end
@@ -165,9 +166,11 @@ module InterviewEngine
     def humanize_media_error(message)
       case message.to_s
       when /Audio too short/i
-        "録音が短すぎます。1秒以上話してから「話し終わり」を押してください。"
+        "録音が短すぎます。1秒以上話してから「録音を止める」を押してください。"
       when /Audio too long/i
         "録音が長すぎます。短く区切って話してください。"
+      when /Audio too quiet/i
+        "マイク音声がほぼ無音でした。マイク許可・入力デバイス・音量を確認し、もう一度はっきり話してください。"
       when /Failed to normalize/i
         "音声の変換に失敗しました。別のブラウザで試すか、テキストで入力してください。"
       else
@@ -180,7 +183,7 @@ module InterviewEngine
       when /OPENAI_API_KEY/i
         "文字起こしAPIキーが未設定です。テキストで回答するか、管理者に連絡してください。"
       when /Empty transcript/i
-        "音声から文字を認識できませんでした。もう一度はっきり話してください。"
+        "音声から内容を認識できませんでした。もう一度、はっきり・大きめの声で話してください。"
       when /Unsupported audio format/i
         "この音声形式は対応していません。もう一度録音してください。"
       else

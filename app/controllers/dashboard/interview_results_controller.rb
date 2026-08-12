@@ -2,9 +2,7 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
   before_action :set_result, only: [:show, :notify_hire, :notify_reject, :regenerate_summary, :judge_pass, :judge_fail]
 
   def index
-    @results = scoped_results
-      .includes(interview: [:user, :situation])
-      .order(created_at: :desc)
+    redirect_to dashboard_candidates_path
   end
 
   def show

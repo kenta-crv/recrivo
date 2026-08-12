@@ -95,6 +95,7 @@ Rails.application.routes.draw do
     get 'index', to: 'dashboard#index', as: :index
     root to: 'dashboard#index'
 
+    resource :candidate_experience, only: [:show]
     resource :account, only: [:show, :update]
     get "management", to: "management#index", as: :management
     resource :subscription, only: [:show, :update] do
@@ -137,6 +138,8 @@ Rails.application.routes.draw do
       patch :update_follow_up_settings
       post :upload_recruitment_material
       delete :remove_recruitment_material
+      patch :update_job_info
+      post :import_job_info
     end
   end
 

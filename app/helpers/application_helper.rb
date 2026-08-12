@@ -3,6 +3,10 @@ module ApplicationHelper
   DEFAULT_TITLE = "AI面接サービス｜人とAIの力で、より良い出会いを".freeze
   DEFAULT_DESCRIPTION = "Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。".freeze
 
+  def admin_auth_screen?
+    controller_path.to_s.start_with?("admins/")
+  end
+
   def default_meta_tags
     {
       site: SITE_NAME,

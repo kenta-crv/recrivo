@@ -15,10 +15,12 @@ cfg.llm_max_retries    = ENV.fetch('LLM_MAX_RETRIES', '3').to_i
 cfg.llm_request_timeout = ENV.fetch('LLM_REQUEST_TIMEOUT', '30').to_i
 
 # === STT (Speech-to-Text) 設定 ===
-cfg.stt_model          = ENV.fetch('STT_MODEL', 'whisper-1')
+cfg.stt_model          = ENV.fetch('STT_MODEL', 'gpt-4o-mini-transcribe')
 cfg.stt_max_file_size  = ENV.fetch('STT_MAX_FILE_SIZE_MB', '25').to_i * 1024 * 1024
 cfg.stt_max_retries    = ENV.fetch('STT_MAX_RETRIES', '2').to_i
 cfg.stt_timeout        = ENV.fetch('STT_TIMEOUT', '60').to_i
+# これ未満の mean_volume(dB) は無音扱いで STT 前に拒否（Whisper ハルシネーション対策）
+cfg.stt_min_mean_volume_db = ENV.fetch('STT_MIN_MEAN_VOLUME_DB', '-40').to_f
 
 # === TTS (Text-to-Speech) 設定 ===
 cfg.tts_model          = ENV.fetch('TTS_MODEL', 'tts-1')

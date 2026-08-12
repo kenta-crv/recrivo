@@ -1,14 +1,15 @@
 .db-v2-header
   .db-v2-header__left
     nav.db-v2-breadcrumb aria-label="パンくず"
-      = link_to "面接結果", dashboard_interview_results_path, class: "db-v2-breadcrumb__link"
+      = link_to "面接管理", dashboard_candidates_path, class: "db-v2-breadcrumb__link"
       i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
-      span.db-v2-breadcrumb__current = "##{@result.id}"
-    h1.db-v2-header__title 面接結果 ##{@result.id}
+      span.db-v2-breadcrumb__current = @result.interview.user&.name.presence || @result.interview.user&.email || "##{@result.id}"
+    h1.db-v2-header__title
+      = @result.interview.user&.name.presence || @result.interview.user&.email || "評価詳細"
     p.db-v2-header__subtitle
       = @result.interview.situation&.title
       |  ／ 
-      = @result.interview.user&.email
+      span class=final_status_badge_class(@result.final_status) = final_status_label(@result.final_status)
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     - if @result.pending_review? || @result.interview.situation&.manual_judgment?
@@ -22,9 +23,9 @@
     = button_to notify_reject_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: "不採用通知メールを送信しますか？" } do
       i.fa-solid.fa-envelope aria-hidden="true"
       span 不採用通知を送る
-    = link_to dashboard_interview_results_path, class: "db-v2-btn db-v2-btn--ghost" do
+    = link_to dashboard_candidate_path(@result.interview), class: "db-v2-btn db-v2-btn--ghost" do
       i.fa-solid.fa-arrow-left aria-hidden="true"
-      span 一覧に戻る
+      span 候補者へ戻る
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header
@@ -32,7 +33,7 @@
   .db-v2-bottom-card__body
     - user = @result.interview.user
     .db-v2-leads-table-wrap
-      table.db-v2-leads-table
+      table.db-v2-leads-table.db-v2-leads-table--defs
         tbody
           tr
             th 氏名
@@ -54,16 +55,7 @@
     .db-v2-summary-card__content
       .db-v2-summary-card__label 判定
       .db-v2-summary-card__value-row
-        span.db-v2-summary-card__value
-          - case @result.final_status
-          - when "passed"
-            | 合格
-          - when "failed"
-            | 不合格
-          - when "pending_review"
-            | 確認待ち（面接官判定）
-          - else
-            = @result.final_status
+        span.db-v2-summary-card__value = final_status_label(@result.final_status, detailed: true)
       - failure_reason = @result.results_data.is_a?(Hash) && (@result.results_data["failure_reason"] || @result.results_data[:failure_reason])
       - failure_reason ||= @result.interview.rejection_reason
       - if @result.failed? && failure_reason.present?

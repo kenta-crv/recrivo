@@ -83,6 +83,34 @@ class Situation < ApplicationRecord
     update!(invite_token: self.class.generate_unique_invite_token)
   end
 
+  def job_info_present?
+    job_summary.present? || employment_type.present? || location.present? ||
+      salary_text.present? || requirements_text.present? || selection_flow.present?
+  end
+
+  # 候補者向け求人基本情報（面接中=要約、完了後=詳細）
+  def candidate_job_info(detail: false)
+    return nil unless job_info_present?
+
+    summary = job_summary.to_s
+    summary = summary.truncate(280) unless detail
+
+    payload = {
+      job_title: job_title,
+      employment_type: employment_type,
+      location: location,
+      salary_text: salary_text,
+      job_summary: summary.presence
+    }
+
+    if detail
+      payload[:requirements_text] = requirements_text
+      payload[:selection_flow] = selection_flow
+    end
+
+    payload.reject { |_, v| v.blank? }
+  end
+
   def self.generate_unique_invite_token
     loop do
       token = SecureRandom.urlsafe_base64(16)

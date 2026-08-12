@@ -245,3 +245,118 @@
 
   .meetia-modern-lp.meetia-auth .meetia-auth__title {
     font-size: 1.45rem; } }
+
+/* Admin auth — dashboard-aligned dark theme */
+html.meetia-auth-html--dark,
+html.meetia-auth-html--dark body.meetia-auth-body--dark {
+  background: #0a0a12;
+  color: #e2e8f0;
+}
+
+html.meetia-auth-html--dark .meetia-lp-atmosphere {
+  background: #0a0a12;
+}
+
+html.meetia-auth-html--dark .meetia-lp-atmosphere__wash {
+  background:
+    radial-gradient(ellipse 72% 48% at 82% 0%, rgba(37, 99, 235, 0.22), transparent 58%),
+    radial-gradient(ellipse 50% 40% at 8% 12%, rgba(59, 130, 246, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 36% at 50% 100%, rgba(30, 64, 175, 0.18), transparent 62%);
+}
+
+html.meetia-auth-html--dark .meetia-lp-atmosphere__orb--a {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.34), transparent 70%);
+}
+
+html.meetia-auth-html--dark .meetia-lp-atmosphere__orb--b {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.24), transparent 70%);
+}
+
+html.meetia-auth-html--dark .meetia-lp-atmosphere__grid {
+  opacity: 0.28;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark {
+  --lp-heading: #f8fafc;
+  --lp-muted: #94a3b8;
+  --lp-purple: #3b82f6;
+  --lp-purple-deep: #60a5fa;
+  --lp-card-border: rgba(59, 130, 246, 0.34);
+  --lp-shadow-card: 0 0 0 1px rgba(37, 99, 235, 0.15), 0 0 26px rgba(37, 99, 235, 0.12), 0 18px 40px rgba(2, 6, 23, 0.45);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__card {
+  background: #141626;
+  border-color: var(--lp-card-border);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__title {
+  color: var(--lp-heading);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__lead,
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__remember,
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__remember label,
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__links {
+  color: var(--lp-muted);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark label.meetia-auth__label {
+  color: #cbd5e1;
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__input,
+.meetia-modern-lp.meetia-auth.meetia-auth--dark input.meetia-auth__input {
+  background: #181a2e;
+  border-color: rgba(59, 130, 246, 0.28);
+  color: #f1f5f9;
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.08);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__input::placeholder {
+  color: #64748b;
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__input:focus {
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__remember input[type="checkbox"] {
+  accent-color: #3b82f6;
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__links a {
+  color: #93c5fd;
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-auth__links a:hover {
+  color: #bfdbfe;
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-btn--primary {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.45);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark .meetia-btn--primary:hover {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.55);
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark #error_explanation {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #fecdd3;
+}
+
+.meetia-modern-lp.meetia-auth.meetia-auth--dark #error_explanation h2 {
+  color: #fda4af;
+}
+

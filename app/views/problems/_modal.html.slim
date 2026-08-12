@@ -8,10 +8,4 @@
       button.db-v2-modal__close type="button" aria-label="閉じる" data-problem-modal-close=""
         i.fa-solid.fa-xmark aria-hidden="true"
     .db-v2-modal__body
-      p.db-v2-muted style="margin:0 0 1rem;"
-        | 不具合の内容をご記入ください。送信後、ダッシュボードに完了通知が表示されます。
       = render "problems/form", problem: problem, form_id: "problem-report-modal-form"
-      .db-v2-problem-modal-footer style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--db-table-border, #e2e8f0);"
-        = link_to new_problem_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", target: "_blank", rel: "noopener noreferrer" do
-          i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
-          span 新しいウィンドウで開く

@@ -3,7 +3,8 @@ class SituationsController < Dashboard::BaseController
     :show, :edit, :update, :destroy, :regenerate_invite_token,
     :suggest_questions, :apply_suggested_questions,
     :update_candidate_registration, :update_follow_up_settings,
-    :upload_recruitment_material, :remove_recruitment_material
+    :upload_recruitment_material, :remove_recruitment_material,
+    :update_job_info, :import_job_info
   ]
   before_action :ensure_client_can_create!, only: [:new, :create]
   before_action :ensure_service_quota!, only: [:new, :create]
@@ -21,14 +22,16 @@ class SituationsController < Dashboard::BaseController
   end
 
   def new
-    @situation = current_client.situations.new(language: "ja")
+    @situation = build_new_situation
+    load_clients_for_admin
   end
 
   def create
-    @situation = current_client.situations.new(situation_params)
+    @situation = build_new_situation(situation_params)
     if @situation.save
       redirect_to @situation, notice: "面接シナリオを作成しました。業種・職種から質問をAI提案できます。"
     else
+      load_clients_for_admin
       render :new, status: :unprocessable_entity
     end
   end
@@ -110,6 +113,31 @@ class SituationsController < Dashboard::BaseController
     redirect_to @situation, notice: "募集資料を削除しました。"
   end
 
+  def update_job_info
+    if @situation.update(job_info_params)
+      redirect_to @situation, notice: "求人基本情報を保存しました。"
+    else
+      redirect_to @situation, alert: @situation.errors.full_messages.join(", ")
+    end
+  end
+
+  def import_job_info
+    result = SituationJobInfo::ImportService.call(
+      situation: @situation,
+      url: params[:job_source_url],
+      text: params[:job_source_text],
+      apply_faqs: ActiveModel::Type::Boolean.new.cast(params[:apply_faqs].nil? ? true : params[:apply_faqs])
+    )
+
+    if result.success?
+      faq_note = result.faqs.any? ? " FAQを#{result.faqs.size}件追加しました。" : ""
+      fallback_note = result.source == "paste_fallback" ? " URLの取得に失敗したため、貼り付けテキストから取り込みました。" : ""
+      redirect_to @situation, notice: "求人情報を取り込みました。内容を確認・編集してください。#{faq_note}#{fallback_note}"
+    else
+      redirect_to @situation, alert: result.error
+    end
+  end
+
   # POST /situations/:id/suggest_questions
   def suggest_questions
     industry = params[:industry].presence || @situation.industry
@@ -141,7 +169,19 @@ class SituationsController < Dashboard::BaseController
     }
   rescue StandardError => e
     Rails.logger.error("suggest_questions failed: #{e.class}: #{e.message}")
-    render json: { success: false, error: "質問の提案に失敗しました。しばらくして再試行してください。" }, status: :internal_server_error
+    fallback = InterviewEngine::LLMClient.new.fallback_suggestions(
+      industry.to_s,
+      job_title.to_s,
+      @situation.language,
+      (params[:count].presence || 5).to_i.clamp(3, 8)
+    )
+    render json: {
+      success: true,
+      industry: industry,
+      job_title: job_title,
+      questions: fallback["questions"],
+      fallback: true
+    }
   end
 
   # POST /situations/:id/apply_suggested_questions
@@ -198,7 +238,7 @@ class SituationsController < Dashboard::BaseController
   end
 
   def situation_params
-    params.require(:situation).permit(
+    permitted = [
       :title, :description, :language, :archived,
       :industry, :job_title,
       :session_timeout_minutes, :allow_resume, :max_resume_count,
@@ -208,13 +248,39 @@ class SituationsController < Dashboard::BaseController
       :allow_text_answer, :allow_voice_answer, :record_camera,
       :enable_satisfaction_survey, :follow_up_next_step_url,
       :skip_candidate_registration
+    ]
+    permitted << :client_id if acting_as_admin?
+    params.require(:situation).permit(*permitted)
+  end
+
+  def job_info_params
+    params.require(:situation).permit(
+      :job_summary, :employment_type, :location, :salary_text,
+      :requirements_text, :selection_flow, :job_source_url
     )
   end
 
-  def ensure_client_can_create!
-    return if client_signed_in?
+  def build_new_situation(attrs = nil)
+    record =
+      if client_signed_in?
+        current_client.situations.new(language: "ja", record_camera: true)
+      else
+        Situation.new(language: "ja", record_camera: true)
+      end
+    record.assign_attributes(attrs) if attrs.present?
+    record
+  end
 
-    redirect_to situations_path, alert: "シナリオの新規作成は企業アカウントで行ってください。"
+  def load_clients_for_admin
+    return unless acting_as_admin?
+
+    @clients = Client.order(:company, :email)
+  end
+
+  def ensure_client_can_create!
+    return if client_signed_in? || admin_signed_in?
+
+    redirect_to situations_path, alert: "シナリオの新規作成にはログインが必要です。"
   end
 
   def ensure_service_quota!

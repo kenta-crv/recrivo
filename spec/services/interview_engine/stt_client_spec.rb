@@ -80,6 +80,22 @@ RSpec.describe InterviewEngine::STTClient do
         expect(result).to eq('テスト回答です')
       end
 
+      it '無音ハルシネーション文言を拒否する' do
+        response_mock = instance_double(Net::HTTPResponse,
+                                        code: '200',
+                                        body: { 'text' => 'ご視聴ありがとうございました' }.to_json)
+        http_mock = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http_mock)
+        allow(http_mock).to receive(:use_ssl=)
+        allow(http_mock).to receive(:open_timeout=)
+        allow(http_mock).to receive(:read_timeout=)
+        allow(http_mock).to receive(:request).and_return(response_mock)
+
+        expect {
+          client.transcribe(audio_path, language: 'ja')
+        }.to raise_error(InterviewEngine::STTClient::STTError, /Empty transcript/)
+      end
+
       it '空のトランスクリプトでSTTErrorを発生する' do
         response_mock = instance_double(Net::HTTPResponse,
                                         code: '200',
