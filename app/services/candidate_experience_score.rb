@@ -18,6 +18,19 @@ class CandidateExperienceScore
     published_questions: "公開中の質問"
   }.freeze
 
+  JOB_INFO_FIELDS = %i[
+    job_title
+    job_summary
+    employment_type
+    location
+    salary_text
+    requirements_text
+    selection_flow
+  ].freeze
+
+  FAQ_FULL_COUNT = 5
+  PUBLISHED_QUESTIONS_FULL_COUNT = 3
+
   OPTIONAL_KEYS = %i[materials].freeze
 
   Gap = Struct.new(:key, :label, :situation_id, :situation_title, :optional, keyword_init: true)
@@ -64,11 +77,11 @@ class CandidateExperienceScore
     breakdown = {}
     gaps = []
 
-    check_item(situation, breakdown, gaps, :job_info) { situation.job_info_present? }
-    check_item(situation, breakdown, gaps, :faqs) { situation.situation_faqs.approved.exists? }
-    check_item(situation, breakdown, gaps, :next_step_url) { situation.follow_up_next_step_url.present? }
-    check_item(situation, breakdown, gaps, :materials) { situation.recruitment_material.attached? }
-    check_item(situation, breakdown, gaps, :published_questions) { situation.questions.published_only.exists? }
+    score_job_info(situation, breakdown, gaps)
+    score_faqs(situation, breakdown, gaps)
+    score_binary(situation, breakdown, gaps, :next_step_url) { situation.follow_up_next_step_url.present? }
+    score_binary(situation, breakdown, gaps, :materials) { situation.recruitment_material.attached? }
+    score_published_questions(situation, breakdown, gaps)
 
     score = breakdown.values.sum
     Result.new(
@@ -81,19 +94,65 @@ class CandidateExperienceScore
     )
   end
 
-  def check_item(situation, breakdown, gaps, key)
+  def score_job_info(situation, breakdown, gaps)
+    filled = JOB_INFO_FIELDS.count { |field| situation.public_send(field).present? }
+    max = WEIGHTS[:job_info]
+    breakdown[:job_info] = proportional_score(filled, JOB_INFO_FIELDS.size, max)
+    add_gap_if_incomplete(gaps, situation, :job_info, breakdown[:job_info], max)
+  end
+
+  def score_faqs(situation, breakdown, gaps)
+    count = situation.situation_faqs.approved.count
+    max = WEIGHTS[:faqs]
+    breakdown[:faqs] = proportional_score([count, FAQ_FULL_COUNT].min, FAQ_FULL_COUNT, max)
+    add_gap_if_incomplete(gaps, situation, :faqs, breakdown[:faqs], max)
+  end
+
+  def score_published_questions(situation, breakdown, gaps)
+    count = situation.questions.published_only.count
+    max = WEIGHTS[:published_questions]
+    breakdown[:published_questions] = proportional_score(
+      [count, PUBLISHED_QUESTIONS_FULL_COUNT].min,
+      PUBLISHED_QUESTIONS_FULL_COUNT,
+      max
+    )
+    add_gap_if_incomplete(gaps, situation, :published_questions, breakdown[:published_questions], max)
+  end
+
+  def score_binary(situation, breakdown, gaps, key)
     if yield
       breakdown[key] = WEIGHTS[key]
     else
       breakdown[key] = 0
-      optional = OPTIONAL_KEYS.include?(key)
-      gaps << Gap.new(
-        key: key,
-        label: "#{ITEM_LABELS[key]}が未設定",
-        situation_id: situation.id,
-        situation_title: situation.title,
-        optional: optional
-      )
+      add_gap(gaps, situation, key, partial: false)
     end
+  end
+
+  def proportional_score(actual, target, max)
+    return 0 if target.zero? || actual.zero?
+
+    (max * actual.to_f / target).round
+  end
+
+  def add_gap_if_incomplete(gaps, situation, key, score, max)
+    return if score >= max
+
+    add_gap(gaps, situation, key, partial: score.positive?)
+  end
+
+  def add_gap(gaps, situation, key, partial:)
+    label = if partial
+              "#{ITEM_LABELS[key]}が不足"
+            else
+              "#{ITEM_LABELS[key]}が未設定"
+            end
+
+    gaps << Gap.new(
+      key: key,
+      label: label,
+      situation_id: situation.id,
+      situation_title: situation.title,
+      optional: OPTIONAL_KEYS.include?(key)
+    )
   end
 end

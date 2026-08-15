@@ -576,6 +576,7 @@ body.interview-room-body {
   font-size: 13px;
   color: #cbd5e1;
   font-weight: 600;
+  visibility: hidden;
 }
 
 .interview-cinema__avatar.is-speaking .interview-cinema__halo {

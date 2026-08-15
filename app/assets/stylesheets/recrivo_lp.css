@@ -5,7 +5,7 @@
 .meetia-hero--drafty {
   position: relative;
   min-height: min(90vh, 780px);
-  padding: 8px clamp(20px, 3vw, 40px) 40px clamp(56px, 9vw, 120px);
+  padding: 0 clamp(20px, 3vw, 40px) 40px clamp(56px, 9vw, 120px);
   overflow: hidden;
   display: flex;
   align-items: flex-start;
@@ -31,14 +31,18 @@
   display: grid;
   grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
   gap: 12px;
-  align-items: center;
+  align-items: start;
 }
 
-.meetia-hero__content {
+.meetia-hero--drafty .meetia-hero__content {
   position: relative;
   z-index: 2;
   min-width: 0;
   padding-right: 8px;
+  align-self: start;
+  justify-self: start;
+  margin-top: 80px;
+  margin-left: -10px;
 }
 
 .meetia-hero__catch {
@@ -112,7 +116,7 @@
   justify-content: flex-end;
   align-items: flex-start;
   min-width: 0;
-  margin-top: -8px;
+  margin-top: -50px;
   margin-right: clamp(-48px, -4vw, -16px);
 }
 

@@ -83,7 +83,7 @@ javascript:
                 span
                 span
                 span
-              p.interview-cinema__avatar-label
+              p.interview-cinema__avatar-label aria-hidden="true"
                 span#avatar_state_label 待機中
                 |  · AIインタビュアー
 
@@ -107,7 +107,7 @@ javascript:
                   span#voice_answer_status.interview-room__hint
                 .interview-room__actions.interview-cinema__answer-actions
                   button#submit_answer.interview-room__primary type="button" hidden=true 回答を送信
-                p#answer_action_hint.interview-room__hint
+                p#answer_action_hint.interview-room__hint hidden=true
 
         .interview-cinema__side
           .interview-cinema__chat role="log" aria-live="polite" aria-label="面接チャット"

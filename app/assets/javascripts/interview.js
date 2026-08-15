@@ -145,8 +145,17 @@
 
     function setStatus(msg) {
       if (!statusEl) return;
+      if (!msg) {
+        statusEl.hidden = true;
+        statusEl.textContent = '';
+        return;
+      }
       statusEl.hidden = false;
-      statusEl.textContent = msg || '';
+      statusEl.textContent = msg;
+    }
+
+    function clearStatus() {
+      setStatus('');
     }
 
     function setProgress(progress, answered, total) {
@@ -429,8 +438,14 @@
           waitUntilEnd: true,
           keepControl: true
         });
-        setStatus(played ? '回答を入力してください' : '音声の自動再生がブロックされました。再生ボタンを押してください。');
-        revealAnswerStage();
+        if (played) {
+          clearStatus();
+          revealAnswerStage();
+        } else if (hasResumableAudio()) {
+          clearStatus();
+        } else {
+          setStatus('音声の自動再生がブロックされました。再生ボタンを押してください。');
+        }
         if (recordCamera) {
           startAnswerVideoRecording().catch(function() {});
         }
@@ -576,7 +591,9 @@
 
     function revealAnswerStage() {
       if (!answerStage) return;
+      if (isQuestionAudioPlaying() || hasResumableAudio()) return;
       answerStage.hidden = false;
+      clearStatus();
 
       var hasOptions = currentQuestionHasOptions();
       renderOptions(hasOptions ? currentQuestion.options : null);
@@ -618,11 +635,12 @@
 
     function setAnswerActionHint(msg) {
       if (!answerActionHint) return;
-      answerActionHint.textContent = msg || '';
+      answerActionHint.textContent = '';
+      answerActionHint.hidden = true;
     }
 
     function applyAnswerModeUi() {
-      revealAnswerStage();
+      hideAnswerStage();
     }
 
     function applyAnswerSettingsFromApi(settings) {
@@ -849,11 +867,7 @@
       if (!avatarStage) return;
       avatarStage.classList.remove('is-idle', 'is-speaking', 'is-listening');
       avatarStage.classList.add('is-' + state);
-      if (avatarStateLabel) {
-        avatarStateLabel.textContent = state === 'speaking' ? '発話中'
-          : state === 'listening' ? '回答待ち'
-          : '待機中';
-      }
+      if (avatarStateLabel) avatarStateLabel.textContent = '';
     }
 
     function stopBrowserSpeech() {
@@ -904,8 +918,7 @@
 
         // hidden のままだとブラウザによっては再生に失敗する
         questionAudio.hidden = false;
-        var audioRow = questionAudio.closest('.interview-cinema__audio-row');
-        if (audioRow) audioRow.hidden = false;
+        ensureAudioRowVisible();
 
         questionAudio.onplay = null;
         questionAudio.onplaying = null;
@@ -959,6 +972,13 @@
         // 同一URLでも確実に再生し直す
         questionAudio.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
         try { questionAudio.load(); } catch (e2) {}
+
+        questionAudio.onpause = function() {
+          if (questionAudio.ended) return;
+          if (generation != null && generation !== playbackGeneration) {
+            done(false);
+          }
+        };
 
         var playPromise = questionAudio.play();
         if (playPromise && playPromise.then) {
@@ -1028,11 +1048,23 @@
       });
     }
 
+    function playControlRoot() {
+      if (replayBtn) {
+        return replayBtn.closest('.interview-cinema__play-overlay')
+          || replayBtn.closest('.interview-cinema__audio-row');
+      }
+      if (questionAudio) {
+        return questionAudio.closest('.interview-cinema__play-overlay')
+          || questionAudio.closest('.interview-cinema__audio-row');
+      }
+      return null;
+    }
+
     function setPlayButtonVisible(visible) {
       if (!replayBtn) return;
       replayBtn.hidden = !visible;
-      var row = replayBtn.closest('.interview-cinema__audio-row');
-      if (row) row.hidden = !visible;
+      var root = playControlRoot();
+      if (root) root.hidden = !visible;
     }
 
     function setPlayButtonPlaying(playing) {
@@ -1050,8 +1082,12 @@
       setPlayButtonVisible(false);
     }
 
+    function isQuestionAudioPlaying() {
+      return !!(questionAudio && !questionAudio.paused && !questionAudio.ended);
+    }
+
     function isAudioPlaying() {
-      if (questionAudio && !questionAudio.paused && !questionAudio.ended) {
+      if (isQuestionAudioPlaying()) {
         return true;
       }
       if (window.speechSynthesis && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
@@ -1060,8 +1096,45 @@
       return false;
     }
 
+    function clearQuestionAudioHandlers() {
+      if (!questionAudio) return;
+      questionAudio.onplay = null;
+      questionAudio.onplaying = null;
+      questionAudio.onended = null;
+      questionAudio.onerror = null;
+      questionAudio.onpause = null;
+    }
+
+    function ensureAudioRowVisible() {
+      if (!questionAudio) return;
+      questionAudio.hidden = false;
+      var root = playControlRoot();
+      if (root) root.hidden = false;
+    }
+
+    function bindManualAudioHandlers() {
+      if (!questionAudio) return;
+      clearQuestionAudioHandlers();
+      questionAudio.onended = function() {
+        setPlayButtonPlaying(false);
+        setAvatarState('listening');
+        clearStatus();
+        if (answerStage && answerStage.hidden) revealAnswerStage();
+      };
+      questionAudio.onpause = function() {
+        if (questionAudio.ended) return;
+        setPlayButtonPlaying(false);
+        setAvatarState('listening');
+      };
+    }
+
     function hasResumableAudio() {
-      return !!(questionAudio && questionAudio.paused && !questionAudio.ended && questionAudio.currentTime > 0);
+      if (!questionAudio || !questionAudio.paused || questionAudio.ended || questionAudio.currentTime <= 0) {
+        return false;
+      }
+      var src = questionAudio.currentSrc || questionAudio.src || '';
+      if (src.indexOf('data:audio/wav') === 0) return false;
+      return true;
     }
 
     function pauseInterviewerAudio() {
@@ -1072,6 +1145,28 @@
       }
       setPlayButtonPlaying(false);
       setAvatarState('listening');
+    }
+
+    async function playQuestionAudioDirect(url) {
+      if (!questionAudio || !url) return false;
+      playbackGeneration += 1;
+      stopBrowserSpeech();
+      ensureAudioRowVisible();
+      setPlayButtonVisible(true);
+      setPlayButtonPlaying(true);
+      setAvatarState('speaking');
+      bindManualAudioHandlers();
+      try { questionAudio.pause(); } catch (e) {}
+      questionAudio.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
+      try { questionAudio.load(); } catch (e2) {}
+      try {
+        var playPromise = questionAudio.play();
+        if (playPromise && playPromise.then) await playPromise;
+        return true;
+      } catch (e) {
+        setPlayButtonPlaying(false);
+        return false;
+      }
     }
 
     async function playSpokenContent(opts) {
@@ -1120,75 +1215,52 @@
       return false;
     }
 
-    async function resumeInterviewerAudio() {
-      if (!hasResumableAudio() || !questionAudio) return false;
-      setPlayButtonPlaying(true);
-      setAvatarState('speaking');
-      setStatus('音声を再生中...');
-      setSubmitButtonState('questioning');
-      setVoiceControlsForQuestioning(true);
-      try {
-        var playPromise = questionAudio.play();
-        if (playPromise && playPromise.then) await playPromise;
-        await new Promise(function(resolve) {
-          var finished = false;
-          function done() {
-            if (finished) return;
-            finished = true;
-            questionAudio.removeEventListener('ended', done);
-            questionAudio.removeEventListener('pause', onPause);
-            resolve();
-          }
-          function onPause() {
-            if (questionAudio.ended) return;
-            done();
-          }
-          questionAudio.addEventListener('ended', done);
-          questionAudio.addEventListener('pause', onPause);
-        });
-        setPlayButtonPlaying(false);
-        setAvatarState('listening');
-        setStatus('回答を入力してください');
-        setSubmitButtonState('ready');
-        setVoiceControlsForQuestioning(false);
-        return true;
-      } catch (e) {
-        setPlayButtonPlaying(false);
-        return false;
-      }
-    }
-
     async function toggleQuestionAudio() {
-      unlockAudioPlayback();
       clearError();
 
-      if (isAudioPlaying() && !hasResumableAudio()) {
+      if (isQuestionAudioPlaying()) {
         pauseInterviewerAudio();
-        setStatus('回答を入力してください');
-        revealAnswerStage();
+        clearStatus();
         return;
       }
 
+      stopBrowserSpeech();
+
       if (hasResumableAudio()) {
-        hideAnswerStage();
-        var resumed = await resumeInterviewerAudio();
-        if (resumed) return;
+        ensureAudioRowVisible();
+        setPlayButtonVisible(true);
+        setPlayButtonPlaying(true);
+        setAvatarState('speaking');
+        setStatus('音声を再生中...');
+        bindManualAudioHandlers();
+        try {
+          var resumePromise = questionAudio.play();
+          if (resumePromise && resumePromise.then) await resumePromise;
+          return;
+        } catch (e) {
+          setPlayButtonPlaying(false);
+        }
+      }
+
+      var url = lastAudioUrl || (currentQuestion && currentQuestion.audio_url) || null;
+      if (!url) {
+        setStatus('再生できる音声がありません');
+        setPlayButtonVisible(true);
+        return;
       }
 
       hardStopSpeechRecognition();
-      await waitMs(200);
-      hideAnswerStage();
       setStatus('音声を再生中...');
-      var played = await playSpokenContent({
-        text: lastSpokenText || (currentQuestion && currentQuestion.question_text) || '',
-        audioUrl: lastAudioUrl || (currentQuestion && currentQuestion.audio_url) || null,
-        waitUntilEnd: true,
-        keepControl: true
-      });
-      setStatus(played ? '回答を入力してください' : '再生に失敗しました。もう一度お試しください。');
-      setPlayButtonVisible(true);
-      setPlayButtonPlaying(false);
-      revealAnswerStage();
+      var played = await playQuestionAudioDirect(url);
+      if (played) {
+        clearStatus();
+        setPlayButtonVisible(true);
+        setPlayButtonPlaying(true);
+      } else {
+        setStatus('再生に失敗しました。もう一度お試しください。');
+        setPlayButtonVisible(true);
+        setPlayButtonPlaying(false);
+      }
     }
 
     async function startVoiceAnswer() {

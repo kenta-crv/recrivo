@@ -166,7 +166,7 @@ module Api
 
       question_payload = begin
         # TTS が長引くと「読み込み中」が異常に長く見えるため上限を設ける
-        Timeout.timeout(15) do
+        Timeout.timeout(25) do
           selector.prepare_question_audio(question, language: language)
         end
       rescue Timeout::Error => e
