@@ -8,13 +8,13 @@ class Dashboard::BaseController < ApplicationController
   def authenticate_dashboard_user!
     return if client_signed_in? || admin_signed_in?
 
-    redirect_to new_client_session_path, alert: "ログインが必要です。"
+    redirect_to helpers.client_sign_in_path_for_locale, alert: t("recrivo.dashboard.flash.login_required")
   end
 
   def authenticate_client_only!
     return if client_signed_in?
 
-    redirect_to dashboard_root_path, alert: "企業アカウントでのログインが必要です。"
+    redirect_to dashboard_root_path, alert: t("recrivo.dashboard.flash.client_login_required")
   end
 
   # 企業は自社のみ、管理者は全件を扱えるスコープ

@@ -23,10 +23,10 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
 
   def regenerate_summary
     InterviewEngine::SessionManager.ensure_summary!(@result, force: true)
-    redirect_to dashboard_interview_result_path(@result), notice: "AI総評を生成しました。"
+    redirect_to dashboard_interview_result_path(@result), notice: t("recrivo.dashboard.flash.summary_generated")
   rescue StandardError => e
     Rails.logger.error("[regenerate_summary] result=#{@result.id}: #{e.class}: #{e.message}")
-    redirect_to dashboard_interview_result_path(@result), alert: "AI総評の生成に失敗しました。"
+    redirect_to dashboard_interview_result_path(@result), alert: t("recrivo.dashboard.flash.summary_failed")
   end
 
   def judge_pass
@@ -41,11 +41,11 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
 
   def apply_manual_judgment!(status)
     unless @result.pending_review? || @result.interview.situation.manual_judgment?
-      return redirect_to dashboard_interview_result_path(@result), alert: "この結果は手動判定の対象ではありません。"
+      return redirect_to dashboard_interview_result_path(@result), alert: t("recrivo.dashboard.flash.not_manual")
     end
 
     @result.update!(final_status: status)
-    redirect_to dashboard_interview_result_path(@result), notice: status == :passed ? "合格に確定しました。" : "不合格に確定しました。"
+    redirect_to dashboard_interview_result_path(@result), notice: status == :passed ? t("recrivo.dashboard.flash.judged_pass") : t("recrivo.dashboard.flash.judged_fail")
   end
 
   def scoped_results
@@ -63,11 +63,11 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
   end
 
   def send_decision_email(decision)
-    label = decision == :hire ? "採用" : "不採用"
+    label = decision == :hire ? t("recrivo.dashboard.flash.hire_label") : t("recrivo.dashboard.flash.reject_label")
     user = @result.interview.user
     if user&.email.blank?
       return redirect_back fallback_location: dashboard_interview_result_path(@result),
-                           alert: "候補者のメールアドレスがありません。"
+                           alert: t("recrivo.dashboard.flash.no_candidate_email")
     end
 
     client = result_client
@@ -91,20 +91,20 @@ class Dashboard::InterviewResultsController < Dashboard::BaseController
     @result.interview.update!(ops_status: "contacted")
 
     redirect_back fallback_location: dashboard_interview_result_path(@result),
-                  notice: "#{label}通知メールを #{user.email} へ送信しました。"
+                  notice: t("recrivo.dashboard.flash.decision_sent", label: label, email: user.email)
   rescue StandardError => e
     Rails.logger.error("[InterviewDecisionMailer] #{decision} failed result=#{@result.id}: #{e.class}: #{e.message}")
     redirect_back fallback_location: dashboard_interview_result_path(@result),
-                  alert: "#{label}通知メールの送信に失敗しました。設定を確認してください。"
+                  alert: t("recrivo.dashboard.flash.decision_failed", label: label)
   end
 
   def decision_template_variables(client)
     interview = @result.interview
     user = interview.user
     {
-      "candidate_name" => user&.name.presence || "候補者",
+      "candidate_name" => user&.name.presence || t("recrivo.dashboard.flash.candidate_fallback"),
       "candidate_email" => user&.email.to_s,
-      "company" => client.company.presence || "弊社",
+      "company" => client.company.presence || t("recrivo.dashboard.flash.company_fallback"),
       "situation_title" => interview.situation&.title.to_s,
       "average_score" => @result.average_score.to_s
     }

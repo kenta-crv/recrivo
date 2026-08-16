@@ -1,10 +1,10 @@
 doctype html
-html.dashboard-html lang="ja"
+html.dashboard-html lang=current_locale
   head
     meta charset="UTF-8"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
     meta name="robots" content="noindex, nofollow"
-    title AI Interview ダッシュボード
+    title = t("recrivo.dashboard.layout_title")
     = csrf_meta_tags
     = csp_meta_tag
     = favicon_link_tag "favicon.ico"
@@ -17,15 +17,15 @@ html.dashboard-html lang="ja"
       | (function(){try{var t=localStorage.getItem("meetia-dashboard-theme");if(t!=="light"&&t!=="dark"){t="light";}document.documentElement.setAttribute("data-dashboard-theme",t);var teal=document.documentElement.getAttribute("data-dashboard-palette")==="teal";document.documentElement.style.backgroundColor=t==="light"?(teal?"#f1f5f9":"#ffffff"):(teal?"#0f172a":"#0a0a12");}catch(e){document.documentElement.setAttribute("data-dashboard-theme","light");document.documentElement.style.backgroundColor="#ffffff";}})();
 
   body.dashboard-body
-    .dashboard-v2-container#dashboard-v2-container
+    .dashboard-v2-container#dashboard-v2-container data-i18n-copied=t("recrivo.dashboard.js.copied") data-i18n-copy-failed=t("recrivo.dashboard.js.copy_failed") data-i18n-copy=t("recrivo.dashboard.js.copy_link") data-i18n-sep=t("recrivo.dashboard.common.sep")
       .db-v2-sidebar__overlay data-dashboard-sidebar-overlay=""
       = render "/dashboard/sidebar"
 
       .db-v2-main-content
         .db-v2-mobile-bar
-          button.db-v2-sidebar__toggle type="button" aria-label="メニューを開く" data-dashboard-sidebar-toggle=""
+          button.db-v2-sidebar__toggle type="button" aria-label=t("recrivo.dashboard.nav.open_menu") data-dashboard-sidebar-toggle=""
             i.fa-solid.fa-bars aria-hidden="true"
-          span.db-v2-mobile-bar__label Dashboard
+          span.db-v2-mobile-bar__label = t("recrivo.dashboard.nav.dashboard")
         - if flash.any?
           .db-v2-flash-stack
             - flash.each do |type, message|

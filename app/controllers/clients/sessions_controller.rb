@@ -3,11 +3,18 @@
 class Clients::SessionsController < Devise::SessionsController
   layout "auth"
 
+  def new
+    session[:omniauth_locale] = I18n.locale.to_s if Client::LOCALES.include?(I18n.locale.to_s)
+    super
+  end
+
   def create
     self.resource = warden.authenticate!(auth_options)
     set_flash_message!(:notice, :signed_in)
     sign_in(resource_name, resource)
-    session[:ui_locale] = resource.preferred_locale if resource.respond_to?(:preferred_locale)
+    if resource.respond_to?(:preferred_locale) && resource.preferred_locale.present?
+      persist_ui_locale!(resource.preferred_locale)
+    end
     I18n.locale = resource.ui_locale if resource.respond_to?(:ui_locale)
     yield resource if block_given?
     respond_with resource, location: after_sign_in_path_for(resource)

@@ -1,5 +1,5 @@
 - form_id = local_assigns.fetch(:form_id, "problem-report-form")
-- submit_label = local_assigns.fetch(:submit_label, "報告する")
+- submit_label = local_assigns.fetch(:submit_label, t("recrivo.dashboard.problem.submit"))
 
 = form_with model: problem, url: problems_path, local: true, multipart: true, html: { id: form_id, class: "db-v2-problem-form" } do |f|
   - if problem.errors.any?
@@ -9,21 +9,21 @@
           li = message
 
   .db-v2-form-group
-    = f.label :company, "会社名", class: "db-v2-form-label"
-    = f.text_field :company, class: "db-v2-form-control", placeholder: "株式会社〇〇〇〇", required: true
+    = f.label :company, t("recrivo.dashboard.problem.company"), class: "db-v2-form-label"
+    = f.text_field :company, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.problem.company_ph"), required: true
 
   .db-v2-form-group
-    = f.label :email, "メールアドレス", class: "db-v2-form-label"
+    = f.label :email, t("recrivo.dashboard.problem.email"), class: "db-v2-form-label"
     = f.email_field :email, class: "db-v2-form-control", placeholder: "test@example.com", required: true
 
   .db-v2-form-group
-    = f.label :photo, "添付画像", class: "db-v2-form-label"
+    = f.label :photo, t("recrivo.dashboard.problem.photo"), class: "db-v2-form-label"
     = f.file_field :photo, class: "db-v2-form-control", accept: "image/*"
-    p.db-v2-form-hint 任意。スクリーンショットなどがあると調査がスムーズです。
+    p.db-v2-form-hint = t("recrivo.dashboard.problem.photo_hint")
 
   .db-v2-form-group
-    = f.label :body, "内容", class: "db-v2-form-label"
-    = f.text_area :body, class: "db-v2-form-control", rows: 6, placeholder: "発生した問題の内容・再現手順など"
+    = f.label :body, t("recrivo.dashboard.problem.body"), class: "db-v2-form-label"
+    = f.text_area :body, class: "db-v2-form-control", rows: 6, placeholder: t("recrivo.dashboard.problem.body_ph")
 
   .db-v2-form-actions
     = f.submit submit_label, class: "db-v2-btn db-v2-btn--primary"

@@ -1,123 +1,122 @@
 = form_with model: @situation, local: true, html: { class: "db-v2-situation-form", data: { situation_form: "1" } } do |f|
   .db-v2-form-section
-    h3.db-v2-form-section__title 基本情報
+    h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.basic")
     - if acting_as_admin? && @situation.new_record?
       .db-v2-form-group
-        = f.label :client_id, "契約企業", class: "db-v2-form-label"
-        = f.collection_select :client_id, (@clients || []), :id, :admin_select_label, { include_blank: "企業を選択" }, class: "db-v2-form-control", required: true
-        p.db-v2-form-hint このシナリオを紐づける企業アカウントを選択してください。
+        = f.label :client_id, t("recrivo.dashboard.situations.form.client"), class: "db-v2-form-label"
+        = f.collection_select :client_id, (@clients || []), :id, :admin_select_label, { include_blank: t("recrivo.dashboard.situations.form.client_blank") }, class: "db-v2-form-control", required: true
+        p.db-v2-form-hint = t("recrivo.dashboard.situations.form.client_hint")
 
     .db-v2-form-group
-      = f.label :title, "タイトル", class: "db-v2-form-label"
-      = f.text_field :title, class: "db-v2-form-control", required: true, placeholder: "例: エンジニア一次面接"
+      = f.label :title, t("recrivo.dashboard.situations.form.title"), class: "db-v2-form-label"
+      = f.text_field :title, class: "db-v2-form-control", required: true, placeholder: t("recrivo.dashboard.situations.form.title_ph")
 
     .db-v2-form-group
-      = f.label :industry, "業種", class: "db-v2-form-label"
-      = f.text_field :industry, class: "db-v2-form-control", required: true, placeholder: "例: IT・Web、人材、製造、小売"
-      p.db-v2-form-hint AIが面接質問を提案するときの前提になります。
+      = f.label :industry, t("recrivo.dashboard.situations.form.industry"), class: "db-v2-form-label"
+      = f.text_field :industry, class: "db-v2-form-control", required: true, placeholder: t("recrivo.dashboard.situations.form.industry_ph")
+      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.industry_hint")
 
     .db-v2-form-group
-      = f.label :job_title, "募集職種", class: "db-v2-form-label"
-      = f.text_field :job_title, class: "db-v2-form-control", required: true, placeholder: "例: バックエンドエンジニア、営業、カスタマーサクセス"
+      = f.label :job_title, t("recrivo.dashboard.situations.form.job_title"), class: "db-v2-form-label"
+      = f.text_field :job_title, class: "db-v2-form-control", required: true, placeholder: t("recrivo.dashboard.situations.form.job_title_ph")
 
     .db-v2-form-group
-      = f.label :description, "説明（任意）", class: "db-v2-form-label"
-      = f.text_area :description, class: "db-v2-form-control", rows: 2, placeholder: "社内メモ（候補者には表示されません）"
+      = f.label :description, t("recrivo.dashboard.situations.form.description"), class: "db-v2-form-label"
+      = f.text_area :description, class: "db-v2-form-control", rows: 2, placeholder: t("recrivo.dashboard.situations.form.description_ph")
 
     .db-v2-form-group
-      = f.label :language, "言語", class: "db-v2-form-label"
-      = f.select :language, [["日本語", "ja"], ["English", "en"]], {}, class: "db-v2-form-control"
+      = f.label :language, t("recrivo.dashboard.situations.form.language"), class: "db-v2-form-label"
+      = f.select :language, [[t("recrivo.dashboard.situations.form.language_ja"), "ja"], [t("recrivo.dashboard.situations.form.language_en"), "en"]], {}, class: "db-v2-form-control"
 
   .db-v2-form-section
-    h3.db-v2-form-section__title 合否と回答方式
+    h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.judgment_section")
     .db-v2-form-group
-      = f.label :passing_score, "合格ライン（平均点）", class: "db-v2-form-label"
+      = f.label :passing_score, t("recrivo.dashboard.situations.form.passing_score"), class: "db-v2-form-label"
       = f.number_field :passing_score, class: "db-v2-form-control", min: 0, max: 100
-      p.db-v2-form-hint 例: 70 なら平均 70 点以上で合格。
+      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.passing_hint")
 
     .db-v2-form-group
-      label.db-v2-form-label 許可する回答手段
+      label.db-v2-form-label = t("recrivo.dashboard.situations.form.answer_modes")
       .db-v2-form-check
         = f.check_box :allow_text_answer
-        = f.label :allow_text_answer, "テキスト"
+        = f.label :allow_text_answer, t("recrivo.dashboard.situations.form.text")
       .db-v2-form-check
         = f.check_box :allow_voice_answer
-        = f.label :allow_voice_answer, "音声"
-      p.db-v2-form-hint 少なくとも一方は有効にしてください。
+        = f.label :allow_voice_answer, t("recrivo.dashboard.situations.form.voice")
+      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.answer_hint")
 
   details.db-v2-details
-    summary.db-v2-details__summary 詳細設定（通常は変更不要）
+    summary.db-v2-details__summary = t("recrivo.dashboard.situations.form.advanced")
     .db-v2-details__body
       .db-v2-form-section
-        h3.db-v2-form-section__title 判定
+        h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.judgment")
         .db-v2-form-group
-          = f.label :judgment_mode, "判定モード", class: "db-v2-form-label"
-          = f.select :judgment_mode, [["自動判定（スコアで合否）", "automatic"], ["面接官が判定（結果は要確認）", "manual"]], {}, class: "db-v2-form-control"
+          = f.label :judgment_mode, t("recrivo.dashboard.situations.form.judgment_mode"), class: "db-v2-form-label"
+          = f.select :judgment_mode, [[t("recrivo.dashboard.situations.form.judgment_automatic"), "automatic"], [t("recrivo.dashboard.situations.form.judgment_manual"), "manual"]], {}, class: "db-v2-form-control"
 
         .db-v2-form-group
-          = f.label :candidate_result_visibility, "候補者への結果表示", class: "db-v2-form-label"
-          = f.select :candidate_result_visibility, [["非表示（推奨・後日連絡）", "hidden"], ["その場で詳細を表示", "immediate"]], {}, class: "db-v2-form-control"
-          p.db-v2-form-hint 総評・推薦は採用側向けです。通常は非表示のままにしてください。
+          = f.label :candidate_result_visibility, t("recrivo.dashboard.situations.form.result_visibility"), class: "db-v2-form-label"
+          = f.select :candidate_result_visibility, [[t("recrivo.dashboard.situations.form.result_hidden"), "hidden"], [t("recrivo.dashboard.situations.form.result_immediate"), "immediate"]], {}, class: "db-v2-form-control"
+          p.db-v2-form-hint = t("recrivo.dashboard.situations.form.result_hint")
 
       .db-v2-form-section
-        h3.db-v2-form-section__title 途中での不合格条件
-        p.db-v2-form-hint style="margin-bottom:12px"
-          | 不要ならオフのままにしてください。
+        h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.auto_reject_section")
+        p.db-v2-form-hint style="margin-bottom:12px" = t("recrivo.dashboard.situations.form.auto_reject_hint")
 
         .db-v2-form-group
           .db-v2-form-check
             = f.check_box :auto_reject_enabled, data: { auto_reject_toggle: "1" }
-            = f.label :auto_reject_enabled, "途中不合格を使う"
+            = f.label :auto_reject_enabled, t("recrivo.dashboard.situations.form.auto_reject_enable")
 
         #auto-reject-details data-auto-reject-details="1"
           .db-v2-page-card
             .db-v2-form-group
               .db-v2-form-check
                 = f.check_box :reject_on_required_fail
-                = f.label :reject_on_required_fail, "必須質問が基準未満なら不合格にする"
+                = f.label :reject_on_required_fail, t("recrivo.dashboard.situations.form.reject_on_required_fail")
 
             .db-v2-form-group
-              = f.label :min_required_score, "必須質問の合格ライン（点）", class: "db-v2-form-label"
+              = f.label :min_required_score, t("recrivo.dashboard.situations.form.min_required_score"), class: "db-v2-form-label"
               = f.number_field :min_required_score, class: "db-v2-form-control", min: 0, max: 100
 
             .db-v2-form-group
-              = f.label :max_consecutive_fails, "連続で基準未達が続いたら不合格", class: "db-v2-form-label"
+              = f.label :max_consecutive_fails, t("recrivo.dashboard.situations.form.max_consecutive_fails"), class: "db-v2-form-label"
               = f.number_field :max_consecutive_fails, class: "db-v2-form-control", min: 0, max: 50
-              p.db-v2-form-hint 使わない場合は 0。
+              p.db-v2-form-hint = t("recrivo.dashboard.situations.form.max_consecutive_hint")
 
             .db-v2-form-group
-              = f.label :reject_notify_method, "途中不合格時の通知", class: "db-v2-form-label"
-              = f.select :reject_notify_method, [["アプリ内", "in_app"], ["メール", "email"], ["なし", "none"]], {}, class: "db-v2-form-control"
+              = f.label :reject_notify_method, t("recrivo.dashboard.situations.form.reject_notify"), class: "db-v2-form-label"
+              = f.select :reject_notify_method, [[t("recrivo.dashboard.situations.form.notify_in_app"), "in_app"], [t("recrivo.dashboard.situations.form.notify_email"), "email"], [t("recrivo.dashboard.situations.form.notify_none"), "none"]], {}, class: "db-v2-form-control"
 
       .db-v2-form-section
-        h3.db-v2-form-section__title カメラ・セッション
+        h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.camera_section")
         .db-v2-form-group
           .db-v2-form-check
             = f.check_box :record_camera
-            = f.label :record_camera, "面接中にカメラ映像を表示・録画する"
+            = f.label :record_camera, t("recrivo.dashboard.situations.form.record_camera")
 
         .db-v2-form-group
-          = f.label :session_timeout_minutes, "無操作でタイムアウト（分）", class: "db-v2-form-label"
+          = f.label :session_timeout_minutes, t("recrivo.dashboard.situations.form.session_timeout"), class: "db-v2-form-label"
           = f.number_field :session_timeout_minutes, class: "db-v2-form-control", min: 1, max: 180
 
         .db-v2-form-group
           .db-v2-form-check
             = f.check_box :allow_resume
-            = f.label :allow_resume, "途中離脱しても再開を許可する"
+            = f.label :allow_resume, t("recrivo.dashboard.situations.form.allow_resume")
 
         .db-v2-form-group
-          = f.label :max_resume_count, "再開できる最大回数", class: "db-v2-form-label"
+          = f.label :max_resume_count, t("recrivo.dashboard.situations.form.max_resume"), class: "db-v2-form-label"
           = f.number_field :max_resume_count, class: "db-v2-form-control", min: 0, max: 10
 
       - if @situation.persisted?
         .db-v2-form-section
-          h3.db-v2-form-section__title その他
+          h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.other")
           .db-v2-form-group
             .db-v2-form-check
               = f.check_box :archived
-              = f.label :archived, "アーカイブする（新規招待を止める）"
+              = f.label :archived, t("recrivo.dashboard.situations.form.archive")
 
   .db-v2-form-actions
-    = f.submit @situation.persisted? ? "更新する" : "作成する", class: "db-v2-btn db-v2-btn--primary"
+    = f.submit @situation.persisted? ? t("recrivo.dashboard.questions.update") : t("recrivo.dashboard.questions.create"), class: "db-v2-btn db-v2-btn--primary"
     = link_to (@situation.persisted? ? situation_path(@situation) : situations_path), class: "db-v2-btn db-v2-btn--ghost" do
-      span キャンセル
+      span = t("recrivo.dashboard.common.cancel")

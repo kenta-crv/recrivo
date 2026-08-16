@@ -1,21 +1,40 @@
 (function() {
+  function teardownDbV2PricingSlider(root) {
+    if (!root) return;
+    if (root._pricingResizeObserver) {
+      root._pricingResizeObserver.disconnect();
+      root._pricingResizeObserver = null;
+    }
+    if (typeof root._pricingCleanup === "function") {
+      root._pricingCleanup();
+      root._pricingCleanup = null;
+    }
+    root.removeAttribute("data-pricing-ready");
+  }
+
   function setupDbV2PricingSlider(root) {
-    var viewport = root.querySelector('.db-v2-pricing__viewport');
-    var track = root.querySelector('.db-v2-pricing__track');
-    var prev = root.querySelector('[data-pricing-prev]');
-    var next = root.querySelector('[data-pricing-next]');
+    var viewport = root.querySelector(".db-v2-pricing__viewport");
+    var track = root.querySelector(".db-v2-pricing__track");
+    var prev = root.querySelector("[data-pricing-prev]");
+    var next = root.querySelector("[data-pricing-next]");
     if (!viewport || !track || !prev || !next) return;
 
-    root.setAttribute('data-pricing-ready', '1');
+    teardownDbV2PricingSlider(root);
+    root.setAttribute("data-pricing-ready", "1");
 
-    var index = 0;
     var gap = 14;
-    var touchStartX = null;
     var initialFullCards = 3;
     var initialPeekRatio = 0.5;
+    var abort = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var signal = abort ? { signal: abort.signal } : false;
+    var dragging = false;
+    var dragMoved = false;
+    var dragStartX = 0;
+    var dragStartScroll = 0;
+    var suppressClick = false;
 
     function cards() {
-      return track.querySelectorAll('.db-v2-pricing__card');
+      return track.querySelectorAll(".db-v2-pricing__card");
     }
 
     function layout() {
@@ -34,84 +53,130 @@
     function syncCardWidths() {
       var width = cardWidth();
       cards().forEach(function(card) {
-        card.style.flexBasis = width + 'px';
-        card.style.width = width + 'px';
-        card.style.maxWidth = width + 'px';
+        card.style.flexBasis = width + "px";
+        card.style.width = width + "px";
+        card.style.maxWidth = width + "px";
       });
-      root.style.setProperty('--db-v2-pricing-card-width', width + 'px');
+      root.style.setProperty("--db-v2-pricing-card-width", width + "px");
     }
 
     function cardStep() {
       return cardWidth() + gap;
     }
 
-    function maxIndex() {
-      return Math.max(0, cards().length - layout().full);
+    function maxScroll() {
+      return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
     }
 
-    function render() {
+    function syncButtons() {
+      var max = maxScroll();
+      var left = viewport.scrollLeft;
+      prev.classList.toggle("is-disabled", left <= 1);
+      next.classList.toggle("is-disabled", left >= max - 1);
+    }
+
+    function layoutAndSync() {
+      var previousLeft = viewport.scrollLeft;
       syncCardWidths();
-      var max = maxIndex();
-      if (index > max) index = max;
-      track.style.transform = 'translateX(-' + (index * cardStep()) + 'px)';
-      prev.classList.toggle('is-disabled', index <= 0);
-      next.classList.toggle('is-disabled', index >= max);
+      viewport.scrollLeft = Math.min(previousLeft, maxScroll());
+      syncButtons();
     }
 
     function goPrev() {
-      if (index <= 0) return;
-      index -= 1;
-      render();
+      viewport.scrollBy({ left: -cardStep(), behavior: "smooth" });
     }
 
     function goNext() {
-      if (index >= maxIndex()) return;
-      index += 1;
-      render();
+      viewport.scrollBy({ left: cardStep(), behavior: "smooth" });
     }
 
-    prev.addEventListener('click', function(e) {
+    function interactiveTarget(el) {
+      return !!(el && el.closest && el.closest("a, button, input, textarea, select, label"));
+    }
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      viewport.classList.remove("is-dragging");
+      if (dragMoved) suppressClick = true;
+    }
+
+    prev.addEventListener("click", function(e) {
       e.preventDefault();
       e.stopPropagation();
       goPrev();
-    });
+    }, signal);
 
-    next.addEventListener('click', function(e) {
+    next.addEventListener("click", function(e) {
       e.preventDefault();
       e.stopPropagation();
       goNext();
-    });
+    }, signal);
 
-    viewport.addEventListener('touchstart', function(e) {
-      if (!e.touches.length) return;
-      touchStartX = e.touches[0].clientX;
-    }, { passive: true });
+    viewport.addEventListener("scroll", syncButtons, signal ? Object.assign({ passive: true }, signal) : { passive: true });
 
-    viewport.addEventListener('touchend', function(e) {
-      if (touchStartX === null || !e.changedTouches.length) return;
-      var delta = e.changedTouches[0].clientX - touchStartX;
-      touchStartX = null;
-      if (Math.abs(delta) < 40) return;
-      if (delta < 0) goNext();
-      else goPrev();
-    }, { passive: true });
+    viewport.addEventListener("pointerdown", function(e) {
+      if (e.pointerType === "touch") return;
+      if (e.button !== 0) return;
+      if (interactiveTarget(e.target)) return;
+      dragging = true;
+      dragMoved = false;
+      dragStartX = e.clientX;
+      dragStartScroll = viewport.scrollLeft;
+      viewport.classList.add("is-dragging");
+      if (viewport.setPointerCapture) {
+        try { viewport.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+    }, signal);
 
-    window.addEventListener('resize', render);
+    viewport.addEventListener("pointermove", function(e) {
+      if (!dragging) return;
+      var dx = e.clientX - dragStartX;
+      if (Math.abs(dx) > 4) dragMoved = true;
+      viewport.scrollLeft = dragStartScroll - dx;
+    }, signal);
 
-    if (typeof ResizeObserver !== 'undefined') {
-      var ro = new ResizeObserver(render);
+    viewport.addEventListener("pointerup", endDrag, signal);
+    viewport.addEventListener("pointercancel", endDrag, signal);
+    viewport.addEventListener("lostpointercapture", endDrag, signal);
+
+    viewport.addEventListener("click", function(e) {
+      if (!suppressClick) return;
+      suppressClick = false;
+      e.preventDefault();
+      e.stopPropagation();
+    }, signal ? Object.assign({ capture: true }, signal) : true);
+
+    window.addEventListener("resize", layoutAndSync, signal);
+
+    var ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(layoutAndSync);
       ro.observe(viewport);
-      ro.observe(track);
+      root._pricingResizeObserver = ro;
     }
 
+    root._pricingCleanup = function() {
+      if (abort) abort.abort();
+      if (ro) ro.disconnect();
+      root._pricingResizeObserver = null;
+      dragging = false;
+      viewport.classList.remove("is-dragging");
+      track.style.transform = "";
+      track.style.transition = "";
+    };
+
     requestAnimationFrame(function() {
-      requestAnimationFrame(render);
+      requestAnimationFrame(layoutAndSync);
     });
   }
 
   function initDbV2PricingSliders() {
-    document.querySelectorAll('[data-pricing-slider]:not([data-pricing-ready])').forEach(function(root) {
-      if (!root.querySelector('.db-v2-pricing__viewport')) return;
+    document.querySelectorAll("[data-pricing-slider]").forEach(function(root) {
+      if (!root.querySelector(".db-v2-pricing__viewport")) return;
+      if (root.getAttribute("data-pricing-ready") === "1") {
+        teardownDbV2PricingSlider(root);
+      }
       setupDbV2PricingSlider(root);
     });
   }
@@ -120,21 +185,21 @@
     initDbV2PricingSliders();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', onReady);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", onReady);
   } else {
     onReady();
   }
 
-  document.addEventListener('turbo:load', onReady);
-  document.addEventListener('turbolinks:load', onReady);
+  document.addEventListener("turbo:load", onReady);
+  document.addEventListener("turbolinks:load", onReady);
 
   function clearReady() {
-    document.querySelectorAll('[data-pricing-ready]').forEach(function(el) {
-      el.removeAttribute('data-pricing-ready');
+    document.querySelectorAll("[data-pricing-ready]").forEach(function(el) {
+      teardownDbV2PricingSlider(el);
     });
   }
 
-  document.addEventListener('turbo:before-cache', clearReady);
-  document.addEventListener('turbolinks:before-cache', clearReady);
+  document.addEventListener("turbo:before-cache", clearReady);
+  document.addEventListener("turbolinks:before-cache", clearReady);
 })();

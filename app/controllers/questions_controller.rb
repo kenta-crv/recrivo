@@ -18,7 +18,7 @@ class QuestionsController < Dashboard::BaseController
   def create
     @question = @situation.questions.new(question_params)
     if @question.save
-      redirect_to situation_path(@situation), notice: "質問を作成しました。"
+      redirect_to situation_path(@situation), notice: t("recrivo.dashboard.flash.question_created")
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class QuestionsController < Dashboard::BaseController
 
   def update
     if @question.update(question_params)
-      redirect_to situation_path(@situation), notice: "質問を更新しました。"
+      redirect_to situation_path(@situation), notice: t("recrivo.dashboard.flash.question_updated")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -37,13 +37,13 @@ class QuestionsController < Dashboard::BaseController
 
   def destroy
     @question.destroy
-    redirect_to situation_path(@situation), notice: "質問を削除しました。"
+    redirect_to situation_path(@situation), notice: t("recrivo.dashboard.flash.question_deleted")
   end
 
   def toggle_publish
     @question.update!(published: !@question.published?)
-    label = @question.published? ? "公開" : "非公開"
-    redirect_to situation_path(@situation), notice: "質問を#{label}にしました。"
+    label = @question.published? ? t("recrivo.dashboard.flash.published_label") : t("recrivo.dashboard.flash.unpublished_label")
+    redirect_to situation_path(@situation), notice: t("recrivo.dashboard.flash.question_toggled", label: label)
   end
 
   private

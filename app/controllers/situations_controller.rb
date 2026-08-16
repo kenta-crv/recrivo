@@ -29,7 +29,7 @@ class SituationsController < Dashboard::BaseController
   def create
     @situation = build_new_situation(situation_params)
     if @situation.save
-      redirect_to @situation, notice: "面接シナリオを作成しました。業種・職種から質問をAI提案できます。"
+      redirect_to @situation, notice: t("recrivo.dashboard.flash.situation_created")
     else
       load_clients_for_admin
       render :new, status: :unprocessable_entity
@@ -41,7 +41,7 @@ class SituationsController < Dashboard::BaseController
 
   def update
     if @situation.update(situation_params)
-      redirect_to @situation, notice: "面接シナリオを更新しました。"
+      redirect_to @situation, notice: t("recrivo.dashboard.flash.situation_updated")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -49,19 +49,19 @@ class SituationsController < Dashboard::BaseController
 
   def destroy
     @situation.destroy
-    redirect_to situations_path, notice: "面接シナリオを削除しました。"
+    redirect_to situations_path, notice: t("recrivo.dashboard.flash.situation_deleted")
   end
 
   def regenerate_invite_token
     @situation.regenerate_invite_token!
-    redirect_to @situation, notice: "招待リンクを再発行しました。"
+    redirect_to @situation, notice: t("recrivo.dashboard.flash.invite_regenerated")
   end
 
   def update_candidate_registration
     @situation.skip_candidate_registration = ActiveModel::Type::Boolean.new.cast(params.dig(:situation, :skip_candidate_registration))
     @situation.assign_candidate_info_fields!(params.dig(:situation, :candidate_info_fields) || {})
     if @situation.save
-      redirect_to @situation, notice: "受験者登録項目を更新しました。"
+      redirect_to @situation, notice: t("recrivo.dashboard.flash.registration_updated")
     else
       redirect_to @situation, alert: @situation.errors.full_messages.join(", ")
     end
@@ -95,27 +95,27 @@ class SituationsController < Dashboard::BaseController
       )
     end
 
-    redirect_to @situation, notice: "フォロー設定を更新しました。"
+    redirect_to @situation, notice: t("recrivo.dashboard.flash.follow_updated")
   end
 
   def upload_recruitment_material
     file = params[:recruitment_material]
     unless file
-      return redirect_to @situation, alert: "ファイルを選択してください。"
+      return redirect_to @situation, alert: t("recrivo.dashboard.flash.no_file")
     end
 
     @situation.recruitment_material.attach(file)
-    redirect_to @situation, notice: "募集資料をアップロードしました。"
+    redirect_to @situation, notice: t("recrivo.dashboard.flash.material_uploaded")
   end
 
   def remove_recruitment_material
     @situation.recruitment_material.purge if @situation.recruitment_material.attached?
-    redirect_to @situation, notice: "募集資料を削除しました。"
+    redirect_to @situation, notice: t("recrivo.dashboard.flash.material_removed")
   end
 
   def update_job_info
     if @situation.update(job_info_params)
-      redirect_to @situation, notice: "求人基本情報を保存しました。"
+      redirect_to @situation, notice: t("recrivo.dashboard.flash.job_info_saved")
     else
       redirect_to @situation, alert: @situation.errors.full_messages.join(", ")
     end
@@ -130,9 +130,9 @@ class SituationsController < Dashboard::BaseController
     )
 
     if result.success?
-      faq_note = result.faqs.any? ? " FAQを#{result.faqs.size}件追加しました。" : ""
-      fallback_note = result.source == "paste_fallback" ? " URLの取得に失敗したため、貼り付けテキストから取り込みました。" : ""
-      redirect_to @situation, notice: "求人情報を取り込みました。内容を確認・編集してください。#{faq_note}#{fallback_note}"
+      faq_note = result.faqs.any? ? t("recrivo.dashboard.flash.job_imported_faq", count: result.faqs.size) : ""
+      fallback_note = result.source == "paste_fallback" ? t("recrivo.dashboard.flash.job_imported_fallback") : ""
+      redirect_to @situation, notice: t("recrivo.dashboard.flash.job_imported", faq_note: faq_note, fallback_note: fallback_note)
     else
       redirect_to @situation, alert: result.error
     end
@@ -146,7 +146,7 @@ class SituationsController < Dashboard::BaseController
     if industry.blank? || job_title.blank?
       return render json: {
         success: false,
-        error: "業種と募集職種を入力してください。"
+        error: t("recrivo.dashboard.js.need_industry_job")
       }, status: :unprocessable_entity
     end
 
@@ -194,7 +194,7 @@ class SituationsController < Dashboard::BaseController
             end
 
     if items.blank?
-      return redirect_to @situation, alert: "追加する質問を選択してください。"
+      return redirect_to @situation, alert: t("recrivo.dashboard.flash.select_questions")
     end
 
     created = 0
@@ -211,7 +211,7 @@ class SituationsController < Dashboard::BaseController
           question_text: text,
           question_type: "open",
           required: ActiveModel::Type::Boolean.new.cast(item[:required]),
-          category: item[:category].to_s.presence || "一般",
+          category: item[:category].to_s.presence || t("recrivo.dashboard.js.general"),
           order: next_order,
           published: false
         )
@@ -221,14 +221,14 @@ class SituationsController < Dashboard::BaseController
     end
 
     if created.zero?
-      redirect_to @situation, alert: "有効な質問がありませんでした。"
+      redirect_to @situation, alert: t("recrivo.dashboard.flash.no_valid_questions")
     else
-      redirect_to @situation, notice: "#{created}問の質問を下書き（非公開）で追加しました。公開すると面接に出ます。"
+      redirect_to @situation, notice: t("recrivo.dashboard.flash.questions_added", count: created)
     end
   rescue JSON::ParserError
-    redirect_to @situation, alert: "質問データの形式が不正です。"
+    redirect_to @situation, alert: t("recrivo.dashboard.flash.questions_invalid")
   rescue ActiveRecord::RecordInvalid => e
-    redirect_to @situation, alert: "質問の追加に失敗しました: #{e.record.errors.full_messages.join(', ')}"
+    redirect_to @situation, alert: t("recrivo.dashboard.flash.questions_failed", message: e.record.errors.full_messages.join(", "))
   end
 
   private
@@ -280,7 +280,7 @@ class SituationsController < Dashboard::BaseController
   def ensure_client_can_create!
     return if client_signed_in? || admin_signed_in?
 
-    redirect_to situations_path, alert: "シナリオの新規作成にはログインが必要です。"
+    redirect_to situations_path, alert: t("recrivo.dashboard.flash.login_to_create")
   end
 
   def ensure_service_quota!

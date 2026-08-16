@@ -1,47 +1,47 @@
 .db-v2-sidebar
-  button.db-v2-sidebar__close type="button" aria-label="メニューを閉じる" data-dashboard-sidebar-close=""
+  button.db-v2-sidebar__close type="button" aria-label=t("recrivo.dashboard.nav.close_menu") data-dashboard-sidebar-close=""
     i.fa-solid.fa-xmark
 
   .db-v2-sidebar__inner
     = link_to dashboard_index_path, class: "db-v2-sidebar__logo-area" do
       = image_tag "recrivo-db.png", alt: "AI Interview", class: "db-v2-sidebar__logo-image"
 
-    nav.db-v2-sidebar__nav aria-label="メインメニュー"
+    nav.db-v2-sidebar__nav aria-label=t("recrivo.dashboard.nav.main_menu")
       .db-v2-sidebar__section
-        p.db-v2-sidebar__section-label 概要
+        p.db-v2-sidebar__section-label = t("recrivo.dashboard.nav.section_overview")
         = link_to dashboard_index_path, class: sidebar_link_class(:dashboard) do
           i.fa-solid.fa-gauge-high aria-hidden="true"
-          span ダッシュボード
+          span = t("recrivo.dashboard.nav.dashboard")
         - if client_signed_in? && !admin_signed_in?
           = link_to dashboard_notifications_path, class: sidebar_link_class(:notifications) do
             i.fa-solid.fa-bell aria-hidden="true"
-            span 通知
+            span = t("recrivo.dashboard.nav.notifications")
             - unread = current_client.notifications.unread.count
             - if unread.positive?
               span.db-v2-sidebar__hint = unread
 
       .db-v2-sidebar__section
-        p.db-v2-sidebar__section-label 面接
+        p.db-v2-sidebar__section-label = t("recrivo.dashboard.nav.section_interviews")
         = link_to situations_path, class: sidebar_link_class(:situations) do
           i.fa-solid.fa-list-check aria-hidden="true"
-          span シナリオ管理
+          span = t("recrivo.dashboard.nav.situations")
         = link_to dashboard_candidates_path, class: sidebar_link_class(:interviews) do
           i.fa-solid.fa-clipboard-check aria-hidden="true"
-          span 面接管理
+          span = t("recrivo.dashboard.nav.interviews")
 
       .db-v2-sidebar__section
-        p.db-v2-sidebar__section-label アカウント
+        p.db-v2-sidebar__section-label = t("recrivo.dashboard.nav.section_account")
         - if client_signed_in? && !admin_signed_in?
           = link_to dashboard_subscription_path, class: sidebar_link_class(:subscription) do
             i.fa-solid.fa-credit-card aria-hidden="true"
-            span プラン・契約
+            span = t("recrivo.dashboard.nav.plan_billing")
         - if admin_signed_in?
           = link_to dashboard_management_path, class: sidebar_link_class(:management) do
             i.fa-solid.fa-building-columns aria-hidden="true"
-            span 契約企業
+            span = t("recrivo.dashboard.nav.companies")
           = link_to admin_interview_results_path, class: sidebar_link_class(:admin_interview_results) do
             i.fa-solid.fa-clipboard-list aria-hidden="true"
-            span 全面接結果
+            span = t("recrivo.dashboard.nav.admin_results")
 
     .db-v2-sidebar__footer
       - avatar_name = admin_signed_in? ? current_admin.email : sidebar_user_display_name
@@ -53,19 +53,23 @@
           .db-v2-sidebar__user-meta
             - if admin_signed_in?
               span.db-v2-sidebar__user-name = current_admin.email
-              span.db-v2-sidebar__user-role Admin
+              span.db-v2-sidebar__user-role = t("recrivo.dashboard.nav.admin_role")
             - else
               span.db-v2-sidebar__user-name = sidebar_user_display_name
               span.db-v2-sidebar__user-role = sidebar_plan_label
           i.fa-solid.fa-chevron-up.db-v2-sidebar__account-caret aria-hidden="true"
 
-        #sidebar-account-menu.db-v2-sidebar__account-menu role="menu" aria-label="アカウントメニュー"
-          p.db-v2-sidebar__account-menu-label アカウント
+        #sidebar-account-menu.db-v2-sidebar__account-menu role="menu" aria-label=t("recrivo.dashboard.nav.account_menu")
+          p.db-v2-sidebar__account-menu-label = t("recrivo.dashboard.account.language_title")
+          .db-v2-locale-switch.db-v2-locale-switch--sidebar role="group" aria-label=t("recrivo.dashboard.account.language_title")
+            = link_to t("recrivo.dashboard.account.language_ja"), locale_switch_path_for(:ja), class: "db-v2-locale-switch__btn#{' is-active' if current_locale.to_s == 'ja'}", role: "menuitem", "aria-pressed": (current_locale.to_s == "ja").to_s
+            = link_to t("recrivo.dashboard.account.language_en"), locale_switch_path_for(:en), class: "db-v2-locale-switch__btn#{' is-active' if current_locale.to_s == 'en'}", role: "menuitem", "aria-pressed": (current_locale.to_s == "en").to_s
+          p.db-v2-sidebar__account-menu-label = t("recrivo.dashboard.nav.settings")
           - if client_signed_in? && !admin_signed_in?
             = link_to dashboard_account_path, class: "db-v2-sidebar__link", role: "menuitem" do
-              i.fa-solid.fa-building aria-hidden="true"
-              span 企業情報
+              i.fa-solid.fa-globe aria-hidden="true"
+              span = t("recrivo.dashboard.nav.account_language")
             button.db-v2-sidebar__link type="button" role="menuitem" data-problem-modal-open=""
               i.fa-solid.fa-bug aria-hidden="true"
-              span 問題報告
-          = render "shared/sign_out_button", path: sign_out_path, variant: :sidebar
+              span = t("recrivo.dashboard.nav.report_problem")
+          = render "shared/sign_out_button", path: sign_out_path, variant: :sidebar, label: t("recrivo.dashboard.common.sign_out")

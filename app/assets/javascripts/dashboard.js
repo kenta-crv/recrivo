@@ -294,6 +294,21 @@ function copyTextToClipboard(text) {
   });
 }
 
+function dashboardI18n(el, key, fallback) {
+  var node = el;
+  while (node && node.getAttribute) {
+    var val = node.getAttribute('data-i18n-' + key);
+    if (val) return val;
+    node = node.parentElement;
+  }
+  var root = document.getElementById('dashboard-v2-container');
+  if (root) {
+    var fromRoot = root.getAttribute('data-i18n-' + key);
+    if (fromRoot) return fromRoot;
+  }
+  return fallback;
+}
+
 function refreshSuggestApplyState(card, listSelector, applySelector, emptyLabel, selectedLabel) {
   var list = card.querySelector(listSelector || '[data-ai-suggest-list]');
   var applyBtn = card.querySelector(applySelector || '[data-ai-suggest-apply]');
@@ -302,19 +317,21 @@ function refreshSuggestApplyState(card, listSelector, applySelector, emptyLabel,
   applyBtn.disabled = n === 0;
   var span = applyBtn.querySelector('span');
   if (span) {
-    var base = emptyLabel || '選択した質問を追加';
-    var withCount = selectedLabel || '選択した質問を追加';
-    span.textContent = n > 0 ? (withCount + '（' + n + '）') : base;
+    var base = emptyLabel || dashboardI18n(card, 'add-questions', 'Add selected questions');
+    var withCount = selectedLabel || base;
+    var tpl = dashboardI18n(card, 'apply-count', '%{label} (%{count})');
+    span.textContent = n > 0 ? tpl.replace('%{label}', withCount).replace('%{count}', n) : base;
   }
 }
 
 function refreshBasicSuggestApplyState(card) {
+  var label = dashboardI18n(card, 'add-basic', 'Add selected basics');
   refreshSuggestApplyState(
     card,
     '[data-basic-suggest-list]',
     '[data-basic-suggest-apply]',
-    '選択した基礎質問を追加',
-    '選択した基礎質問を追加'
+    label,
+    label
   );
 }
 
@@ -336,7 +353,7 @@ function renderSuggestedQuestions(card, questions) {
       question_text: q.question_text,
       question_type: q.question_type || 'open',
       required: !!q.required,
-      category: q.category || '一般'
+      category: q.category || dashboardI18n(card, 'general', 'General')
     });
 
     var check = document.createElement('span');
@@ -354,9 +371,9 @@ function renderSuggestedQuestions(card, questions) {
     meta.className = 'db-v2-suggest-item__meta';
     var metaParts = [];
     if (q.category) metaParts.push(q.category);
-    metaParts.push(q.required ? '必須' : '任意');
+    metaParts.push(q.required ? dashboardI18n(card, 'required', 'Required') : dashboardI18n(card, 'optional', 'Optional'));
     if (q.reason) metaParts.push(q.reason);
-    meta.textContent = metaParts.join(' ／ ');
+    meta.textContent = metaParts.join(dashboardI18n(card, 'sep', ' / '));
 
     body.appendChild(text);
     body.appendChild(meta);
@@ -420,7 +437,7 @@ function applySuggestedQuestions(card) {
     card,
     '[data-ai-suggest-list]',
     card.querySelector('[data-ai-suggest-apply]'),
-    '質問を追加中…'
+    dashboardI18n(card, 'adding', 'Adding questions…')
   );
 }
 
@@ -435,7 +452,7 @@ function applyBasicSuggestedQuestions(card) {
 function runAiSuggest(card) {
   var suggestUrl = card.getAttribute('data-suggest-url');
   if (!suggestUrl) {
-    setSuggestStatus(card, '提案URLが設定されていません。');
+    setSuggestStatus(card, dashboardI18n(card, 'no-suggest-url', 'Suggestion URL is missing.'));
     return;
   }
 
@@ -448,12 +465,12 @@ function runAiSuggest(card) {
   var count = countEl ? (countEl.value || '5') : '5';
 
   if (!industry || !jobTitle) {
-    setSuggestStatus(card, '業種と募集職種を入力してください。');
+    setSuggestStatus(card, dashboardI18n(card, 'need-industry-job', 'Enter industry and job title.'));
     return;
   }
 
   if (btn) btn.disabled = true;
-  setSuggestStatus(card, '提案を生成中…');
+  setSuggestStatus(card, dashboardI18n(card, 'generating', 'Generating suggestions…'));
 
   fetch(suggestUrl, {
     method: 'POST',
@@ -489,24 +506,24 @@ function runAiSuggest(card) {
     });
   }).then(function(result) {
     if (!result.ok || !result.data.success) {
-      setSuggestStatus(card, (result.data && result.data.error) || '提案に失敗しました。');
+      setSuggestStatus(card, (result.data && result.data.error) || dashboardI18n(card, 'suggest-failed', 'Suggestion failed.'));
       return;
     }
     var questions = result.data.questions || [];
-    setSuggestStatus(card, questions.length + '問を提案しました。必要なものだけ選んで追加できます。');
+    setSuggestStatus(card, dashboardI18n(card, 'suggested', 'Suggested %{count}.').replace('%{count}', questions.length));
     renderSuggestedQuestions(card, questions);
   }).catch(function(err) {
     if (err && err.message === 'non_json') {
       if (err.status === 401 || err.status === 403) {
-        setSuggestStatus(card, 'ログインの有効期限が切れました。再ログインしてください。');
+        setSuggestStatus(card, dashboardI18n(card, 'session-expired', 'Your session expired. Please sign in again.'));
       } else if (err.status >= 500) {
-        setSuggestStatus(card, 'サーバーエラーが発生しました。しばらくして再試行してください。');
+        setSuggestStatus(card, dashboardI18n(card, 'server-error', 'Server error. Try again in a moment.'));
       } else {
-        setSuggestStatus(card, '応答の解析に失敗しました。ページを再読み込みして再試行してください。');
+        setSuggestStatus(card, dashboardI18n(card, 'parse-error', 'Could not parse the response. Reload and try again.'));
       }
       return;
     }
-    setSuggestStatus(card, '通信エラーが発生しました。ネットワークを確認して再試行してください。');
+    setSuggestStatus(card, dashboardI18n(card, 'network-error', 'Network error. Check your connection and try again.'));
   }).finally(function() {
     if (btn) btn.disabled = false;
   });
@@ -533,11 +550,11 @@ document.addEventListener('click', function(e) {
     var original = label ? label.textContent : '';
     copyTextToClipboard(field.value || field.textContent || '').then(function() {
       if (label) {
-        label.textContent = 'コピーしました';
-        window.setTimeout(function() { label.textContent = original || 'リンクをコピー'; }, 1600);
+        label.textContent = dashboardI18n(copyBtn, 'copied', 'Copied');
+        window.setTimeout(function() { label.textContent = original || dashboardI18n(copyBtn, 'copy', 'Copy link'); }, 1600);
       }
     }).catch(function() {
-      if (label) label.textContent = 'コピーに失敗しました';
+      if (label) label.textContent = dashboardI18n(copyBtn, 'copy-failed', 'Copy failed');
     });
     return;
   }
@@ -649,7 +666,7 @@ function syncCorrectChoiceOptions(form) {
   select.innerHTML = '';
   var empty = document.createElement('option');
   empty.value = '';
-  empty.textContent = '正解なし（情報確認のみ）';
+  empty.textContent = dashboardI18n(form, 'no-correct', 'No correct answer (info only)');
   select.appendChild(empty);
 
   texts.forEach(function(text) {
@@ -672,11 +689,14 @@ function addChoiceRow(form, value) {
   var row = document.createElement('div');
   row.className = 'db-v2-choice-row';
   row.setAttribute('data-choice-row', '1');
+  var choicePh = dashboardI18n(form, 'choice-ph', 'e.g. Yes / No');
+  var choiceRemove = dashboardI18n(form, 'choice-remove', 'Remove this option');
+  var deleteLabel = dashboardI18n(form, 'delete', 'Delete');
   row.innerHTML =
     '<span class="db-v2-choice-row__num"></span>' +
-    '<input class="db-v2-form-control" type="text" name="question[choice_texts][]" value="" placeholder="例: はい / いいえ / 具体的な選択肢" data-choice-text="1" autocomplete="off">' +
-    '<button class="db-v2-btn db-v2-btn--ghost db-v2-btn--xs" type="button" data-choice-remove="1" aria-label="この選択肢を削除">' +
-      '<i class="fa-solid fa-trash" aria-hidden="true"></i><span>削除</span>' +
+    '<input class="db-v2-form-control" type="text" name="question[choice_texts][]" value="" placeholder="' + choicePh.replace(/"/g, '&quot;') + '" data-choice-text="1" autocomplete="off">' +
+    '<button class="db-v2-btn db-v2-btn--ghost db-v2-btn--xs" type="button" data-choice-remove="1" aria-label="' + choiceRemove.replace(/"/g, '&quot;') + '">' +
+      '<i class="fa-solid fa-trash" aria-hidden="true"></i><span>' + deleteLabel + '</span>' +
     '</button>';
   if (value) row.querySelector('[data-choice-text]').value = value;
   list.appendChild(row);

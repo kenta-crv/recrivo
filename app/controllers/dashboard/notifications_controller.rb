@@ -19,12 +19,12 @@ class Dashboard::NotificationsController < Dashboard::BaseController
 
   def update
     @notification.mark_read!
-    redirect_to dashboard_notifications_path, notice: "既読にしました"
+    redirect_to dashboard_notifications_path, notice: t("recrivo.dashboard.flash.marked_read")
   end
 
   def mark_all_read
     current_client.notifications.unread.update_all(read: true, read_at: Time.current)
-    redirect_to dashboard_notifications_path, notice: "すべて既読にしました"
+    redirect_to dashboard_notifications_path, notice: t("recrivo.dashboard.flash.marked_all_read")
   end
 
   private

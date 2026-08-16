@@ -5,7 +5,7 @@ class Dashboard::DashboardController < Dashboard::BaseController
       results_scope = InterviewResult.includes(interview: [:user, :situation])
                                     .joins(:interview).where(interviews: { preview: false })
       interviews_scope = Interview.real
-      @display_name = "管理者"
+      @display_name = t("recrivo.dashboard.home.admin_name")
       situation_ids = situations_scope_rel.pluck(:id)
     else
       situations_scope_rel = current_client.situations

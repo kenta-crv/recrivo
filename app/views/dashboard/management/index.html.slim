@@ -1,35 +1,35 @@
 .db-v2-header
   .db-v2-header__left
     h1.db-v2-header__title Management
-    p.db-v2-header__subtitle 契約企業の一覧と使用状況
+    p.db-v2-header__subtitle = t("recrivo.dashboard.management.subtitle")
   .db-v2-header__right
     = render "/dashboard/theme_switch"
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title 契約企業一覧
-    span.db-v2-deals-count = "#{@clients.size} 社"
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.management.list_title")
+    span.db-v2-deals-count = t("recrivo.dashboard.common.count_companies", count: @clients.size)
 
   .db-v2-bottom-card__body
     - if @clients.empty?
       .db-v2-empty-state
         .db-v2-empty-state__icon
           i.fa-solid.fa-building aria-hidden="true"
-        p.db-v2-empty-state__text 登録されている契約企業はありません
+        p.db-v2-empty-state__text = t("recrivo.dashboard.management.empty")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table.db-v2-deals-table
           thead
             tr
-              th 企業名
-              th メールアドレス
-              th 担当者
-              th プラン
-              th 契約状態
-              th シナリオ数
-              th 面接結果数
-              th 登録日
-              th 操作
+              th = t("recrivo.dashboard.management.col_company")
+              th = t("recrivo.dashboard.management.col_email")
+              th = t("recrivo.dashboard.management.col_contact")
+              th = t("recrivo.dashboard.management.col_plan")
+              th = t("recrivo.dashboard.management.col_status")
+              th = t("recrivo.dashboard.management.col_scenarios")
+              th = t("recrivo.dashboard.management.col_results")
+              th = t("recrivo.dashboard.management.col_registered")
+              th = t("recrivo.dashboard.management.col_actions")
           tbody
             - @clients.each do |client|
               - plan_config = client.current_plan_config
@@ -40,14 +40,14 @@
                 td = client.company.presence || "—"
                 td = client.email
                 td = client.name.presence || "—"
-                td = plan_config[:name]
+                td = localized_plan_name(plan_config)
                 td = client.subscription_status.presence || "—"
                 td
                   - if situation_limit
                     = "#{situation_count} / #{situation_limit}"
                   - else
-                    = "#{situation_count} / 無制限"
+                    = t("recrivo.dashboard.management.usage_unlimited", count: situation_count)
                 td = result_count
                 td = l(client.created_at, format: :short)
                 td
-                  = link_to "契約", dashboard_subscription_path(client_id: client.id), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+                  = link_to t("recrivo.dashboard.management.billing"), dashboard_subscription_path(client_id: client.id), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"

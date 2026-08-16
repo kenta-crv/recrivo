@@ -81,6 +81,9 @@ ja:
       pricing_choose: "このプランを選択"
       pricing_per_days: " / %{days}日間"
       pricing_per_month: " / 月"
+      trial_description: "無料トライアル (%{days}日間)"
+      plan_fallback: "プラン"
+      payment_fallback: "決済"
     mailer:
       hello: "こんにちは、%{email} 様"
       welcome: "ようこそ、%{email} 様"
@@ -185,6 +188,9 @@ en:
       pricing_choose: "Choose this plan"
       pricing_per_days: " / %{days} days"
       pricing_per_month: " / mo"
+      trial_description: "Free trial (%{days} days)"
+      plan_fallback: "Plan"
+      payment_fallback: "Payment"
     mailer:
       hello: "Hello %{email},"
       welcome: "Welcome %{email}!"

@@ -4,8 +4,8 @@
   .db-v2-modal__backdrop data-problem-modal-close=""
   .db-v2-modal__dialog.db-v2-modal__dialog--wide
     .db-v2-modal__header
-      h2#problem-report-modal-title.db-v2-modal__title 問題報告
-      button.db-v2-modal__close type="button" aria-label="閉じる" data-problem-modal-close=""
+      h2#problem-report-modal-title.db-v2-modal__title = t("recrivo.dashboard.problem.title")
+      button.db-v2-modal__close type="button" aria-label=t("recrivo.dashboard.common.close") data-problem-modal-close=""
         i.fa-solid.fa-xmark aria-hidden="true"
     .db-v2-modal__body
       = render "problems/form", problem: problem, form_id: "problem-report-modal-form"

@@ -142,9 +142,9 @@ class CandidateExperienceScore
 
   def add_gap(gaps, situation, key, partial:)
     label = if partial
-              "#{ITEM_LABELS[key]}が不足"
+              I18n.t("recrivo.dashboard.experience.gap_partial", item: I18n.t("recrivo.dashboard.experience.items.#{key}"))
             else
-              "#{ITEM_LABELS[key]}が未設定"
+              I18n.t("recrivo.dashboard.experience.gap_missing", item: I18n.t("recrivo.dashboard.experience.items.#{key}"))
             end
 
     gaps << Gap.new(

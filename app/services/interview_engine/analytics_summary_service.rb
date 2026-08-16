@@ -100,10 +100,10 @@ module InterviewEngine
       in_progressish = [started - completed - abandoned, 0].max
 
       segments = [
-        { key: "visit_only", label: "閲覧のみ", count: visit_only, color: "#94a3b8" },
-        { key: "registered_only", label: "登録のみ", count: lead_only, color: "#38bdf8" },
-        { key: "started_only", label: "受験中/未完了", count: in_progressish + abandoned, color: "#f59e0b" },
-        { key: "completed", label: "完了", count: completed, color: "#10b981" }
+        { key: "visit_only", count: visit_only, color: "#94a3b8" },
+        { key: "registered_only", count: lead_only, color: "#38bdf8" },
+        { key: "started_only", count: in_progressish + abandoned, color: "#f59e0b" },
+        { key: "completed", count: completed, color: "#10b981" }
       ]
       total = segments.sum { |s| s[:count] }
       segments.each do |seg|

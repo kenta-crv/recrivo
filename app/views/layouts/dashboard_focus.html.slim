@@ -1,10 +1,10 @@
 doctype html
-html.dashboard-html lang="ja"
+html.dashboard-html lang=current_locale
   head
     meta charset="UTF-8"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
     meta name="robots" content="noindex, nofollow"
-    title AI Interview
+    title = t("recrivo.dashboard.layout_title")
     = csrf_meta_tags
     = csp_meta_tag
     = favicon_link_tag "favicon.ico"

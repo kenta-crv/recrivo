@@ -44,8 +44,18 @@ module DashboardHelper
     classes.compact.join(" ")
   end
 
+  def localized_plan_name(config)
+    return "—" if config.blank?
+
+    I18n.locale.to_s == "en" ? (config[:name_en].presence || config[:name]) : config[:name]
+  end
+
   def sidebar_plan_label
-    sidebar_account_client&.current_plan_config&.dig(:name) || "—"
+    localized_plan_name(sidebar_account_client&.current_plan_config)
+  end
+
+  def candidate_registration_field_label(key)
+    I18n.t("recrivo.dashboard.situations.candidate_fields.#{key}", default: key.to_s)
   end
 
   def sidebar_user_display_name
@@ -71,27 +81,8 @@ module DashboardHelper
     admin_signed_in? && !client_signed_in?
   end
 
-  OPS_STATUS_LABELS = {
-    "new" => "新規",
-    "in_progress" => "進行中",
-    "completed" => "完了",
-    "pending_review" => "審査待ち",
-    "passed" => "合格",
-    "failed" => "不合格",
-    "abandoned" => "離脱",
-    "contacted" => "連絡済み"
-  }.freeze
-
-  INTERVIEW_STATUS_LABELS = {
-    "not_started" => "未開始",
-    "in_progress" => "面接中",
-    "completed" => "完了",
-    "failed" => "失敗",
-    "abandoned" => "離脱"
-  }.freeze
-
   def ops_status_label(status)
-    OPS_STATUS_LABELS[status.to_s] || status.to_s
+    I18n.t("recrivo.dashboard.status.ops.#{status}", default: status.to_s)
   end
 
   def ops_status_options
@@ -110,17 +101,19 @@ module DashboardHelper
   end
 
   def interview_status_label(status)
-    INTERVIEW_STATUS_LABELS[status.to_s] || status.to_s
+    I18n.t("recrivo.dashboard.status.interview.#{status}", default: status.to_s)
   end
 
   def final_status_label(status, detailed: false)
-    case status.to_s
-    when "passed" then "合格"
-    when "failed" then "不合格"
-    when "pending_review" then (detailed ? "確認待ち（面接官判定）" : "確認待ち")
-    else
-      status.to_s.presence || "—"
-    end
+    key = status.to_s
+    return "—" if key.blank?
+
+    lookup = if key == "pending_review" && detailed
+               "recrivo.dashboard.status.final.pending_review_detailed"
+             else
+               "recrivo.dashboard.status.final.#{key}"
+             end
+    I18n.t(lookup, default: key)
   end
 
   def final_status_badge_class(status)
@@ -134,32 +127,22 @@ module DashboardHelper
     "db-v2-status-badge db-v2-status-badge--#{modifier}"
   end
 
-  FOLLOW_UP_KIND_LABELS = {
-    "incomplete" => "未完了リマインド",
-    "completed" => "完了後フォロー"
-  }.freeze
-
-  FOLLOW_UP_STATUS_LABELS = {
-    "scheduled" => "予約済み",
-    "sent" => "送信済み",
-    "opened" => "開封済み",
-    "failed" => "失敗",
-    "cancelled" => "キャンセル",
-    "skipped" => "スキップ"
-  }.freeze
-
   def follow_up_kind_label(kind)
-    FOLLOW_UP_KIND_LABELS[kind.to_s] || kind.to_s
+    I18n.t("recrivo.dashboard.status.follow_kind.#{kind}", default: kind.to_s)
   end
 
   def follow_up_status_label(status)
-    FOLLOW_UP_STATUS_LABELS[status.to_s] || status.to_s
+    I18n.t("recrivo.dashboard.status.follow_status.#{status}", default: status.to_s)
   end
 
   def follow_up_template_label(template)
     delay = template.delay_days.to_i
-    timing = delay.zero? ? "即時" : "#{delay}日後"
-    "#{follow_up_kind_label(template.kind)}（#{timing}）"
+    timing = if delay.zero?
+               I18n.t("recrivo.dashboard.status.follow_immediate")
+             else
+               I18n.t("recrivo.dashboard.status.follow_days_later", days: delay)
+             end
+    I18n.t("recrivo.dashboard.status.follow_template", kind: follow_up_kind_label(template.kind), timing: timing)
   end
 
   EXPERIENCE_GAP_ANCHORS = {

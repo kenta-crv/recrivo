@@ -24,11 +24,11 @@ class Dashboard::CandidatesController < Dashboard::BaseController
   def update_ops_status
     status = params[:ops_status].to_s
     unless Interview::OPS_STATUSES.include?(status)
-      return redirect_to dashboard_candidate_path(@interview), alert: "不正なステータスです"
+      return redirect_to dashboard_candidate_path(@interview), alert: t("recrivo.dashboard.flash.invalid_ops")
     end
 
     @interview.update!(ops_status: status)
-    redirect_to dashboard_candidate_path(@interview), notice: "運用ステータスを更新しました"
+    redirect_to dashboard_candidate_path(@interview), notice: t("recrivo.dashboard.flash.ops_updated")
   end
 
   private

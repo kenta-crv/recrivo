@@ -1,72 +1,72 @@
 .db-v2-header
   .db-v2-header__left
-    nav.db-v2-breadcrumb aria-label="パンくず"
-      = link_to "面接管理", dashboard_candidates_path, class: "db-v2-breadcrumb__link"
+    nav.db-v2-breadcrumb aria-label=t("recrivo.dashboard.common.breadcrumb")
+      = link_to t("recrivo.dashboard.candidates.title"), dashboard_candidates_path, class: "db-v2-breadcrumb__link"
       i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
       span.db-v2-breadcrumb__current = @interview.user&.name.presence || @interview.user&.email
     h1.db-v2-header__title = @interview.user&.name.presence || @interview.user&.email
     p.db-v2-header__subtitle
       = @interview.situation&.title
-      |  ／ 
+      = t("recrivo.dashboard.common.sep")
       = interview_status_label(@interview.status)
       |  
       span class=ops_status_badge_class(@interview.ops_status) = ops_status_label(@interview.ops_status)
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     - if @result
-      = link_to "評価詳細", dashboard_interview_result_path(@result), class: "db-v2-btn db-v2-btn--primary"
+      = link_to t("recrivo.dashboard.candidates.evaluation_detail"), dashboard_interview_result_path(@result), class: "db-v2-btn db-v2-btn--primary"
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 候補者情報
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.candidates.info_title")
   .db-v2-bottom-card__body
     .db-v2-leads-table-wrap
       table.db-v2-leads-table.db-v2-leads-table--defs
         tbody
           tr
-            th メール
+            th = t("recrivo.dashboard.candidates.email")
             td = @interview.user&.email.presence || "—"
           tr
-            th 電話
+            th = t("recrivo.dashboard.candidates.phone")
             td = @interview.user&.tel.presence || "—"
           tr
-            th 住所
+            th = t("recrivo.dashboard.candidates.address")
             td = @interview.user&.address.presence || "—"
           tr
-            th 満足度
+            th = t("recrivo.dashboard.candidates.satisfaction")
             td = @interview.satisfaction_rating.presence || "—"
           - if @interview.satisfaction_feedback.present?
             tr
-              th フィードバック
+              th = t("recrivo.dashboard.candidates.feedback")
               td.db-v2-text-block = @interview.satisfaction_feedback
 
     hr.db-v2-card-divider
 
     = form_with url: update_ops_status_dashboard_candidate_path(@interview), method: :patch, local: true, html: { class: "db-v2-ops-form" } do
       .db-v2-form-group
-        label.db-v2-form-label 運用ステータス
+        label.db-v2-form-label = t("recrivo.dashboard.candidates.filter_ops")
         = select_tag :ops_status, options_for_select(ops_status_options, @interview.ops_status), class: "db-v2-form-control"
       .db-v2-form-group.db-v2-ops-form__actions
         label.db-v2-form-label &nbsp;
-        button.db-v2-btn.db-v2-btn--primary type="submit" 更新
+        button.db-v2-btn.db-v2-btn--primary type="submit" = t("recrivo.dashboard.common.update")
 
 .db-v2-bottom-card style="margin-top:1.25rem"
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title フォロー配信
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.candidates.follow_title")
   .db-v2-bottom-card__body
     - if @deliveries.blank?
-      p.db-v2-muted フォロー配信はありません
+      p.db-v2-muted = t("recrivo.dashboard.candidates.follow_empty")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table
           thead
             tr
-              th 種別
-              th 順番
-              th 状態
-              th 予定
-              th 送信
-              th 開封
+              th = t("recrivo.dashboard.candidates.col_kind")
+              th = t("recrivo.dashboard.candidates.col_seq")
+              th = t("recrivo.dashboard.candidates.col_status")
+              th = t("recrivo.dashboard.candidates.col_scheduled")
+              th = t("recrivo.dashboard.candidates.col_sent")
+              th = t("recrivo.dashboard.candidates.col_opened")
           tbody
             - @deliveries.each do |d|
               tr
@@ -79,18 +79,18 @@
 
 .db-v2-bottom-card style="margin-top:1.25rem"
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 行動イベント
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.candidates.events_title")
   .db-v2-bottom-card__body
     - if @events.blank?
-      p.db-v2-muted イベントはまだありません
+      p.db-v2-muted = t("recrivo.dashboard.candidates.events_empty")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table
           thead
             tr
-              th 種別
-              th 質問
-              th 日時
+              th = t("recrivo.dashboard.candidates.col_type")
+              th = t("recrivo.dashboard.candidates.col_question")
+              th = t("recrivo.dashboard.candidates.col_datetime")
           tbody
             - @events.each do |ev|
               tr

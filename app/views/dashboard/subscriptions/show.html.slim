@@ -6,29 +6,30 @@
   .db-v2-bottom-card__header
     h2.db-v2-bottom-card__title
       i.fa-solid.fa-id-card aria-hidden="true"
-      |  現在のプラン
+      |  
+      = t("recrivo.dashboard.subscription.current_plan")
   .db-v2-bottom-card__body
     - if @subscription.present? || @target_client.on_trial?
       .db-v2-subscription-status
         .db-v2-subscription-status__row
-          span.db-v2-subscription-status__label プランタイプ
+          span.db-v2-subscription-status__label = t("recrivo.dashboard.subscription.plan_type")
           span.db-v2-subscription-status__value
             - if is_trial
-              = Subscription::PLAN_NAMES[:trial]
+              = localized_plan_name(Subscription.plan_config(:trial))
             - else
-              = @subscription&.plan_name || "—"
+              = localized_plan_name(@plan_config || @subscription&.plan_config) || "—"
 
         .db-v2-subscription-status__row
-          span.db-v2-subscription-status__label ステータス
+          span.db-v2-subscription-status__label = t("recrivo.dashboard.subscription.status")
           span.db-v2-subscription-status__value class=("db-v2-subscription-status__value--trial" if is_trial)
             - if is_trial && @target_client.on_trial?
-              | トライアル中
+              = t("recrivo.dashboard.status.trial")
             - elsif @subscription&.expired? || (@subscription&.trial? && @subscription&.trial_expired?)
-              | トライアル終了（閲覧のみ）
+              = t("recrivo.dashboard.status.trial_ended")
             - elsif @subscription&.cancelled?
-              | 解約手続き済み
+              = t("recrivo.dashboard.status.cancel_pending")
             - elsif is_active
-              | 有効
+              = t("recrivo.dashboard.status.active")
             - else
               = @subscription&.status || "—"
 
@@ -38,44 +39,44 @@
 
         - if current_trial_ends_at.present?
           .db-v2-subscription-status__row
-            span.db-v2-subscription-status__label トライアル終了日
-            span.db-v2-subscription-status__value = current_trial_ends_at.strftime("%Y年%m月%d日")
+            span.db-v2-subscription-status__label = t("recrivo.dashboard.subscription.trial_ends")
+            span.db-v2-subscription-status__value = l(current_trial_ends_at.to_date, format: :long)
 
       - unless admin_signed_in?
         .db-v2-subscription-upgrade
-          h3.db-v2-subscription-upgrade__title プランのアップグレード・変更
-          = link_to plans_path, class: "db-v2-btn db-v2-btn--primary" do
+          h3.db-v2-subscription-upgrade__title = t("recrivo.dashboard.subscription.upgrade_title")
+          = link_to plans_path_for_locale, class: "db-v2-btn db-v2-btn--primary" do
             i.fa-solid.fa-tags aria-hidden="true"
-            span プランを変更する
+            span = t("recrivo.dashboard.subscription.change_plan")
 
         - if can_cancel
           .db-v2-subscription-cancel
             p.db-v2-subscription-cancel__note
               - if is_trial
-                | トライアルはカード不要です。期間終了時も自動課金されず、スタンダードへのご契約は管理画面から行えます。
+                = t("recrivo.dashboard.subscription.cancel_trial_note")
               - else
-                | 解約手続き後も、契約期間の終了日まではご利用いただけます。
-            = link_to "サブスクリプションを解約する", cancel_confirm_dashboard_subscription_path(subscription_path_options), class: "db-v2-btn db-v2-btn--danger"
+                = t("recrivo.dashboard.subscription.cancel_active_note")
+            = link_to t("recrivo.dashboard.subscription.cancel_cta"), cancel_confirm_dashboard_subscription_path(subscription_path_options), class: "db-v2-btn db-v2-btn--danger"
 
     - else
       .db-v2-empty-state
-        p.db-v2-empty-state__text アクティブなサブスクリプションがありません。
-        = link_to plans_path, class: "db-v2-btn db-v2-btn--primary" do
-          span プランを選択する
+        p.db-v2-empty-state__text = t("recrivo.dashboard.subscription.empty")
+        = link_to plans_path_for_locale, class: "db-v2-btn db-v2-btn--primary" do
+          span = t("recrivo.dashboard.subscription.choose_plan")
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 支払い履歴
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.subscription.payments")
   .db-v2-bottom-card__body
     - if @payments.present?
       .db-v2-leads-table-wrap
         table.db-v2-leads-table
           thead
             tr
-              th 日付
-              th 金額
-              th 説明
-              th ステータス
+              th = t("recrivo.dashboard.subscription.col_date")
+              th = t("recrivo.dashboard.subscription.col_amount")
+              th = t("recrivo.dashboard.subscription.col_desc")
+              th = t("recrivo.dashboard.subscription.col_status")
           tbody
             - @payments.each do |payment|
               tr
@@ -84,4 +85,4 @@
                 td = payment.try(:description) || "—"
                 td = payment.status
     - else
-      p.db-v2-empty-state__text 支払い履歴はありません。
+      p.db-v2-empty-state__text = t("recrivo.dashboard.subscription.no_payments")

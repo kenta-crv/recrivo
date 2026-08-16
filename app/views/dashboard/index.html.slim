@@ -1,97 +1,97 @@
 .db-v2-header
   .db-v2-header__left
-    h1.db-v2-header__title こんにちは、#{@display_name} さん
-    p.db-v2-header__subtitle AI面接の運用サマリー
+    h1.db-v2-header__title = t("recrivo.dashboard.home.greeting", name: @display_name)
+    p.db-v2-header__subtitle = t("recrivo.dashboard.home.subtitle")
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
       i.fa-solid.fa-plus aria-hidden="true"
-      span シナリオを作成
+      span = t("recrivo.dashboard.home.create_scenario")
 
 .db-v2-summary-grid.db-v2-summary-grid--3
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
       i.fa-solid.fa-list-check aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label シナリオ
+      .db-v2-summary-card__label = t("recrivo.dashboard.home.metric_scenarios")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = @situations_count
       .db-v2-summary-card__trend
-        span.db-v2-summary-card__trend-label 有効 #{@active_situations_count} 件
+        span.db-v2-summary-card__trend-label = t("recrivo.dashboard.home.metric_scenarios_hint", count: @active_situations_count)
 
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--green
       i.fa-solid.fa-clipboard-check aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 評価済み
+      .db-v2-summary-card__label = t("recrivo.dashboard.home.metric_evaluated")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = @results_count
       .db-v2-summary-card__trend
-        span.db-v2-summary-card__trend-label 累計の評価済み面接
+        span.db-v2-summary-card__trend-label = t("recrivo.dashboard.home.metric_evaluated_hint")
 
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--purple
       i.fa-solid.fa-calendar-check aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 今月の面接
+      .db-v2-summary-card__label = t("recrivo.dashboard.home.metric_month")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = @interviews_this_month
       .db-v2-summary-card__trend
         span.db-v2-summary-card__trend-label
           - if admin_signed_in?
-            | 全企業の合計
+            = t("recrivo.dashboard.home.metric_month_all")
           - elsif @monthly_limit
-            | 上限 #{@monthly_limit} 件
+            = t("recrivo.dashboard.home.metric_month_limit", count: @monthly_limit)
           - else
-            | 上限なし
+            = t("recrivo.dashboard.home.metric_month_unlimited")
 
 .db-v2-summary-grid.db-v2-summary-grid--3
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--gold
       i.fa-solid.fa-star aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 平均点
+      .db-v2-summary-card__label = t("recrivo.dashboard.home.metric_avg_score")
       .db-v2-summary-card__value-row
         - if @average_score
           span.db-v2-summary-card__value = @average_score
-          span.db-v2-summary-card__unit 点
+          span.db-v2-summary-card__unit = t("recrivo.dashboard.home.unit_points")
         - else
           span.db-v2-summary-card__value —
       .db-v2-summary-card__trend
-        span.db-v2-summary-card__trend-label 評価済み面接の平均（満点100）
+        span.db-v2-summary-card__trend-label = t("recrivo.dashboard.home.metric_avg_score_hint")
 
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--rose
       i.fa-solid.fa-person-walking-arrow-right aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 離脱率
+      .db-v2-summary-card__label = t("recrivo.dashboard.home.metric_abandon")
       .db-v2-summary-card__value-row
         - if @abandon_rate.nil?
           span.db-v2-summary-card__value —
         - else
           span.db-v2-summary-card__value = @abandon_rate
-          span.db-v2-summary-card__unit ％
+          span.db-v2-summary-card__unit = t("recrivo.dashboard.common.percent")
       .db-v2-summary-card__trend
         span.db-v2-summary-card__trend-label
           - if @decided_interview_count.to_i.zero?
-            | まだ終了した面接がありません
+            = t("recrivo.dashboard.home.metric_abandon_empty")
           - else
-            = "途中離脱 #{@abandoned_count}／開始 #{@analytics[:sessions_started]}"
+            = t("recrivo.dashboard.home.metric_abandon_hint", abandoned: @abandoned_count, started: @analytics[:sessions_started])
 
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
       i.fa-solid.fa-filter aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 完了率
+      .db-v2-summary-card__label = t("recrivo.dashboard.home.metric_completion")
       .db-v2-summary-card__value-row
         - if @analytics[:completion_rate]
           span.db-v2-summary-card__value = @analytics[:completion_rate]
-          span.db-v2-summary-card__unit ％
+          span.db-v2-summary-card__unit = t("recrivo.dashboard.common.percent")
         - else
           span.db-v2-summary-card__value —
       .db-v2-summary-card__trend
         span.db-v2-summary-card__trend-label
-          = "閲覧 #{@analytics[:page_views]} → 登録 #{@analytics[:registered_count]} → 完了 #{@analytics[:sessions_completed]}"
+          = t("recrivo.dashboard.home.metric_completion_hint", views: @analytics[:page_views], registered: @analytics[:registered_count], completed: @analytics[:sessions_completed])
 
 .db-v2-experience-bar class=(@experience_has_gaps ? "db-v2-experience-bar--alert" : nil)
   .db-v2-experience-bar__main
@@ -101,54 +101,54 @@
       .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--teal
         i.fa-solid.fa-chart-pie aria-hidden="true"
     .db-v2-experience-bar__text
-      span.db-v2-experience-bar__label 候補者体験の充実度
+      span.db-v2-experience-bar__label = t("recrivo.dashboard.home.experience_label")
       span.db-v2-experience-bar__score
         - if @experience_score
           strong = @experience_score
-          span.db-v2-muted ／100
+          span.db-v2-muted = t("recrivo.dashboard.common.of_100")
         - else
           strong —
-  = link_to "状況を確認", dashboard_candidate_experience_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+  = link_to t("recrivo.dashboard.home.experience_check"), dashboard_candidate_experience_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
 
 - if @analytics[:funnel_segments].present?
   .db-v2-bottom-card style="margin-top: 1.25rem"
     .db-v2-bottom-card__header
-      h2.db-v2-bottom-card__title 進捗の内訳
+      h2.db-v2-bottom-card__title = t("recrivo.dashboard.home.funnel_title")
     .db-v2-bottom-card__body
       .db-v2-funnel-pie__legends style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px"
         - @analytics[:funnel_segments].each do |seg|
           .db-v2-funnel-pie__legend
             span.db-v2-funnel-pie__badge style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#{seg[:color]};margin-right:6px"
-            span.db-v2-funnel-pie__legend-label = seg[:label]
-            span.db-v2-muted = " #{seg[:count]}件（#{seg[:share]}%）"
+            span.db-v2-funnel-pie__legend-label = t("recrivo.dashboard.home.funnel_#{seg[:key]}")
+            span.db-v2-muted = " #{t("recrivo.dashboard.home.funnel_count", count: seg[:count], share: seg[:share])}"
       p.db-v2-muted style="margin-top:12px"
-        | 合格 #{@analytics[:passed_count]} ／ 審査待ち #{@analytics[:pending_review_count]} ／ フォロー送信 #{@analytics[:follow_up_sent]}（開封 #{@analytics[:follow_up_opened]}）
+        = t("recrivo.dashboard.home.funnel_footer", passed: @analytics[:passed_count], pending: @analytics[:pending_review_count], sent: @analytics[:follow_up_sent], opened: @analytics[:follow_up_opened])
         - if @analytics[:average_satisfaction]
-          |  ／ 満足度平均 #{@analytics[:average_satisfaction]}
+          = t("recrivo.dashboard.home.funnel_satisfaction", rating: @analytics[:average_satisfaction])
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title 最近の面接
-    = link_to "すべて見る", dashboard_candidates_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.home.recent_title")
+    = link_to t("recrivo.dashboard.home.view_all"), dashboard_candidates_path, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
   .db-v2-bottom-card__body
     - if @recent_candidates.blank?
       .db-v2-empty-state
-        p.db-v2-empty-state__text まだ面接がありません
-        p.db-v2-muted シナリオを作成し、招待リンクを候補者へ共有してください。
+        p.db-v2-empty-state__text = t("recrivo.dashboard.home.empty")
+        p.db-v2-muted = t("recrivo.dashboard.home.empty_lead")
         - unless admin_signed_in?
           = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
-            span シナリオを作成
+            span = t("recrivo.dashboard.home.create_scenario")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table.db-v2-deals-table
           thead
             tr
-              th 候補者
-              th シナリオ
-              th 運用
-              th 判定
-              th スコア
-              th 更新
+              th = t("recrivo.dashboard.home.col_candidate")
+              th = t("recrivo.dashboard.home.col_scenario")
+              th = t("recrivo.dashboard.home.col_ops")
+              th = t("recrivo.dashboard.home.col_decision")
+              th = t("recrivo.dashboard.home.col_score")
+              th = t("recrivo.dashboard.home.col_updated")
               th
           tbody
             - @recent_candidates.each do |interview|
@@ -167,4 +167,4 @@
                 td = l(interview.updated_at, format: :short)
                 td
                   = link_to dashboard_candidate_path(interview), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
-                    span 詳細
+                    span = t("recrivo.dashboard.common.detail")

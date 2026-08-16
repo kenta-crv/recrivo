@@ -1,54 +1,54 @@
 .db-v2-header
   .db-v2-header__left
-    h1.db-v2-header__title 候補者体験の充実度
-    p.db-v2-header__subtitle 有効シナリオごとの整備状況（任意項目含む）
+    h1.db-v2-header__title = t("recrivo.dashboard.experience.title")
+    p.db-v2-header__subtitle = t("recrivo.dashboard.experience.subtitle")
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     = link_to dashboard_index_path, class: "db-v2-btn db-v2-btn--ghost" do
-      span ダッシュボードへ戻る
+      span = t("recrivo.dashboard.experience.back")
 
 .db-v2-summary-grid.db-v2-summary-grid--3
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--teal
       i.fa-solid.fa-chart-pie aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 平均充実度
+      .db-v2-summary-card__label = t("recrivo.dashboard.experience.avg_score")
       .db-v2-summary-card__value-row
         - if @experience_score
           span.db-v2-summary-card__value = @experience_score
-          span.db-v2-summary-card__unit ／100
+          span.db-v2-summary-card__unit = t("recrivo.dashboard.common.of_100")
         - else
           span.db-v2-summary-card__value —
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
       i.fa-solid.fa-list-check aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 対象シナリオ
+      .db-v2-summary-card__label = t("recrivo.dashboard.experience.target_scenarios")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = @situations_count
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--rose
       i.fa-solid.fa-triangle-exclamation aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 不足項目
+      .db-v2-summary-card__label = t("recrivo.dashboard.experience.gaps_count")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = @experience_gaps.size
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 不足している項目
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.experience.gaps_title")
   .db-v2-bottom-card__body
     - if @experience_items.blank?
       .db-v2-empty-state
-        p.db-v2-empty-state__text 有効なシナリオがありません
-        p.db-v2-muted シナリオを作成・有効化すると、充実度を確認できます。
+        p.db-v2-empty-state__text = t("recrivo.dashboard.experience.empty_situations")
+        p.db-v2-muted = t("recrivo.dashboard.experience.empty_situations_lead")
         - unless admin_signed_in?
           = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
-            span シナリオを作成
+            span = t("recrivo.dashboard.home.create_scenario")
     - elsif @experience_gaps.blank?
       .db-v2-empty-state
-        p.db-v2-empty-state__text 不足はありません
-        p.db-v2-muted 求人情報・FAQ・案内URLなどが揃っています。
+        p.db-v2-empty-state__text = t("recrivo.dashboard.experience.no_gaps")
+        p.db-v2-muted = t("recrivo.dashboard.experience.no_gaps_lead")
     - else
       .db-v2-experience-issue-list
         - @experience_gaps.each do |gap|
@@ -59,4 +59,4 @@
               span.db-v2-experience-issue__label
                 = gap.label
                 - if gap.optional
-                  span.db-v2-experience-issue__optional  （任意）
+                  span.db-v2-experience-issue__optional = t("recrivo.dashboard.experience.optional")

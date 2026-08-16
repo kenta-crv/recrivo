@@ -1,0 +1,1311 @@
+ja:
+  recrivo:
+    dashboard:
+      layout_title: AI Interview ダッシュボード
+      common:
+        close: 閉じる
+        save: 保存
+        cancel: キャンセル
+        delete: 削除
+        detail: 詳細
+        open: 開く
+        copy: コピー
+        back: 戻る
+        update: 更新
+        create: 作成する
+        all: すべて
+        filter: 絞り込み
+        edit: 編集
+        required: 必須
+        optional: 任意
+        published: 公開
+        draft: 下書き
+        hidden: 非表示
+        none: なし
+        archived: アーカイブ
+        active: 有効
+        breadcrumb: パンくず
+        dashboard: ダッシュボード
+        sign_out: ログアウト
+        theme_switch: テーマ切替
+        unlimited: 無制限
+        unlimited_paren: "（無制限）"
+        count: "%{count} 件"
+        count_companies: "%{count} 社"
+        count_questions: "%{count} 問"
+        points: "%{score}点"
+        of_100: ／100
+        sep: " ／ "
+        percent: ％
+      nav:
+        main_menu: メインメニュー
+        close_menu: メニューを閉じる
+        open_menu: メニューを開く
+        section_overview: 概要
+        section_interviews: 面接
+        section_account: アカウント
+        dashboard: ダッシュボード
+        notifications: 通知
+        situations: シナリオ管理
+        interviews: 面接管理
+        plan_billing: プラン・契約
+        companies: 契約企業
+        admin_results: 全面接結果
+        account_menu: アカウントメニュー
+        settings: アカウント
+        company_profile: 企業情報
+        report_problem: 問題報告
+        onboarding: 契約フロー
+        top: トップ
+        choose_plan: プラン選択
+        subscription_status: 契約状況
+        account_language: アカウント・言語
+        admin_role: 管理者
+      home:
+        greeting: こんにちは、%{name} さん
+        admin_name: 管理者
+        subtitle: AI面接の運用サマリー
+        create_scenario: シナリオを作成
+        metric_scenarios: シナリオ
+        metric_scenarios_hint: 有効 %{count} 件
+        metric_evaluated: 評価済み
+        metric_evaluated_hint: 累計の評価済み面接
+        metric_month: 今月の面接
+        metric_month_all: 全企業の合計
+        metric_month_limit: 上限 %{count} 件
+        metric_month_unlimited: 上限なし
+        metric_avg_score: 平均点
+        metric_avg_score_hint: 評価済み面接の平均（満点100）
+        unit_points: 点
+        metric_abandon: 離脱率
+        metric_abandon_empty: まだ終了した面接がありません
+        metric_abandon_hint: 途中離脱 %{abandoned}／開始 %{started}
+        metric_completion: 完了率
+        metric_completion_hint: 閲覧 %{views} → 登録 %{registered} → 完了 %{completed}
+        experience_label: 候補者体験の充実度
+        experience_check: 状況を確認
+        funnel_title: 進捗の内訳
+        funnel_count: "%{count}件（%{share}%）"
+        funnel_footer: 合格 %{passed} ／ 審査待ち %{pending} ／ フォロー送信 %{sent}（開封 %{opened}）
+        funnel_satisfaction:  ／ 満足度平均 %{rating}
+        funnel_visit_only: 閲覧のみ
+        funnel_registered_only: 登録のみ
+        funnel_started_only: 受験中/未完了
+        funnel_completed: 完了
+        recent_title: 最近の面接
+        view_all: すべて見る
+        empty: まだ面接がありません
+        empty_lead: シナリオを作成し、招待リンクを候補者へ共有してください。
+        col_candidate: 候補者
+        col_scenario: シナリオ
+        col_ops: 運用
+        col_decision: 判定
+        col_score: スコア
+        col_updated: 更新
+      status:
+        ops:
+          new: 新規
+          in_progress: 進行中
+          completed: 完了
+          pending_review: 審査待ち
+          passed: 合格
+          failed: 不合格
+          abandoned: 離脱
+          contacted: 連絡済み
+        interview:
+          not_started: 未開始
+          in_progress: 面接中
+          completed: 完了
+          failed: 失敗
+          abandoned: 離脱
+        final:
+          passed: 合格
+          failed: 不合格
+          incomplete: 未完了
+          pending_review: 確認待ち
+          pending_review_detailed: 確認待ち（面接官判定）
+        follow_kind:
+          incomplete: 未完了リマインド
+          completed: 完了後フォロー
+        follow_status:
+          scheduled: 予約済み
+          sent: 送信済み
+          opened: 開封済み
+          failed: 失敗
+          cancelled: キャンセル
+          skipped: スキップ
+        follow_immediate: 即時
+        follow_days_later: "%{days}日後"
+        follow_template: "%{kind}（%{timing}）"
+        trial: トライアル中
+        trial_ended: トライアル終了（閲覧のみ）
+        cancel_pending: 解約手続き済み
+        active: 有効
+      candidates:
+        title: 面接管理
+        subtitle: 候補者・評価・合否をまとめて確認できます
+        filter_scenario: シナリオ
+        filter_ops: 運用ステータス
+        filter_submit: 絞り込み
+        empty: まだ面接がありません
+        empty_lead: シナリオを作成し、招待リンクを候補者へ共有してください。
+        col_id: ID
+        col_candidate: 候補者
+        col_scenario: シナリオ
+        col_interview: 面接
+        col_ops: 運用
+        col_decision: 判定
+        col_score: スコア
+        col_updated: 更新
+        evaluation: 評価
+        evaluation_detail: 評価詳細
+        info_title: 候補者情報
+        email: メール
+        phone: 電話
+        address: 住所
+        satisfaction: 満足度
+        feedback: フィードバック
+        follow_title: フォロー配信
+        follow_empty: フォロー配信はありません
+        col_kind: 種別
+        col_seq: 順番
+        col_status: 状態
+        col_scheduled: 予定
+        col_sent: 送信
+        col_opened: 開封
+        events_title: 行動イベント
+        events_empty: イベントはまだありません
+        col_type: 種別
+        col_question: 質問
+        col_datetime: 日時
+      results:
+        title: 面接結果
+        subtitle: 候補者の評価・合否・スコアを確認できます（録音の再生は詳細画面）
+        list_title: 結果一覧
+        empty: まだ面接結果がありません
+        to_situations: シナリオ管理へ
+        col_id: ID
+        col_candidate: 受験者
+        col_scenario: シナリオ
+        col_decision: 判定
+        col_score: 平均点
+        col_date: 日時
+        col_actions: 通知 / 操作
+        hire: 採用
+        reject: 不採用
+        hire_confirm: 採用通知メールを送信しますか？
+        reject_confirm: 不採用通知メールを送信しますか？
+        judge_pass: 合格にする
+        judge_fail: 不合格にする
+        judge_pass_confirm: 合格に確定しますか？
+        judge_fail_confirm: 不合格に確定しますか？
+        hire_email: 採用通知を送る
+        reject_email: 不採用通知を送る
+        back_to_candidate: 候補者へ戻る
+        applicant_info: 受験者情報
+        name: 氏名
+        email: メール
+        phone: 電話番号
+        address: 住所
+        metric_decision: 判定
+        metric_score: 平均点
+        metric_answers: 回答数
+        reason: "理由: %{reason}"
+        summary_title: AI総評
+        generate_summary: 総評を生成
+        summary_empty: AI総評はまだ生成されていません。「総評を生成」から作成できます。
+        strengths: 強み
+        weaknesses: 改善点
+        recommendation: 推奨アクション
+        none: なし
+        log_title: 回答ログ（録音・動画）
+        log_empty: 回答がありません
+        score_label: "スコア: "
+        answer_text: 回答テキスト
+        play_audio: 録音を再生
+        play_video: 動画を再生
+        no_media: 録音・動画なし
+        fallback_title: 評価詳細
+        admin_title: "面接結果 #%{id}"
+        admin_subtitle: 全応募者の面接結果一覧
+        admin_list_title: 面接結果一覧
+        admin_empty: 面接結果はまだありません
+        admin_col_candidate: 応募者
+        admin_col_status: ステータス
+        admin_col_score: 平均スコア
+        admin_col_created: 作成日
+        admin_back: 一覧へ戻る
+        admin_summary: サマリー
+        admin_applicant: 応募者
+        admin_answers: 回答一覧
+        admin_audio: 音声
+        admin_video: 動画
+        admin_weaknesses: 弱み
+        admin_recommendation: 推薦
+      experience:
+        title: 候補者体験の充実度
+        subtitle: 有効シナリオごとの整備状況（任意項目含む）
+        back: ダッシュボードへ戻る
+        avg_score: 平均充実度
+        target_scenarios: 対象シナリオ
+        gaps_count: 不足項目
+        gaps_title: 不足している項目
+        empty_situations: 有効なシナリオがありません
+        empty_situations_lead: シナリオを作成・有効化すると、充実度を確認できます。
+        no_gaps: 不足はありません
+        no_gaps_lead: 求人情報・FAQ・案内URLなどが揃っています。
+        optional: （任意）
+        items:
+          job_info: 求人基本情報
+          faqs: FAQ
+          next_step_url: 次ステップ案内URL
+          materials: 採用資料
+          published_questions: 公開中の質問
+        gap_partial: "%{item}が不足"
+        gap_missing: "%{item}が未設定"
+      account:
+        language_title: 表示言語
+        language_hint: ダッシュボードの表示言語を選択します。変更はすぐに反映されます。
+        language_ja: 日本語
+        language_en: English
+        title: 企業情報
+        company: 会社名
+        name: 担当者名
+        email: メールアドレス
+        tel: 電話番号
+        address: 住所
+        url: URL
+        save: 保存する
+        emails_title: 採用・不採用メール文面
+        emails_lead: 面接管理から送る採用・不採用メールの文面です。空欄の項目はシステム標準文面を使います。
+        emails_vars: 差し込み変数（そのままコピーして使えます）
+        hire_subject: 採用メール件名
+        hire_body: 採用メール本文
+        reject_subject: 不採用メール件名
+        reject_body: 不採用メール本文
+        hire_subject_ph: 空欄でデフォルト（【採用のご連絡】{{company}}）
+        reject_subject_ph: 空欄でデフォルト（【選考結果のご連絡】{{company}}）
+        hire_body_ph: 空欄でデフォルトの採用通知文面を使用
+        reject_body_ph: 空欄でデフォルトの不採用通知文面を使用
+      subscription:
+        current_plan: 現在のプラン
+        plan_type: プランタイプ
+        status: ステータス
+        trial_ends: トライアル終了日
+        upgrade_title: プランのアップグレード・変更
+        change_plan: プランを変更する
+        cancel_trial_note: トライアルはカード不要です。期間終了時も自動課金されず、スタンダードへのご契約は管理画面から行えます。
+        cancel_active_note: 解約手続き後も、契約期間の終了日まではご利用いただけます。
+        cancel_cta: サブスクリプションを解約する
+        empty: アクティブなサブスクリプションがありません。
+        choose_plan: プランを選択する
+        payments: 支払い履歴
+        col_date: 日付
+        col_amount: 金額
+        col_desc: 説明
+        col_status: ステータス
+        no_payments: 支払い履歴はありません。
+        cancel_confirm_title: 解約の確認
+        cancel_confirm_lead: 解約手続きを完了すると、自動更新が停止されます。
+        cancel_until: 最終利用可能日： %{date}
+        cancel_until_note: この日付まで、有料機能を引き続きご利用いただけます。
+        cancel_confirm_btn: 解約を確定する
+        cancel_confirm_dialog: 本当に解約しますか？
+        change_to: "%{name}に変更"
+      management:
+        subtitle: 契約企業の一覧と使用状況
+        list_title: 契約企業一覧
+        empty: 登録されている契約企業はありません
+        col_company: 企業名
+        col_email: メールアドレス
+        col_contact: 担当者
+        col_plan: プラン
+        col_status: 契約状態
+        col_scenarios: シナリオ数
+        col_results: 面接結果数
+        col_registered: 登録日
+        col_actions: 操作
+        usage_unlimited: "%{count} / 無制限"
+        billing: 契約
+      notifications:
+        title: 通知
+        subtitle: 面接完了・不合格などのアプリ内通知
+        mark_all: すべて既読
+        empty: 通知はありません
+        col_state: 状態
+        col_title: タイトル
+        col_type: 種別
+        col_datetime: 日時
+        read: 既読
+        unread: 未読
+      problem:
+        title: 問題報告
+        company: 会社名
+        email: メールアドレス
+        photo: 添付画像
+        photo_hint: 任意。スクリーンショットなどがあると調査がスムーズです。
+        body: 内容
+        body_ph: 発生した問題の内容・再現手順など
+        company_ph: 株式会社〇〇〇〇
+        submit: 報告する
+      situations:
+        index_title: シナリオ管理
+        index_subtitle_admin: 全契約企業の面接シナリオ一覧
+        index_subtitle_limited: "プラン: %{plan} ／ シナリオ %{used} / %{limit} 件"
+        index_subtitle_unlimited: "プラン: %{plan} ／ シナリオ %{used} 件（無制限）"
+        create: シナリオを新規作成
+        list_title: 面接シナリオ一覧
+        empty: まだ面接シナリオがありません
+        create_first: 最初のシナリオを作成
+        col_id: ID
+        col_company: 企業
+        col_title: タイトル
+        col_language: 言語
+        col_questions: 質問数
+        col_status: 状態
+        col_updated: 更新日
+        col_actions: 操作
+        delete_confirm: このシナリオを削除しますか？
+        new_title: 新規シナリオ作成
+        new_current: 新規作成
+        new_subtitle: 基本情報を入れて作成し、続けて質問を追加します
+        edit_title: シナリオを編集
+        edit_current: 編集
+        settings_title: シナリオ設定
+        back_to_list: 一覧に戻る
+        back_to_detail: 詳細に戻る
+        no_description: 説明未設定
+        language_label: "言語 %{code}"
+        archived_now: アーカイブ中
+        add_question: 質問を追加
+        invite_title: 招待リンク
+        invite_lead: "候補者にこのURLを共有してください（ログイン不要）。閲覧数: %{count}"
+        invite_url: 招待URL
+        copy_link: リンクをコピー
+        open_interview: 面接ページを開く
+        preview: プレビュー（記録なし）
+        regenerate: リンクを再発行
+        regenerate_confirm: 既存リンクは無効になります。再発行しますか？
+        judgment_title: 合否ルール
+        suggest_title: 質問を提案・追加
+        suggest_badge: 基礎質問 ＋ 業種・職種向け
+        basic_pick: 基礎質問から選ぶ（%{count}問）
+        basic_lead: どの職種でも使いやすい定番質問です。必要なものを選んで追加できます。
+        add_basic: 選択した基礎質問を追加
+        select_all: すべて選択
+        clear_selection: 選択解除
+        ai_title: 業種・職種向けにAIで提案
+        ai_lead: 業種と募集職種をもとに、その仕事ならではの質問を提案します。
+        industry: 業種
+        job_title: 募集職種
+        suggest_count: 提案数
+        questions_n: "%{count}問"
+        suggest_run: 質問を提案する
+        suggest_results: 提案結果（追加したい質問を選んでください）
+        add_selected: 選択した質問を追加
+        questions_title: 質問一覧
+        questions_empty: まだ質問がありません。最低1問必要です。
+        add_first_question: 最初の質問を追加
+        branched: 分岐あり
+        unpublish: 非公開にする
+        publish: 公開する
+        question_delete_confirm: この質問を削除しますか？
+        extra_title: 追加設定
+        analytics_title: このシナリオの進捗
+        analytics_line: 閲覧 %{views} → 登録 %{registered} → 完了 %{completed}（完了率 %{rate}%）／合格 %{passed}
+        registration_title: 受験者登録項目
+        skip_registration: 登録をスキップする
+        save_registration: 登録項目を保存
+        candidate_fields:
+          name: お名前
+          email: メールアドレス
+          tel: 電話番号
+          address: 住所
+          job_title: 現職・希望職種
+          company: 現所属
+          url: ポートフォリオURL
+        field_required: 必須
+        field_optional: 任意
+        field_hidden: 非表示
+        job_info_title: 求人基本情報
+        job_info_lead: 候補者が面接中に確認できる求人情報です（任意）。URL優先で読み取り、取得できない場合はテキスト貼り付けに切り替えてください。媒体専用のスクレイピングではありません。
+        job_url: 求人ページURL
+        job_url_hint: 公開ページのHTMLから本文を取得し、AIが基本情報とFAQ候補を下書きします。JS描画やログイン壁のページでは失敗することがあります。
+        job_text: 求人テキスト（貼り付け）
+        job_text_ph: URLが読めない場合は、求人票の本文をここに貼り付けてください
+        apply_faqs: 抽出したFAQ候補も追加する
+        import: URL / テキストから取り込む
+        employment_type: 雇用形態
+        employment_ph: 正社員・契約社員など
+        location: 勤務地
+        location_ph: 東京都渋谷区 / リモート可 など
+        salary: 給与
+        salary_ph: 年収○○万〜 / 月給○○万 など
+        job_summary: 仕事内容（候補者向け）
+        job_summary_ph: 候補者に見せる業務概要
+        requirements: 応募条件
+        selection_flow: 選考の流れ
+        source_url: 取り込み元URL
+        save_job_info: 求人基本情報を保存
+        materials_title: 募集資料・FAQ
+        materials_label: 募集要項・会社紹介など（任意）
+        materials_hint: 未設定の場合、面接終了画面には資料欄を表示しません。
+        upload_material: 資料をアップロード
+        faq_question: 質問
+        faq_answer: 回答
+        faq_category: カテゴリ
+        faq_category_ph: 勤務条件・福利厚生など
+        add_faq: FAQを追加
+        follow_title: フォロー自動化
+        follow_plan_note: 現在のプランではフォロー自動化は無効です（Standard以上で有効）。設定は保存できます。
+        next_step_url: 案内先URL
+        next_step_hint: 日程調整ページや選考案内ページなど、候補者に案内したいURLを設定します。
+        delay_days: 送信タイミング（遅延日数）
+        email_subject: 件名
+        email_body: 本文
+        include_link: メールに案内先URLへのリンクを入れる
+        follow_vars: "変数: {{candidate_name}} / {{company}} / {{situation_title}} / {{invite_url}}"
+        save_follow: フォロー設定を保存
+        form:
+          basic: 基本情報
+          client: 契約企業
+          client_blank: 企業を選択
+          client_hint: このシナリオを紐づける企業アカウントを選択してください。
+          title: タイトル
+          title_ph: "例: エンジニア一次面接"
+          industry: 業種
+          industry_ph: "例: IT・Web、人材、製造、小売"
+          industry_hint: AIが面接質問を提案するときの前提になります。
+          job_title: 募集職種
+          job_title_ph: "例: バックエンドエンジニア、営業、カスタマーサクセス"
+          description: 説明（任意）
+          description_ph: 社内メモ（候補者には表示されません）
+          language: 言語
+          language_ja: 日本語
+          language_en: English
+          judgment_section: 合否と回答方式
+          passing_score: 合格ライン（平均点）
+          passing_hint: "例: 70 なら平均 70 点以上で合格。"
+          answer_modes: 許可する回答手段
+          text: テキスト
+          voice: 音声
+          answer_hint: 少なくとも一方は有効にしてください。
+          advanced: 詳細設定（通常は変更不要）
+          judgment: 判定
+          judgment_mode: 判定モード
+          judgment_automatic: 自動判定（スコアで合否）
+          judgment_manual: 面接官が判定（結果は要確認）
+          result_visibility: 候補者への結果表示
+          result_hidden: 非表示（推奨・後日連絡）
+          result_immediate: その場で詳細を表示
+          result_hint: 総評・推薦は採用側向けです。通常は非表示のままにしてください。
+          auto_reject_section: 途中での不合格条件
+          auto_reject_hint: 不要ならオフのままにしてください。
+          auto_reject_enable: 途中不合格を使う
+          reject_on_required_fail: 必須質問が基準未満なら不合格にする
+          min_required_score: 必須質問の合格ライン（点）
+          max_consecutive_fails: 連続で基準未達が続いたら不合格
+          max_consecutive_hint: 使わない場合は 0。
+          reject_notify: 途中不合格時の通知
+          notify_in_app: アプリ内
+          notify_email: メール
+          notify_none: なし
+          camera_section: カメラ・セッション
+          record_camera: 面接中にカメラ映像を表示・録画する
+          session_timeout: 無操作でタイムアウト（分）
+          allow_resume: 途中離脱しても再開を許可する
+          max_resume: 再開できる最大回数
+          other: その他
+          archive: アーカイブする（新規招待を止める）
+        judgment:
+          manual: 面接官が判定
+          automatic: 自動判定
+          passing: "合格%{score}点"
+          hide_result: 結果非表示
+          show_result: 結果その場表示
+          auto_reject: 途中不合格あり
+      questions:
+        new_title: 新しい質問を作成
+        new_current: 質問追加
+        edit_title: 質問を編集
+        edit_current: 質問編集
+        crumb_situations: シナリオ
+        content_title: 質問内容
+        question_text: 質問内容
+        question_type: 質問タイプ
+        type_open: 自由回答
+        type_mcq: 選択式
+        type_hint: 自由回答は音声・テキストで答えます。選択式は下で選択肢を作ります。
+        choices: 選択肢
+        choices_hint: 1行に1つ。最低2つ必要です。正解がある場合だけ選んでください（任意）。
+        choice_ph: "例: はい / いいえ / 具体的な選択肢"
+        choice_remove: この選択肢を削除
+        add_choice: 選択肢を追加
+        correct: 正解（任意）
+        no_correct: 正解なし（情報確認のみ）
+        correct_hint: 正解を指定すると、その選択肢かどうかで採点します。
+        order: 表示順
+        publish: 公開する（面接に出す）
+        publish_hint: オフの間は下書きです。AI提案から追加した質問は初期状態で非公開です。
+        required: 必須質問（途中不合格の対象）
+        required_hint: シナリオで「必須質問が基準未満なら不合格」をオンにしている場合、この質問が対象になります。
+        category: カテゴリ
+        category_ph: "例: 技術, コミュニケーション"
+        branch_title: 分岐ルール（任意）
+        branch_lead: 条件を満たすときだけこの質問を出します。未設定なら通常どおり出題します。
+        branch_enable: 分岐条件を使う
+        branch_source: 参照する質問の表示順
+        branch_source_hint: "例: 1 なら「表示順1の質問」への回答を参照します。"
+        branch_type: 条件タイプ
+        branch_answered: 回答済み
+        branch_selected: 選択肢が一致
+        branch_score_above: スコア以上
+        branch_score_below: スコア未満
+        branch_value: 条件値（選択肢文 or 点数）
+        branch_value_ph: "例: はい / 70"
+        branch_value_hint: 「回答済み」のときは不要です。
+        branch_action: 条件が真のとき
+        branch_include: この質問を出す
+        branch_exclude: この質問を出さない
+        branch_default: 条件が偽のとき（デフォルト）
+        branch_default_exclude: 出さない
+        branch_default_include: 出す
+        create: 作成する
+        update: 更新する
+      js:
+        copied: コピーしました
+        copy_failed: コピーに失敗しました
+        copy_link: リンクをコピー
+        add_questions: 選択した質問を追加
+        add_basic: 選択した基礎質問を追加
+        apply_count: "%{label}（%{count}）"
+        adding: 質問を追加中…
+        no_suggest_url: 提案URLが設定されていません。
+        need_industry_job: 業種と募集職種を入力してください。
+        generating: 提案を生成中…
+        suggest_failed: 提案に失敗しました。
+        suggested: "%{count}問を提案しました。必要なものだけ選んで追加できます。"
+        session_expired: ログインの有効期限が切れました。再ログインしてください。
+        server_error: サーバーエラーが発生しました。しばらくして再試行してください。
+        parse_error: 応答の解析に失敗しました。ページを再読み込みして再試行してください。
+        network_error: 通信エラーが発生しました。ネットワークを確認して再試行してください。
+        required: 必須
+        optional: 任意
+        general: 一般
+        no_correct: 正解なし（情報確認のみ）
+        choice_ph: "例: はい / いいえ / 具体的な選択肢"
+        choice_remove: この選択肢を削除
+        delete: 削除
+      flash:
+        login_required: ログインが必要です。
+        client_login_required: 企業アカウントでのログインが必要です。
+        account_updated: 設定を保存しました。
+        invalid_ops: 不正なステータスです
+        ops_updated: 運用ステータスを更新しました
+        marked_read: 既読にしました
+        marked_all_read: すべて既読にしました
+        summary_generated: AI総評を生成しました。
+        summary_failed: AI総評の生成に失敗しました。
+        not_manual: この結果は手動判定の対象ではありません。
+        judged_pass: 合格に確定しました。
+        judged_fail: 不合格に確定しました。
+        no_candidate_email: 候補者のメールアドレスがありません。
+        decision_sent: "%{label}通知メールを %{email} へ送信しました。"
+        decision_failed: "%{label}通知メールの送信に失敗しました。設定を確認してください。"
+        hire_label: 採用
+        reject_label: 不採用
+        candidate_fallback: 候補者
+        company_fallback: 弊社
+        invalid_plan: 無効なプランです。
+        same_plan: 同じプランです。
+        no_active_sub: 現在有効なサブスクリプションはありません。
+        sub_missing: サブスクリプションが存在しません。
+        cancel_done: 解約手続きが完了しました。期間終了日まで継続してご利用いただけます。
+        cancel_failed: 解約処理に失敗しました。
+        stripe_cancel_failed: Stripe側のキャンセル処理に失敗しました。
+        client_required: クライアントを指定してください。
+        problem_submitted: 報告完了しました
+        situation_created: 面接シナリオを作成しました。業種・職種から質問をAI提案できます。
+        situation_updated: 面接シナリオを更新しました。
+        situation_deleted: 面接シナリオを削除しました。
+        invite_regenerated: 招待リンクを再発行しました。
+        registration_updated: 受験者登録項目を更新しました。
+        follow_updated: フォロー設定を更新しました。
+        no_file: ファイルを選択してください。
+        material_uploaded: 募集資料をアップロードしました。
+        material_removed: 募集資料を削除しました。
+        job_info_saved: 求人基本情報を保存しました。
+        job_imported: 求人情報を取り込みました。内容を確認・編集してください。%{faq_note}%{fallback_note}
+        job_imported_faq: " FAQを%{count}件追加しました。"
+        job_imported_fallback: " URLの取得に失敗したため、貼り付けテキストから取り込みました。"
+        select_questions: 追加する質問を選択してください。
+        no_valid_questions: 有効な質問がありませんでした。
+        questions_added: "%{count}問の質問を下書き（非公開）で追加しました。公開すると面接に出ます。"
+        questions_invalid: 質問データの形式が不正です。
+        questions_failed: "質問の追加に失敗しました: %{message}"
+        login_to_create: シナリオの新規作成にはログインが必要です。
+        question_created: 質問を作成しました。
+        question_updated: 質問を更新しました。
+        question_deleted: 質問を削除しました。
+        question_toggled: 質問を%{label}にしました。
+        published_label: 公開
+        unpublished_label: 非公開
+        faq_added: FAQを追加しました
+        faq_updated: FAQを更新しました
+        faq_deleted: FAQを削除しました
+
+en:
+  recrivo:
+    dashboard:
+      layout_title: AI Interview dashboard
+      common:
+        close: Close
+        save: Save
+        cancel: Cancel
+        delete: Delete
+        detail: Details
+        open: Open
+        copy: Copy
+        back: Back
+        update: Update
+        create: Create
+        all: All
+        filter: Filter
+        edit: Edit
+        required: Required
+        optional: Optional
+        published: Live
+        draft: Draft
+        hidden: Hidden
+        none: None
+        archived: Archived
+        active: Active
+        breadcrumb: Breadcrumb
+        dashboard: Dashboard
+        sign_out: Sign out
+        theme_switch: Theme
+        unlimited: Unlimited
+        unlimited_paren: "(unlimited)"
+        count: "%{count}"
+        count_companies: "%{count} companies"
+        count_questions: "%{count} questions"
+        points: "%{score} pts"
+        of_100: /100
+        sep: " / "
+        percent: "%"
+      nav:
+        main_menu: Main menu
+        close_menu: Close menu
+        open_menu: Open menu
+        section_overview: Overview
+        section_interviews: Interviews
+        section_account: Account
+        dashboard: Dashboard
+        notifications: Notifications
+        situations: Scenarios
+        interviews: Interviews
+        plan_billing: Plan & billing
+        companies: Companies
+        admin_results: All results
+        account_menu: Account menu
+        settings: Account
+        company_profile: Company profile
+        report_problem: Report a problem
+        onboarding: Onboarding
+        top: Home
+        choose_plan: Choose a plan
+        subscription_status: Billing
+        account_language: Account & language
+        admin_role: Admin
+      home:
+        greeting: Hi, %{name}
+        admin_name: Admin
+        subtitle: AI interview operations summary
+        create_scenario: Create scenario
+        metric_scenarios: Scenarios
+        metric_scenarios_hint: "%{count} active"
+        metric_evaluated: Evaluated
+        metric_evaluated_hint: Completed interviews with scores
+        metric_month: Interviews this month
+        metric_month_all: All companies
+        metric_month_limit: Cap %{count}
+        metric_month_unlimited: No cap
+        metric_avg_score: Average score
+        metric_avg_score_hint: Average of scored interviews (out of 100)
+        unit_points: pts
+        metric_abandon: Drop-off rate
+        metric_abandon_empty: No finished interviews yet
+        metric_abandon_hint: Abandoned %{abandoned} / started %{started}
+        metric_completion: Completion rate
+        metric_completion_hint: Views %{views} → registered %{registered} → completed %{completed}
+        experience_label: Candidate experience completeness
+        experience_check: Review gaps
+        funnel_title: Progress mix
+        funnel_count: "%{count} (%{share}%)"
+        funnel_footer: Passed %{passed} / pending review %{pending} / follow-ups sent %{sent} (opened %{opened})
+        funnel_satisfaction: " / avg satisfaction %{rating}"
+        funnel_visit_only: View only
+        funnel_registered_only: Registered only
+        funnel_started_only: In progress / incomplete
+        funnel_completed: Completed
+        recent_title: Recent interviews
+        view_all: View all
+        empty: No interviews yet
+        empty_lead: Create a scenario and share the invite link with candidates.
+        col_candidate: Candidate
+        col_scenario: Scenario
+        col_ops: Ops
+        col_decision: Decision
+        col_score: Score
+        col_updated: Updated
+      status:
+        ops:
+          new: New
+          in_progress: In progress
+          completed: Completed
+          pending_review: Pending review
+          passed: Passed
+          failed: Failed
+          abandoned: Abandoned
+          contacted: Contacted
+        interview:
+          not_started: Not started
+          in_progress: In interview
+          completed: Completed
+          failed: Failed
+          abandoned: Abandoned
+        final:
+          passed: Passed
+          failed: Failed
+          incomplete: Incomplete
+          pending_review: Pending
+          pending_review_detailed: Pending (manual review)
+        follow_kind:
+          incomplete: Incomplete reminder
+          completed: Post-completion follow-up
+        follow_status:
+          scheduled: Scheduled
+          sent: Sent
+          opened: Opened
+          failed: Failed
+          cancelled: Cancelled
+          skipped: Skipped
+        follow_immediate: Immediate
+        follow_days_later: "%{days} days later"
+        follow_template: "%{kind} (%{timing})"
+        trial: Trial
+        trial_ended: Trial ended (view only)
+        cancel_pending: Cancellation scheduled
+        active: Active
+      candidates:
+        title: Interviews
+        subtitle: Candidates, scores, and pass/fail in one place
+        filter_scenario: Scenario
+        filter_ops: Ops status
+        filter_submit: Filter
+        empty: No interviews yet
+        empty_lead: Create a scenario and share the invite link with candidates.
+        col_id: ID
+        col_candidate: Candidate
+        col_scenario: Scenario
+        col_interview: Interview
+        col_ops: Ops
+        col_decision: Decision
+        col_score: Score
+        col_updated: Updated
+        evaluation: Score
+        evaluation_detail: Score details
+        info_title: Candidate
+        email: Email
+        phone: Phone
+        address: Address
+        satisfaction: Satisfaction
+        feedback: Feedback
+        follow_title: Follow-up sends
+        follow_empty: No follow-up sends
+        col_kind: Type
+        col_seq: Seq
+        col_status: Status
+        col_scheduled: Scheduled
+        col_sent: Sent
+        col_opened: Opened
+        events_title: Activity
+        events_empty: No events yet
+        col_type: Type
+        col_question: Question
+        col_datetime: Date
+      results:
+        title: Results
+        subtitle: Scores and pass/fail (play recordings on the detail page)
+        list_title: Results
+        empty: No results yet
+        to_situations: Go to scenarios
+        col_id: ID
+        col_candidate: Candidate
+        col_scenario: Scenario
+        col_decision: Decision
+        col_score: Avg score
+        col_date: Date
+        col_actions: Notify / actions
+        hire: Hire
+        reject: Reject
+        hire_confirm: Send a hire email?
+        reject_confirm: Send a rejection email?
+        judge_pass: Mark as passed
+        judge_fail: Mark as failed
+        judge_pass_confirm: Confirm pass?
+        judge_fail_confirm: Confirm fail?
+        hire_email: Send hire email
+        reject_email: Send rejection email
+        back_to_candidate: Back to candidate
+        applicant_info: Candidate
+        name: Name
+        email: Email
+        phone: Phone
+        address: Address
+        metric_decision: Decision
+        metric_score: Avg score
+        metric_answers: Answers
+        reason: "Reason: %{reason}"
+        summary_title: AI summary
+        generate_summary: Generate summary
+        summary_empty: No AI summary yet. Generate one from the button above.
+        strengths: Strengths
+        weaknesses: Areas to improve
+        recommendation: Recommended next step
+        none: None
+        log_title: Answer log (audio / video)
+        log_empty: No answers
+        score_label: "Score: "
+        answer_text: Transcript
+        play_audio: Play audio
+        play_video: Play video
+        no_media: No recording
+        fallback_title: Score details
+        admin_title: "Result #%{id}"
+        admin_subtitle: All candidate results
+        admin_list_title: Results
+        admin_empty: No results yet
+        admin_col_candidate: Candidate
+        admin_col_status: Status
+        admin_col_score: Avg score
+        admin_col_created: Created
+        admin_back: Back to list
+        admin_summary: Summary
+        admin_applicant: Candidate
+        admin_answers: Answers
+        admin_audio: Audio
+        admin_video: Video
+        admin_weaknesses: Weaknesses
+        admin_recommendation: Recommendation
+      experience:
+        title: Candidate experience completeness
+        subtitle: Setup status per live scenario (including optional items)
+        back: Back to dashboard
+        avg_score: Average completeness
+        target_scenarios: Scenarios
+        gaps_count: Missing items
+        gaps_title: Missing items
+        empty_situations: No live scenarios
+        empty_situations_lead: Create and activate a scenario to see completeness.
+        no_gaps: Nothing missing
+        no_gaps_lead: Job info, FAQs, and next-step URLs are in place.
+        optional: (optional)
+        items:
+          job_info: Job basics
+          faqs: FAQs
+          next_step_url: Next-step URL
+          materials: Hiring materials
+          published_questions: Published questions
+        gap_partial: "%{item} is incomplete"
+        gap_missing: "%{item} is not set"
+      account:
+        language_title: Display language
+        language_hint: Choose the dashboard UI language. Changes apply immediately.
+        language_ja: 日本語
+        language_en: English
+        title: Company profile
+        company: Company
+        name: Contact name
+        email: Email
+        tel: Phone
+        address: Address
+        url: URL
+        save: Save
+        emails_title: Hire / reject email copy
+        emails_lead: Used when you send hire or reject emails from Interviews. Blank fields use the system default.
+        emails_vars: Merge variables (copy and paste)
+        hire_subject: Hire email subject
+        hire_body: Hire email body
+        reject_subject: Reject email subject
+        reject_body: Reject email body
+        hire_subject_ph: "Blank = default ([Offer] {{company}})"
+        reject_subject_ph: "Blank = default ([Application update] {{company}})"
+        hire_body_ph: Blank = default hire email
+        reject_body_ph: Blank = default rejection email
+      subscription:
+        current_plan: Current plan
+        plan_type: Plan
+        status: Status
+        trial_ends: Trial ends
+        upgrade_title: Upgrade or change plan
+        change_plan: Change plan
+        cancel_trial_note: Trial does not require a card. There is no automatic charge when it ends — subscribe to Standard from the dashboard.
+        cancel_active_note: After cancellation, you keep access until the period ends.
+        cancel_cta: Cancel subscription
+        empty: No active subscription.
+        choose_plan: Choose a plan
+        payments: Payment history
+        col_date: Date
+        col_amount: Amount
+        col_desc: Description
+        col_status: Status
+        no_payments: No payments yet.
+        cancel_confirm_title: Confirm cancellation
+        cancel_confirm_lead: Completing cancellation stops automatic renewal.
+        cancel_until: "Access until: %{date}"
+        cancel_until_note: Paid features remain available until this date.
+        cancel_confirm_btn: Confirm cancellation
+        cancel_confirm_dialog: Cancel your subscription?
+        change_to: Switch to %{name}
+      management:
+        subtitle: Companies and usage
+        list_title: Companies
+        empty: No companies registered
+        col_company: Company
+        col_email: Email
+        col_contact: Contact
+        col_plan: Plan
+        col_status: Status
+        col_scenarios: Scenarios
+        col_results: Results
+        col_registered: Registered
+        col_actions: Actions
+        usage_unlimited: "%{count} / unlimited"
+        billing: Billing
+      notifications:
+        title: Notifications
+        subtitle: In-app alerts for completed interviews and fails
+        mark_all: Mark all read
+        empty: No notifications
+        col_state: Status
+        col_title: Title
+        col_type: Type
+        col_datetime: Date
+        read: Read
+        unread: Unread
+      problem:
+        title: Report a problem
+        company: Company
+        email: Email
+        photo: Screenshot
+        photo_hint: Optional. A screenshot helps us investigate.
+        body: Details
+        body_ph: What happened and how to reproduce it
+        company_ph: Acme Inc.
+        submit: Submit
+      situations:
+        index_title: Scenarios
+        index_subtitle_admin: Interview scenarios across all companies
+        index_subtitle_limited: "Plan: %{plan} / scenarios %{used} / %{limit}"
+        index_subtitle_unlimited: "Plan: %{plan} / scenarios %{used} (unlimited)"
+        create: New scenario
+        list_title: Scenarios
+        empty: No scenarios yet
+        create_first: Create your first scenario
+        col_id: ID
+        col_company: Company
+        col_title: Title
+        col_language: Language
+        col_questions: Questions
+        col_status: Status
+        col_updated: Updated
+        col_actions: Actions
+        delete_confirm: Delete this scenario?
+        new_title: New scenario
+        new_current: New
+        new_subtitle: Save the basics, then add questions
+        edit_title: Edit scenario
+        edit_current: Edit
+        settings_title: Scenario settings
+        back_to_list: Back to list
+        back_to_detail: Back to scenario
+        no_description: No description
+        language_label: "Language %{code}"
+        archived_now: Archived
+        add_question: Add question
+        invite_title: Invite link
+        invite_lead: "Share this URL with candidates (no login). Views: %{count}"
+        invite_url: Invite URL
+        copy_link: Copy link
+        open_interview: Open interview
+        preview: Preview (not recorded)
+        regenerate: Reissue link
+        regenerate_confirm: The current link will stop working. Reissue it?
+        judgment_title: Pass / fail rules
+        suggest_title: Suggest and add questions
+        suggest_badge: Basics + role-specific
+        basic_pick: Pick from basics (%{count})
+        basic_lead: Common questions that work for most roles. Select the ones you need.
+        add_basic: Add selected basics
+        select_all: Select all
+        clear_selection: Clear
+        ai_title: AI suggestions for this role
+        ai_lead: Suggests questions tailored to the industry and job title.
+        industry: Industry
+        job_title: Job title
+        suggest_count: How many
+        questions_n: "%{count}"
+        suggest_run: Suggest questions
+        suggest_results: Suggestions (pick what to add)
+        add_selected: Add selected questions
+        questions_title: Questions
+        questions_empty: No questions yet. You need at least one.
+        add_first_question: Add the first question
+        branched: Branching
+        unpublish: Unpublish
+        publish: Publish
+        question_delete_confirm: Delete this question?
+        extra_title: More settings
+        analytics_title: Scenario progress
+        analytics_line: Views %{views} → registered %{registered} → completed %{completed} (completion %{rate}%) / passed %{passed}
+        registration_title: Candidate registration fields
+        skip_registration: Skip registration
+        save_registration: Save fields
+        candidate_fields:
+          name: Name
+          email: Email
+          tel: Phone
+          address: Address
+          job_title: Current / target role
+          company: Current company
+          url: Portfolio URL
+        field_required: Required
+        field_optional: Optional
+        field_hidden: Hidden
+        job_info_title: Job basics
+        job_info_lead: Optional job details candidates can see during the interview. We try the URL first, then pasted text. This is not a job-board scraper.
+        job_url: Job page URL
+        job_url_hint: We fetch the public HTML and draft basics plus FAQ candidates. JS-rendered or login-walled pages may fail.
+        job_text: Job text (paste)
+        job_text_ph: If the URL cannot be read, paste the job posting here
+        apply_faqs: Also add extracted FAQ candidates
+        import: Import from URL / text
+        employment_type: Employment type
+        employment_ph: Full-time, contract, etc.
+        location: Location
+        location_ph: Tokyo / remote OK, etc.
+        salary: Compensation
+        salary_ph: e.g. $80k–$100k
+        job_summary: Role summary (candidate-facing)
+        job_summary_ph: Overview shown to candidates
+        requirements: Requirements
+        selection_flow: Process
+        source_url: Source URL
+        save_job_info: Save job basics
+        materials_title: Materials & FAQs
+        materials_label: Job description, company intro, etc. (optional)
+        materials_hint: If unset, the materials block is hidden on the interview end screen.
+        upload_material: Upload file
+        faq_question: Question
+        faq_answer: Answer
+        faq_category: Category
+        faq_category_ph: Hours, benefits, etc.
+        add_faq: Add FAQ
+        follow_title: Follow-up automation
+        follow_plan_note: Follow-up automation is off on your current plan (Standard+). You can still save settings.
+        next_step_url: Next-step URL
+        next_step_hint: Scheduling page or next-step instructions for candidates.
+        delay_days: Send timing (delay in days)
+        email_subject: Subject
+        email_body: Body
+        include_link: Include the next-step URL in the email
+        follow_vars: "Variables: {{candidate_name}} / {{company}} / {{situation_title}} / {{invite_url}}"
+        save_follow: Save follow-up
+        form:
+          basic: Basics
+          client: Company
+          client_blank: Select a company
+          client_hint: Choose the company account this scenario belongs to.
+          title: Title
+          title_ph: "e.g. Engineering first interview"
+          industry: Industry
+          industry_ph: "e.g. IT, staffing, manufacturing, retail"
+          industry_hint: Used as context when AI suggests questions.
+          job_title: Job title
+          job_title_ph: "e.g. Backend engineer, sales, customer success"
+          description: Description (optional)
+          description_ph: Internal note (not shown to candidates)
+          language: Language
+          language_ja: 日本語
+          language_en: English
+          judgment_section: Scoring and answer modes
+          passing_score: Passing score (average)
+          passing_hint: "e.g. 70 means pass at 70+ average."
+          answer_modes: Allowed answer modes
+          text: Text
+          voice: Voice
+          answer_hint: Enable at least one.
+          advanced: Advanced (usually leave as-is)
+          judgment: Decision
+          judgment_mode: Decision mode
+          judgment_automatic: Automatic (score-based)
+          judgment_manual: Manual (reviewer decides)
+          result_visibility: Show result to candidate
+          result_hidden: Hidden (recommended — follow up later)
+          result_immediate: Show details immediately
+          result_hint: Summary and recommendation are for the hiring team. Keep hidden in most cases.
+          auto_reject_section: Mid-interview fail rules
+          auto_reject_hint: Leave off unless you need them.
+          auto_reject_enable: Enable mid-interview fail
+          reject_on_required_fail: Fail if a required question is below the bar
+          min_required_score: Required-question passing score
+          max_consecutive_fails: Fail after consecutive misses
+          max_consecutive_hint: Use 0 to disable.
+          reject_notify: Notify on mid-interview fail
+          notify_in_app: In-app
+          notify_email: Email
+          notify_none: None
+          camera_section: Camera & session
+          record_camera: Show and record camera during the interview
+          session_timeout: Idle timeout (minutes)
+          allow_resume: Allow resume after drop-off
+          max_resume: Max resumes
+          other: Other
+          archive: Archive (stop new invites)
+        judgment:
+          manual: Reviewer decides
+          automatic: Automatic
+          passing: "Pass at %{score}"
+          hide_result: Result hidden
+          show_result: Result shown immediately
+          auto_reject: Mid-interview fail on
+      questions:
+        new_title: New question
+        new_current: Add question
+        edit_title: Edit question
+        edit_current: Edit question
+        crumb_situations: Scenarios
+        content_title: Question
+        question_text: Question
+        question_type: Type
+        type_open: Open
+        type_mcq: Multiple choice
+        type_hint: Open answers use voice or text. Multiple choice uses the options below.
+        choices: Options
+        choices_hint: One per line. At least two. Set a correct answer only if you want scoring.
+        choice_ph: "e.g. Yes / No / a specific option"
+        choice_remove: Remove this option
+        add_choice: Add option
+        correct: Correct answer (optional)
+        no_correct: No correct answer (info only)
+        correct_hint: If set, we score against that option.
+        order: Display order
+        publish: Publish (include in the interview)
+        publish_hint: Off = draft. AI-suggested questions start unpublished.
+        required: Required (counts toward mid-interview fail)
+        required_hint: Used when the scenario fails required questions below the bar.
+        category: Category
+        category_ph: "e.g. technical, communication"
+        branch_title: Branching (optional)
+        branch_lead: Show this question only when a condition is met. Otherwise it always appears.
+        branch_enable: Use a branch condition
+        branch_source: Source question order
+        branch_source_hint: "e.g. 1 refers to the answer to question 1."
+        branch_type: Condition
+        branch_answered: Answered
+        branch_selected: Option matches
+        branch_score_above: Score at or above
+        branch_score_below: Score below
+        branch_value: Value (option text or score)
+        branch_value_ph: "e.g. Yes / 70"
+        branch_value_hint: Not needed for “Answered”.
+        branch_action: When true
+        branch_include: Show this question
+        branch_exclude: Hide this question
+        branch_default: When false (default)
+        branch_default_exclude: Hide
+        branch_default_include: Show
+        create: Create
+        update: Update
+      js:
+        copied: Copied
+        copy_failed: Copy failed
+        copy_link: Copy link
+        add_questions: Add selected questions
+        add_basic: Add selected basics
+        apply_count: "%{label} (%{count})"
+        adding: Adding questions…
+        no_suggest_url: Suggestion URL is missing.
+        need_industry_job: Enter industry and job title.
+        generating: Generating suggestions…
+        suggest_failed: Suggestion failed.
+        suggested: "Suggested %{count}. Pick the ones you want to add."
+        session_expired: Your session expired. Please sign in again.
+        server_error: Server error. Try again in a moment.
+        parse_error: Couldn’t parse the response. Reload and try again.
+        network_error: Network error. Check your connection and try again.
+        required: Required
+        optional: Optional
+        general: General
+        no_correct: No correct answer (info only)
+        choice_ph: "e.g. Yes / No / a specific option"
+        choice_remove: Remove this option
+        delete: Delete
+      flash:
+        login_required: Please sign in.
+        client_login_required: Sign in with a company account.
+        account_updated: Settings saved.
+        invalid_ops: Invalid status
+        ops_updated: Ops status updated
+        marked_read: Marked as read
+        marked_all_read: All marked as read
+        summary_generated: AI summary generated.
+        summary_failed: Couldn’t generate the AI summary.
+        not_manual: This result is not set up for manual review.
+        judged_pass: Marked as passed.
+        judged_fail: Marked as failed.
+        no_candidate_email: Candidate has no email address.
+        decision_sent: "%{label} email sent to %{email}."
+        decision_failed: "Couldn’t send the %{label} email. Check your settings."
+        hire_label: Hire
+        reject_label: Reject
+        candidate_fallback: Candidate
+        company_fallback: our company
+        invalid_plan: Invalid plan.
+        same_plan: Already on this plan.
+        no_active_sub: No active subscription.
+        sub_missing: Subscription not found.
+        cancel_done: Cancellation scheduled. You can keep using the product until the period ends.
+        cancel_failed: Cancellation failed.
+        stripe_cancel_failed: Stripe cancellation failed.
+        client_required: Specify a company.
+        problem_submitted: Report submitted
+        situation_created: Scenario created. You can now suggest questions from industry and job title.
+        situation_updated: Scenario updated.
+        situation_deleted: Scenario deleted.
+        invite_regenerated: Invite link reissued.
+        registration_updated: Registration fields updated.
+        follow_updated: Follow-up settings updated.
+        no_file: Select a file.
+        material_uploaded: Materials uploaded.
+        material_removed: Materials removed.
+        job_info_saved: Job basics saved.
+        job_imported: Job info imported. Review and edit as needed. %{faq_note}%{fallback_note}
+        job_imported_faq: " Added %{count} FAQ(s)."
+        job_imported_fallback: " URL fetch failed, so we imported from pasted text."
+        select_questions: Select questions to add.
+        no_valid_questions: No valid questions.
+        questions_added: "Added %{count} question(s) as drafts. Publish them to include in the interview."
+        questions_invalid: Invalid question data.
+        questions_failed: "Couldn’t add questions: %{message}"
+        login_to_create: Sign in to create a scenario.
+        question_created: Question created.
+        question_updated: Question updated.
+        question_deleted: Question deleted.
+        question_toggled: Question set to %{label}.
+        published_label: published
+        unpublished_label: unpublished
+        faq_added: FAQ added
+        faq_updated: FAQ updated
+        faq_deleted: FAQ deleted

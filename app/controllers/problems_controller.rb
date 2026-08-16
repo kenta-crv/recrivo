@@ -15,7 +15,7 @@ class ProblemsController < ApplicationController
     @problem = Problem.new(problem_params)
 
     if @problem.save
-      flash[:notice] = "報告完了しました"
+      flash[:notice] = t("recrivo.dashboard.flash.problem_submitted")
       begin
         ProblemMailer.report_email(@problem).deliver
       rescue StandardError => e
@@ -73,7 +73,7 @@ class ProblemsController < ApplicationController
   def authenticate_problem_reporter!
     return if client_signed_in? || admin_signed_in?
 
-    redirect_to new_client_session_path, alert: "ログインが必要です。"
+    redirect_to helpers.client_sign_in_path_for_locale, alert: t("recrivo.dashboard.flash.login_required")
   end
 
   def build_problem

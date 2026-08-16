@@ -1,73 +1,74 @@
 .db-v2-header
   .db-v2-header__left
-    nav.db-v2-breadcrumb aria-label="パンくず"
+    nav.db-v2-breadcrumb aria-label=t("recrivo.dashboard.common.breadcrumb")
       = link_to dashboard_index_path, class: "db-v2-breadcrumb__link" do
         i.fa-solid.fa-gauge-high aria-hidden="true"
-        span ダッシュボード
+        span = t("recrivo.dashboard.common.dashboard")
       i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
-      = link_to "シナリオ管理", situations_path, class: "db-v2-breadcrumb__link"
+      = link_to t("recrivo.dashboard.situations.index_title"), situations_path, class: "db-v2-breadcrumb__link"
       i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
       span.db-v2-breadcrumb__current = @situation.title
     h1.db-v2-header__title = @situation.title
+    - sep = t("recrivo.dashboard.common.sep")
     p.db-v2-header__subtitle
       - if @situation.industry.present? || @situation.job_title.present?
-        = [@situation.industry.presence, @situation.job_title.presence].compact.join(" ／ ")
-        |  ／ 
-      = @situation.description.presence || "説明未設定"
-      |  ／ 言語 #{@situation.language.to_s.upcase}
+        = [@situation.industry.presence, @situation.job_title.presence].compact.join(sep)
+        = sep
+      = @situation.description.presence || t("recrivo.dashboard.situations.no_description")
+      = sep
+      = t("recrivo.dashboard.situations.language_label", code: @situation.language.to_s.upcase)
       - if @situation.archived?
-        |  ／ アーカイブ中
+        = sep
+        = t("recrivo.dashboard.situations.archived_now")
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     = link_to edit_situation_path(@situation), class: "db-v2-btn db-v2-btn--ghost" do
       i.fa-solid.fa-pen aria-hidden="true"
-      span 編集
+      span = t("recrivo.dashboard.common.edit")
     = link_to new_situation_question_path(@situation), class: "db-v2-btn db-v2-btn--primary" do
       i.fa-solid.fa-plus aria-hidden="true"
-      span 質問を追加
+      span = t("recrivo.dashboard.situations.add_question")
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 招待リンク
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.invite_title")
   .db-v2-bottom-card__body
-    p.db-v2-muted.db-v2-invite__lead
-      | 候補者にこのURLを共有してください（ログイン不要）。閲覧数: #{@situation.page_views_count}
+    p.db-v2-muted.db-v2-invite__lead = t("recrivo.dashboard.situations.invite_lead", count: @situation.page_views_count)
     .db-v2-share-strip.db-v2-invite__strip
       span.db-v2-share-strip__label
         i.fa-solid.fa-link aria-hidden="true"
         | URL
       .db-v2-copy-row
-        input.db-v2-form-control#invite-url-field type="text" readonly=true value=interview_invite_url(@situation.invite_token) aria-label="招待URL"
+        input.db-v2-form-control#invite-url-field type="text" readonly=true value=interview_invite_url(@situation.invite_token) aria-label=t("recrivo.dashboard.situations.invite_url")
         button.db-v2-btn.db-v2-btn--primary type="button" data-copy-text-from="#invite-url-field"
           i.fa-solid.fa-copy aria-hidden="true"
-          span リンクをコピー
+          span = t("recrivo.dashboard.situations.copy_link")
     .db-v2-form-actions.db-v2-invite__actions
       = link_to interview_invite_path(@situation.invite_token), class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener", data: { turbo: false } do
         i.fa-solid.fa-arrow-up-right-from-square aria-hidden="true"
-        span 面接ページを開く
+        span = t("recrivo.dashboard.situations.open_interview")
       = link_to interview_invite_path(@situation.invite_token, preview: 1), class: "db-v2-btn db-v2-btn--ghost", target: "_blank", rel: "noopener", data: { turbo: false } do
         i.fa-solid.fa-eye aria-hidden="true"
-        span プレビュー（記録なし）
-      = button_to regenerate_invite_token_situation_path(@situation), method: :post, class: "db-v2-btn db-v2-btn--ghost", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: "既存リンクは無効になります。再発行しますか？", confirm: "既存リンクは無効になります。再発行しますか？" } do
-        span リンクを再発行
+        span = t("recrivo.dashboard.situations.preview")
+      = button_to regenerate_invite_token_situation_path(@situation), method: :post, class: "db-v2-btn db-v2-btn--ghost", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: t("recrivo.dashboard.situations.regenerate_confirm"), confirm: t("recrivo.dashboard.situations.regenerate_confirm") } do
+        span = t("recrivo.dashboard.situations.regenerate")
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title 合否ルール
-    = link_to "編集", edit_situation_path(@situation), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.judgment_title")
+    = link_to t("recrivo.dashboard.common.edit"), edit_situation_path(@situation), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
   .db-v2-bottom-card__body
     p.db-v2-muted = situation_judgment_summary(@situation)
 
-.db-v2-bottom-card#questions style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation)
+.db-v2-bottom-card#questions style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation) data-i18n-add-questions=t("recrivo.dashboard.js.add_questions") data-i18n-add-basic=t("recrivo.dashboard.js.add_basic") data-i18n-apply-count=t("recrivo.dashboard.js.apply_count") data-i18n-adding=t("recrivo.dashboard.js.adding") data-i18n-no-suggest-url=t("recrivo.dashboard.js.no_suggest_url") data-i18n-need-industry-job=t("recrivo.dashboard.js.need_industry_job") data-i18n-generating=t("recrivo.dashboard.js.generating") data-i18n-suggest-failed=t("recrivo.dashboard.js.suggest_failed") data-i18n-suggested=t("recrivo.dashboard.js.suggested") data-i18n-session-expired=t("recrivo.dashboard.js.session_expired") data-i18n-server-error=t("recrivo.dashboard.js.server_error") data-i18n-parse-error=t("recrivo.dashboard.js.parse_error") data-i18n-network-error=t("recrivo.dashboard.js.network_error") data-i18n-required=t("recrivo.dashboard.js.required") data-i18n-optional=t("recrivo.dashboard.js.optional") data-i18n-general=t("recrivo.dashboard.js.general")
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title 質問を提案・追加
-    span.db-v2-deals-count 基礎質問 ＋ 業種・職種向け
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.suggest_title")
+    span.db-v2-deals-count = t("recrivo.dashboard.situations.suggest_badge")
   .db-v2-bottom-card__body
     details.db-v2-details
-      summary.db-v2-details__summary = "基礎質問から選ぶ（#{basic_interview_questions.size}問）"
+      summary.db-v2-details__summary = t("recrivo.dashboard.situations.basic_pick", count: basic_interview_questions.size)
       .db-v2-details__body
-        p.db-v2-muted style="margin-bottom:12px"
-          | どの職種でも使いやすい定番質問です。必要なものを選んで追加できます。
+        p.db-v2-muted style="margin-bottom:12px" = t("recrivo.dashboard.situations.basic_lead")
         .db-v2-suggest-list data-basic-suggest-list="1"
           - basic_interview_questions.each_with_index do |q, idx|
             label.db-v2-suggest-item.db-v2-suggest-item--selectable
@@ -75,59 +76,58 @@
               span.db-v2-suggest-item__check aria-hidden="true"
               span.db-v2-suggest-item__body
                 span.db-v2-suggest-item__text = "#{idx + 1}. #{q[:question_text]}"
-                span.db-v2-suggest-item__meta = [q[:category], (q[:required] ? "必須" : "任意"), q[:reason]].compact.join(" ／ ")
+                span.db-v2-suggest-item__meta = [q[:category], (q[:required] ? t("recrivo.dashboard.common.required") : t("recrivo.dashboard.common.optional")), q[:reason]].compact.join(t("recrivo.dashboard.common.sep"))
         .db-v2-form-actions style="margin-top:12px"
           button.db-v2-btn.db-v2-btn--primary type="button" data-basic-suggest-apply="1" disabled=true
             i.fa-solid.fa-plus aria-hidden="true"
-            span 選択した基礎質問を追加
-          button.db-v2-btn.db-v2-btn--ghost type="button" data-basic-suggest-select-all="1" すべて選択
-          button.db-v2-btn.db-v2-btn--ghost type="button" data-basic-suggest-clear="1" 選択解除
+            span = t("recrivo.dashboard.situations.add_basic")
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-basic-suggest-select-all="1" = t("recrivo.dashboard.situations.select_all")
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-basic-suggest-clear="1" = t("recrivo.dashboard.situations.clear_selection")
 
     .db-v2-form-section style="margin-top:1.25rem"
-      h3.db-v2-form-section__title 業種・職種向けにAIで提案
-      p.db-v2-muted style="margin-bottom:12px"
-        | 業種と募集職種をもとに、その仕事ならではの質問を提案します。
+      h3.db-v2-form-section__title = t("recrivo.dashboard.situations.ai_title")
+      p.db-v2-muted style="margin-bottom:12px" = t("recrivo.dashboard.situations.ai_lead")
       .db-v2-suggest-grid
         .db-v2-form-group
-          label.db-v2-form-label for="suggest-industry" 業種
-          input#suggest-industry.db-v2-form-control type="text" value=(@situation.industry.to_s) placeholder="例: IT・Web" data-ai-suggest-industry="1"
+          label.db-v2-form-label for="suggest-industry" = t("recrivo.dashboard.situations.industry")
+          input#suggest-industry.db-v2-form-control type="text" value=(@situation.industry.to_s) placeholder=t("recrivo.dashboard.situations.form.industry_ph") data-ai-suggest-industry="1"
         .db-v2-form-group
-          label.db-v2-form-label for="suggest-job-title" 募集職種
-          input#suggest-job-title.db-v2-form-control type="text" value=(@situation.job_title.to_s) placeholder="例: カスタマーサクセス" data-ai-suggest-job="1"
+          label.db-v2-form-label for="suggest-job-title" = t("recrivo.dashboard.situations.job_title")
+          input#suggest-job-title.db-v2-form-control type="text" value=(@situation.job_title.to_s) placeholder=t("recrivo.dashboard.situations.form.job_title_ph") data-ai-suggest-job="1"
         .db-v2-form-group
-          label.db-v2-form-label for="suggest-count" 提案数
+          label.db-v2-form-label for="suggest-count" = t("recrivo.dashboard.situations.suggest_count")
           select#suggest-count.db-v2-form-control data-ai-suggest-count="1"
-            option value="3" 3問
-            option value="5" selected="selected" 5問
-            option value="8" 8問
+            option value="3" = t("recrivo.dashboard.situations.questions_n", count: 3)
+            option value="5" selected="selected" = t("recrivo.dashboard.situations.questions_n", count: 5)
+            option value="8" = t("recrivo.dashboard.situations.questions_n", count: 8)
       .db-v2-form-actions style="margin-top:4px"
         button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-run="1"
           i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
-          span 質問を提案する
+          span = t("recrivo.dashboard.situations.suggest_run")
         span.db-v2-muted data-ai-suggest-status="1"
 
       .db-v2-suggest-results data-ai-suggest-results="1" hidden=true
-        p.db-v2-muted style="margin:16px 0 8px" 提案結果（追加したい質問を選んでください）
+        p.db-v2-muted style="margin:16px 0 8px" = t("recrivo.dashboard.situations.suggest_results")
         .db-v2-suggest-list data-ai-suggest-list="1"
         .db-v2-form-actions style="margin-top:12px"
           button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
             i.fa-solid.fa-plus aria-hidden="true"
-            span 選択した質問を追加
-          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" すべて選択
-          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" 選択解除
+            span = t("recrivo.dashboard.situations.add_selected")
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" = t("recrivo.dashboard.situations.select_all")
+          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" = t("recrivo.dashboard.situations.clear_selection")
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title 質問一覧
-    span.db-v2-deals-count = "#{@questions.size} 問"
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.questions_title")
+    span.db-v2-deals-count = t("recrivo.dashboard.common.count_questions", count: @questions.size)
   .db-v2-bottom-card__body
     - if @questions.empty?
       .db-v2-empty-state
         .db-v2-empty-state__icon
           i.fa-solid.fa-circle-question aria-hidden="true"
-        p.db-v2-empty-state__text まだ質問がありません。最低1問必要です。
+        p.db-v2-empty-state__text = t("recrivo.dashboard.situations.questions_empty")
         = link_to new_situation_question_path(@situation), class: "db-v2-btn db-v2-btn--primary" do
-          span 最初の質問を追加
+          span = t("recrivo.dashboard.situations.add_first_question")
     - else
       ol.db-v2-question-list
         - @questions.each do |q|
@@ -139,108 +139,107 @@
               .db-v2-question-list__meta
                 span.db-v2-question-list__chip = question_type_label(q.question_type)
                 - if q.published?
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--required 公開
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--required = t("recrivo.dashboard.common.published")
                 - else
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional 下書き
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional = t("recrivo.dashboard.common.draft")
                 - if q.required?
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--required 必須
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--required = t("recrivo.dashboard.common.required")
                 - else
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional 任意
+                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional = t("recrivo.dashboard.common.optional")
                 - if q.has_branching_rules?
-                  span.db-v2-question-list__chip 分岐あり
+                  span.db-v2-question-list__chip = t("recrivo.dashboard.situations.branched")
             .db-v2-question-list__actions
               = button_to toggle_publish_situation_question_path(@situation, q), method: :post, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form" } do
-                span = q.published? ? "非公開にする" : "公開する"
+                span = q.published? ? t("recrivo.dashboard.situations.unpublish") : t("recrivo.dashboard.situations.publish")
               = link_to edit_situation_question_path(@situation, q), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
                 i.fa-solid.fa-pen aria-hidden="true"
-                span 編集
-              = button_to situation_question_path(@situation, q), method: :delete, class: "db-v2-btn db-v2-btn--danger db-v2-btn--xs", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: "この質問を削除しますか？", confirm: "この質問を削除しますか？" } do
+                span = t("recrivo.dashboard.common.edit")
+              = button_to situation_question_path(@situation, q), method: :delete, class: "db-v2-btn db-v2-btn--danger db-v2-btn--xs", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: t("recrivo.dashboard.situations.question_delete_confirm"), confirm: t("recrivo.dashboard.situations.question_delete_confirm") } do
                 i.fa-solid.fa-trash aria-hidden="true"
-                span 削除
+                span = t("recrivo.dashboard.common.delete")
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 追加設定
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.extra_title")
   .db-v2-bottom-card__body
     - if @analytics.present?
       details.db-v2-details
-        summary.db-v2-details__summary このシナリオの進捗
+        summary.db-v2-details__summary = t("recrivo.dashboard.situations.analytics_title")
         .db-v2-details__body
           p.db-v2-muted
-            | 閲覧 #{@analytics[:page_views]} → 登録 #{@analytics[:registered_count]} → 完了 #{@analytics[:sessions_completed]}（完了率 #{@analytics[:completion_rate] || "—"}%）／合格 #{@analytics[:passed_count]}
+            = t("recrivo.dashboard.situations.analytics_line", views: @analytics[:page_views], registered: @analytics[:registered_count], completed: @analytics[:sessions_completed], rate: (@analytics[:completion_rate] || "—"), passed: @analytics[:passed_count])
 
     details.db-v2-details
-      summary.db-v2-details__summary 受験者登録項目
+      summary.db-v2-details__summary = t("recrivo.dashboard.situations.registration_title")
       .db-v2-details__body
         = form_with url: update_candidate_registration_situation_path(@situation), method: :patch, local: true do
           .db-v2-form-check style="margin-bottom:12px"
             = check_box_tag "situation[skip_candidate_registration]", "1", @situation.skip_candidate_registration?, id: "skip_candidate_registration"
-            = label_tag "skip_candidate_registration", "登録をスキップする"
+            = label_tag "skip_candidate_registration", t("recrivo.dashboard.situations.skip_registration")
           - fields = @situation.resolved_candidate_info_fields
           - SituationCandidateRegistration::CANDIDATE_INFO_FIELDS.each do |key|
             .db-v2-form-group
-              label.db-v2-form-label = SituationCandidateRegistration::FIELD_LABELS[key]
-              = select_tag "situation[candidate_info_fields][#{key}]", options_for_select([["必須", "required"], ["任意", "optional"], ["非表示", "hidden"]], fields[key]), class: "db-v2-form-control"
-          button.db-v2-btn.db-v2-btn--primary type="submit" 登録項目を保存
+              label.db-v2-form-label = candidate_registration_field_label(key)
+              = select_tag "situation[candidate_info_fields][#{key}]", options_for_select([[t("recrivo.dashboard.situations.field_required"), "required"], [t("recrivo.dashboard.situations.field_optional"), "optional"], [t("recrivo.dashboard.situations.field_hidden"), "hidden"]], fields[key]), class: "db-v2-form-control"
+          button.db-v2-btn.db-v2-btn--primary type="submit" = t("recrivo.dashboard.situations.save_registration")
 
     details#job-info.db-v2-details open=situation_section_open?("job-info")
-      summary.db-v2-details__summary 求人基本情報
+      summary.db-v2-details__summary = t("recrivo.dashboard.situations.job_info_title")
       .db-v2-details__body
-        p.db-v2-muted style="margin-bottom:12px"
-          | 候補者が面接中に確認できる求人情報です（任意）。URL優先で読み取り、取得できない場合はテキスト貼り付けに切り替えてください。媒体専用のスクレイピングではありません。
+        p.db-v2-muted style="margin-bottom:12px" = t("recrivo.dashboard.situations.job_info_lead")
         = form_with url: import_job_info_situation_path(@situation), method: :post, local: true do
           .db-v2-form-group
-            label.db-v2-form-label 求人ページURL
+            label.db-v2-form-label = t("recrivo.dashboard.situations.job_url")
             = url_field_tag :job_source_url, @situation.job_source_url, class: "db-v2-form-control", placeholder: "https://..."
-            p.db-v2-form-hint 公開ページのHTMLから本文を取得し、AIが基本情報とFAQ候補を下書きします。JS描画やログイン壁のページでは失敗することがあります。
+            p.db-v2-form-hint = t("recrivo.dashboard.situations.job_url_hint")
           .db-v2-form-group
-            label.db-v2-form-label 求人テキスト（貼り付け）
-            = text_area_tag :job_source_text, nil, class: "db-v2-form-control", rows: 5, placeholder: "URLが読めない場合は、求人票の本文をここに貼り付けてください"
+            label.db-v2-form-label = t("recrivo.dashboard.situations.job_text")
+            = text_area_tag :job_source_text, nil, class: "db-v2-form-control", rows: 5, placeholder: t("recrivo.dashboard.situations.job_text_ph")
           .db-v2-form-check
             = check_box_tag :apply_faqs, "1", true, id: "import_apply_faqs"
-            = label_tag "import_apply_faqs", "抽出したFAQ候補も追加する"
-          button.db-v2-btn.db-v2-btn--ghost type="submit" URL / テキストから取り込む
+            = label_tag "import_apply_faqs", t("recrivo.dashboard.situations.apply_faqs")
+          button.db-v2-btn.db-v2-btn--ghost type="submit" = t("recrivo.dashboard.situations.import")
 
         hr style="margin:16px 0;border:none;border-top:1px solid var(--db-v2-border, #e2e8f0)"
 
         = form_with url: update_job_info_situation_path(@situation), method: :patch, local: true do
           .db-v2-form-group
-            label.db-v2-form-label 雇用形態
-            = text_field_tag "situation[employment_type]", @situation.employment_type, class: "db-v2-form-control", placeholder: "正社員・契約社員など"
+            label.db-v2-form-label = t("recrivo.dashboard.situations.employment_type")
+            = text_field_tag "situation[employment_type]", @situation.employment_type, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.situations.employment_ph")
           .db-v2-form-group
-            label.db-v2-form-label 勤務地
-            = text_field_tag "situation[location]", @situation.location, class: "db-v2-form-control", placeholder: "東京都渋谷区 / リモート可 など"
+            label.db-v2-form-label = t("recrivo.dashboard.situations.location")
+            = text_field_tag "situation[location]", @situation.location, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.situations.location_ph")
           .db-v2-form-group
-            label.db-v2-form-label 給与
-            = text_field_tag "situation[salary_text]", @situation.salary_text, class: "db-v2-form-control", placeholder: "年収○○万〜 / 月給○○万 など"
+            label.db-v2-form-label = t("recrivo.dashboard.situations.salary")
+            = text_field_tag "situation[salary_text]", @situation.salary_text, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.situations.salary_ph")
           .db-v2-form-group
-            label.db-v2-form-label 仕事内容（候補者向け）
-            = text_area_tag "situation[job_summary]", @situation.job_summary, class: "db-v2-form-control", rows: 4, placeholder: "候補者に見せる業務概要"
+            label.db-v2-form-label = t("recrivo.dashboard.situations.job_summary")
+            = text_area_tag "situation[job_summary]", @situation.job_summary, class: "db-v2-form-control", rows: 4, placeholder: t("recrivo.dashboard.situations.job_summary_ph")
           .db-v2-form-group
-            label.db-v2-form-label 応募条件
+            label.db-v2-form-label = t("recrivo.dashboard.situations.requirements")
             = text_area_tag "situation[requirements_text]", @situation.requirements_text, class: "db-v2-form-control", rows: 3
           .db-v2-form-group
-            label.db-v2-form-label 選考の流れ
+            label.db-v2-form-label = t("recrivo.dashboard.situations.selection_flow")
             = text_area_tag "situation[selection_flow]", @situation.selection_flow, class: "db-v2-form-control", rows: 3
           .db-v2-form-group
-            label.db-v2-form-label 取り込み元URL
+            label.db-v2-form-label = t("recrivo.dashboard.situations.source_url")
             = url_field_tag "situation[job_source_url]", @situation.job_source_url, class: "db-v2-form-control", placeholder: "https://..."
-          button.db-v2-btn.db-v2-btn--primary type="submit" 求人基本情報を保存
+          button.db-v2-btn.db-v2-btn--primary type="submit" = t("recrivo.dashboard.situations.save_job_info")
 
     details#materials-faqs.db-v2-details open=situation_section_open?("materials", "faqs")
-      summary.db-v2-details__summary 募集資料・FAQ
+      summary.db-v2-details__summary = t("recrivo.dashboard.situations.materials_title")
       .db-v2-details__body
         #materials
           - if @situation.recruitment_material.attached?
             p
               = link_to @situation.recruitment_material.filename.to_s, rails_blob_path(@situation.recruitment_material, disposition: "attachment"), class: "db-v2-deals-table__link"
-              = button_to "削除", remove_recruitment_material_situation_path(@situation), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form", style: "display:inline;margin-left:8px" }
+              = button_to t("recrivo.dashboard.common.delete"), remove_recruitment_material_situation_path(@situation), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form", style: "display:inline;margin-left:8px" }
           = form_with url: upload_recruitment_material_situation_path(@situation), method: :post, local: true, html: { multipart: true } do
             .db-v2-form-group
-              label.db-v2-form-label 募集要項・会社紹介など（任意）
+              label.db-v2-form-label = t("recrivo.dashboard.situations.materials_label")
               = file_field_tag :recruitment_material, class: "db-v2-form-control", accept: ".pdf,.doc,.docx,.png,.jpg"
-              p.db-v2-form-hint 未設定の場合、面接終了画面には資料欄を表示しません。
-            button.db-v2-btn.db-v2-btn--ghost type="submit" 資料をアップロード
+              p.db-v2-form-hint = t("recrivo.dashboard.situations.materials_hint")
+            button.db-v2-btn.db-v2-btn--ghost type="submit" = t("recrivo.dashboard.situations.upload_material")
 
         hr style="margin:16px 0;border:none;border-top:1px solid var(--db-v2-border, #e2e8f0)"
         h3#faqs.db-v2-form-section__title style="margin-bottom:8px" FAQ
@@ -248,45 +247,45 @@
           .db-v2-page-card style="margin-bottom:8px"
             strong = faq.question
             p.db-v2-muted = faq.answer
-            = button_to "削除", situation_situation_faq_path(@situation, faq), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form" }
+            = button_to t("recrivo.dashboard.common.delete"), situation_situation_faq_path(@situation, faq), method: :delete, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form" }
         = form_with model: [@situation, SituationFaq.new], url: situation_situation_faqs_path(@situation), local: true do |f|
           .db-v2-form-group
-            = f.label :question, "質問", class: "db-v2-form-label"
+            = f.label :question, t("recrivo.dashboard.situations.faq_question"), class: "db-v2-form-label"
             = f.text_field :question, class: "db-v2-form-control", required: true
           .db-v2-form-group
-            = f.label :answer, "回答", class: "db-v2-form-label"
+            = f.label :answer, t("recrivo.dashboard.situations.faq_answer"), class: "db-v2-form-label"
             = f.text_area :answer, class: "db-v2-form-control", rows: 3, required: true
           .db-v2-form-group
-            = f.label :category, "カテゴリ", class: "db-v2-form-label"
-            = f.text_field :category, class: "db-v2-form-control", placeholder: "勤務条件・福利厚生など"
-          button.db-v2-btn.db-v2-btn--primary type="submit" FAQを追加
+            = f.label :category, t("recrivo.dashboard.situations.faq_category"), class: "db-v2-form-label"
+            = f.text_field :category, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.situations.faq_category_ph")
+          button.db-v2-btn.db-v2-btn--primary type="submit" = t("recrivo.dashboard.situations.add_faq")
 
     details#follow-up.db-v2-details open=situation_section_open?("follow-up")
-      summary.db-v2-details__summary フォロー自動化
+      summary.db-v2-details__summary = t("recrivo.dashboard.situations.follow_title")
       .db-v2-details__body
         - unless @situation.client&.follow_up_automation_enabled?
-          p.db-v2-muted style="margin-bottom:12px" 現在のプランではフォロー自動化は無効です（Standard以上で有効）。設定は保存できます。
+          p.db-v2-muted style="margin-bottom:12px" = t("recrivo.dashboard.situations.follow_plan_note")
         = form_with url: update_follow_up_settings_situation_path(@situation), method: :patch, local: true do
           .db-v2-form-group
-            label.db-v2-form-label 案内先URL
+            label.db-v2-form-label = t("recrivo.dashboard.situations.next_step_url")
             = url_field_tag "situation[follow_up_next_step_url]", @situation.follow_up_next_step_url, class: "db-v2-form-control", placeholder: "https://..."
-            p.db-v2-form-hint 日程調整ページや選考案内ページなど、候補者に案内したいURLを設定します。
+            p.db-v2-form-hint = t("recrivo.dashboard.situations.next_step_hint")
           - @follow_up_templates.each do |template|
             .db-v2-page-card style="margin-bottom:12px"
               .db-v2-form-check
                 = check_box_tag "templates[#{template.id}][enabled]", "1", template.enabled?, id: "tpl_enabled_#{template.id}"
                 = label_tag "tpl_enabled_#{template.id}", follow_up_template_label(template)
               .db-v2-form-group
-                = label_tag "templates_#{template.id}_delay", "送信タイミング（遅延日数）", class: "db-v2-form-label"
+                = label_tag "templates_#{template.id}_delay", t("recrivo.dashboard.situations.delay_days"), class: "db-v2-form-label"
                 = number_field_tag "templates[#{template.id}][delay_days]", template.delay_days, class: "db-v2-form-control", min: 0, max: 90
               .db-v2-form-group
-                = label_tag "templates_#{template.id}_subject", "件名", class: "db-v2-form-label"
+                = label_tag "templates_#{template.id}_subject", t("recrivo.dashboard.situations.email_subject"), class: "db-v2-form-label"
                 = text_field_tag "templates[#{template.id}][subject]", template.subject, class: "db-v2-form-control"
               .db-v2-form-group
-                = label_tag "templates_#{template.id}_body", "本文", class: "db-v2-form-label"
+                = label_tag "templates_#{template.id}_body", t("recrivo.dashboard.situations.email_body"), class: "db-v2-form-label"
                 = text_area_tag "templates[#{template.id}][body]", template.body, class: "db-v2-form-control", rows: 4
               .db-v2-form-check
                 = check_box_tag "templates[#{template.id}][include_next_step_link]", "1", template.include_next_step_link?, id: "tpl_link_#{template.id}"
-                = label_tag "tpl_link_#{template.id}", "メールに案内先URLへのリンクを入れる"
-              p.db-v2-form-hint 変数: {{candidate_name}} / {{company}} / {{situation_title}} / {{invite_url}}
-          button.db-v2-btn.db-v2-btn--primary type="submit" フォロー設定を保存
+                = label_tag "tpl_link_#{template.id}", t("recrivo.dashboard.situations.include_link")
+              p.db-v2-form-hint = t("recrivo.dashboard.situations.follow_vars")
+          button.db-v2-btn.db-v2-btn--primary type="submit" = t("recrivo.dashboard.situations.save_follow")

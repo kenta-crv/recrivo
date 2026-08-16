@@ -1,32 +1,32 @@
 .db-v2-header
   .db-v2-header__left
-    h1.db-v2-header__title 通知
-    p.db-v2-header__subtitle 面接完了・不合格などのアプリ内通知
+    h1.db-v2-header__title = t("recrivo.dashboard.notifications.title")
+    p.db-v2-header__subtitle = t("recrivo.dashboard.notifications.subtitle")
   .db-v2-header__right
     = render "/dashboard/theme_switch"
-    = button_to "すべて既読", mark_all_read_dashboard_notifications_path, method: :post, class: "db-v2-btn db-v2-btn--ghost"
+    = button_to t("recrivo.dashboard.notifications.mark_all"), mark_all_read_dashboard_notifications_path, method: :post, class: "db-v2-btn db-v2-btn--ghost"
 
 .db-v2-bottom-card
   .db-v2-bottom-card__body
     - if @notifications.blank?
       .db-v2-empty-state
-        p.db-v2-empty-state__text 通知はありません
+        p.db-v2-empty-state__text = t("recrivo.dashboard.notifications.empty")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table
           thead
             tr
-              th 状態
-              th タイトル
-              th 種別
-              th 日時
+              th = t("recrivo.dashboard.notifications.col_state")
+              th = t("recrivo.dashboard.notifications.col_title")
+              th = t("recrivo.dashboard.notifications.col_type")
+              th = t("recrivo.dashboard.notifications.col_datetime")
               th
           tbody
             - @notifications.each do |n|
               tr
-                td = n.read? ? "既読" : "未読"
+                td = n.read? ? t("recrivo.dashboard.notifications.read") : t("recrivo.dashboard.notifications.unread")
                 td = n.title
                 td = n.category
                 td = l(n.created_at, format: :short)
                 td
-                  = link_to "開く", dashboard_notification_path(n), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+                  = link_to t("recrivo.dashboard.common.open"), dashboard_notification_path(n), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"

@@ -1,50 +1,50 @@
 .db-v2-header
   .db-v2-header__left
-    h1.db-v2-header__title シナリオ管理
+    h1.db-v2-header__title = t("recrivo.dashboard.situations.index_title")
     p.db-v2-header__subtitle
       - if acting_as_admin?
-        | 全契約企業の面接シナリオ一覧
+        = t("recrivo.dashboard.situations.index_subtitle_admin")
       - else
         - plan = current_client.current_plan_config
         - situation_limit = current_client.situation_limit
         - if situation_limit
-          | プラン: #{plan[:name]} ／ シナリオ #{current_client.active_services_count} / #{situation_limit} 件
+          = t("recrivo.dashboard.situations.index_subtitle_limited", plan: localized_plan_name(plan), used: current_client.active_services_count, limit: situation_limit)
         - else
-          | プラン: #{plan[:name]} ／ シナリオ #{current_client.active_services_count} 件（無制限）
+          = t("recrivo.dashboard.situations.index_subtitle_unlimited", plan: localized_plan_name(plan), used: current_client.active_services_count)
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
       i.fa-solid.fa-plus aria-hidden="true"
-      span シナリオを新規作成
+      span = t("recrivo.dashboard.situations.create")
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title 面接シナリオ一覧
-    span.db-v2-deals-count = "#{@situations.size} 件"
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.list_title")
+    span.db-v2-deals-count = t("recrivo.dashboard.common.count", count: @situations.size)
 
   .db-v2-bottom-card__body
     - if @situations.empty?
       .db-v2-empty-state
         .db-v2-empty-state__icon
           i.fa-solid.fa-list-check aria-hidden="true"
-        p.db-v2-empty-state__text まだ面接シナリオがありません
+        p.db-v2-empty-state__text = t("recrivo.dashboard.situations.empty")
         = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
           i.fa-solid.fa-plus aria-hidden="true"
-          span 最初のシナリオを作成
+          span = t("recrivo.dashboard.situations.create_first")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table.db-v2-deals-table
           thead
             tr
-              th ID
+              th = t("recrivo.dashboard.situations.col_id")
               - if acting_as_admin?
-                th 企業
-              th タイトル
-              th 言語
-              th 質問数
-              th 状態
-              th 更新日
-              th 操作
+                th = t("recrivo.dashboard.situations.col_company")
+              th = t("recrivo.dashboard.situations.col_title")
+              th = t("recrivo.dashboard.situations.col_language")
+              th = t("recrivo.dashboard.situations.col_questions")
+              th = t("recrivo.dashboard.situations.col_status")
+              th = t("recrivo.dashboard.situations.col_updated")
+              th = t("recrivo.dashboard.situations.col_actions")
           tbody
             - @situations.each do |situation|
               tr
@@ -55,20 +55,20 @@
                   = link_to situation.title, situation_path(situation), class: "db-v2-deals-table__link"
                   - if situation.industry.present? || situation.job_title.present?
                     br
-                    span style="color:#64748b;font-size:12px;" = [situation.industry.presence, situation.job_title.presence].compact.join(" ／ ")
+                    span style="color:#64748b;font-size:12px;" = [situation.industry.presence, situation.job_title.presence].compact.join(t("recrivo.dashboard.common.sep"))
                 td = situation.language.to_s.upcase
                 td = situation.questions.size
                 td
                   - if situation.archived?
-                    span.db-v2-status-badge アーカイブ
+                    span.db-v2-status-badge = t("recrivo.dashboard.common.archived")
                   - else
-                    span.db-v2-status-badge.db-v2-status-badge--live 有効
+                    span.db-v2-status-badge.db-v2-status-badge--live = t("recrivo.dashboard.common.active")
                 td = l(situation.updated_at, format: :short)
                 td
                   .db-v2-deals-table__actions
                     = link_to situation_path(situation), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
-                      span 詳細
+                      span = t("recrivo.dashboard.common.detail")
                     = link_to edit_situation_path(situation), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
-                      span 編集
-                    = button_to situation_path(situation), method: :delete, class: "db-v2-btn db-v2-btn--danger db-v2-btn--xs", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: "このシナリオを削除しますか？", confirm: "このシナリオを削除しますか？" } do
-                      span 削除
+                      span = t("recrivo.dashboard.common.edit")
+                    = button_to situation_path(situation), method: :delete, class: "db-v2-btn db-v2-btn--danger db-v2-btn--xs", form: { class: "db-v2-inline-form" }, data: { turbo_confirm: t("recrivo.dashboard.situations.delete_confirm"), confirm: t("recrivo.dashboard.situations.delete_confirm") } do
+                      span = t("recrivo.dashboard.common.delete")

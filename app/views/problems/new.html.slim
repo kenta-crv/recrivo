@@ -2,6 +2,7 @@
   .db-v2-bottom-card__header
     h2.db-v2-bottom-card__title
       i.fa-solid.fa-bug aria-hidden="true"
-      |  問題報告
+      |  
+      = t("recrivo.dashboard.problem.title")
   .db-v2-bottom-card__body
     = render "form", problem: @problem, form_id: "problem-report-page-form"

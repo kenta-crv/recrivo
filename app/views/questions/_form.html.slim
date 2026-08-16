@@ -6,103 +6,100 @@
 - branch_cond = (branch_rules && branch_rules[:conditions].is_a?(Array) && branch_rules[:conditions].first) || {}
 - branch_enabled = @question.has_branching_rules?
 
-= form_with model: [@situation, @question], local: true, html: { class: "db-v2-question-form", data: { question_form: "1" } } do |f|
+= form_with model: [@situation, @question], local: true, html: { class: "db-v2-question-form", data: { question_form: "1", i18n_no_correct: t("recrivo.dashboard.js.no_correct"), i18n_choice_ph: t("recrivo.dashboard.js.choice_ph"), i18n_choice_remove: t("recrivo.dashboard.js.choice_remove"), i18n_delete: t("recrivo.dashboard.js.delete") } } do |f|
   .db-v2-form-group
-    = f.label :question_text, "質問内容", class: "db-v2-form-label"
+    = f.label :question_text, t("recrivo.dashboard.questions.question_text"), class: "db-v2-form-label"
     = f.text_area :question_text, class: "db-v2-form-control", rows: 3, required: true
 
   .db-v2-form-group
-    = f.label :question_type, "質問タイプ", class: "db-v2-form-label"
-    = f.select :question_type, [["自由回答", "open"], ["選択式", "mcq"]], { selected: (is_choice_type ? "mcq" : "open") }, class: "db-v2-form-control", data: { question_type_select: "1" }
-    p.db-v2-form-hint 自由回答は音声・テキストで答えます。選択式は下で選択肢を作ります。
+    = f.label :question_type, t("recrivo.dashboard.questions.question_type"), class: "db-v2-form-label"
+    = f.select :question_type, [[t("recrivo.dashboard.questions.type_open"), "open"], [t("recrivo.dashboard.questions.type_mcq"), "mcq"]], { selected: (is_choice_type ? "mcq" : "open") }, class: "db-v2-form-control", data: { question_type_select: "1" }
+    p.db-v2-form-hint = t("recrivo.dashboard.questions.type_hint")
 
   .db-v2-form-group data-choice-options-panel="1" style=("display:none" unless is_choice_type)
-    label.db-v2-form-label 選択肢
-    p.db-v2-form-hint style="margin-bottom:10px" 1行に1つ。最低2つ必要です。正解がある場合だけ選んでください（任意）。
+    label.db-v2-form-label = t("recrivo.dashboard.questions.choices")
+    p.db-v2-form-hint style="margin-bottom:10px" = t("recrivo.dashboard.questions.choices_hint")
     .db-v2-choice-rows data-choice-rows="1"
       - choice_texts.each_with_index do |text, idx|
         .db-v2-choice-row data-choice-row="1"
           span.db-v2-choice-row__num = idx + 1
-          input.db-v2-form-control type="text" name="question[choice_texts][]" value=text placeholder="例: はい / いいえ / 具体的な選択肢" data-choice-text="1" autocomplete="off"
-          button.db-v2-btn.db-v2-btn--ghost.db-v2-btn--xs type="button" data-choice-remove="1" aria-label="この選択肢を削除"
+          input.db-v2-form-control type="text" name="question[choice_texts][]" value=text placeholder=t("recrivo.dashboard.questions.choice_ph") data-choice-text="1" autocomplete="off"
+          button.db-v2-btn.db-v2-btn--ghost.db-v2-btn--xs type="button" data-choice-remove="1" aria-label=t("recrivo.dashboard.questions.choice_remove")
             i.fa-solid.fa-trash aria-hidden="true"
-            span 削除
+            span = t("recrivo.dashboard.common.delete")
     .db-v2-form-actions style="margin-top:10px"
       button.db-v2-btn.db-v2-btn--ghost type="button" data-choice-add="1"
         i.fa-solid.fa-plus aria-hidden="true"
-        span 選択肢を追加
+        span = t("recrivo.dashboard.questions.add_choice")
 
     .db-v2-form-group style="margin-top:14px;margin-bottom:0"
-      label.db-v2-form-label for="question_correct_choice" 正解（任意）
+      label.db-v2-form-label for="question_correct_choice" = t("recrivo.dashboard.questions.correct")
       select#question_correct_choice.db-v2-form-control name="question[correct_choice]" data-correct-choice="1"
-        option value="" selected=(correct_choice.blank?) 正解なし（情報確認のみ）
+        option value="" selected=(correct_choice.blank?) = t("recrivo.dashboard.questions.no_correct")
         - choice_texts.each do |text|
           - next if text.blank?
           option value=text selected=(text == correct_choice) = text
-      p.db-v2-form-hint 正解を指定すると、その選択肢かどうかで採点します。
+      p.db-v2-form-hint = t("recrivo.dashboard.questions.correct_hint")
 
   .db-v2-form-group
-    = f.label :order, "表示順", class: "db-v2-form-label"
+    = f.label :order, t("recrivo.dashboard.questions.order"), class: "db-v2-form-label"
     = f.number_field :order, class: "db-v2-form-control", min: 1
 
   .db-v2-form-group
     .db-v2-form-check
       = f.check_box :published, checked: (@question.published.nil? ? true : @question.published?)
-      = f.label :published, "公開する（面接に出す）"
-    p.db-v2-form-hint
-      | オフの間は下書きです。AI提案から追加した質問は初期状態で非公開です。
+      = f.label :published, t("recrivo.dashboard.questions.publish")
+    p.db-v2-form-hint = t("recrivo.dashboard.questions.publish_hint")
 
   .db-v2-form-group
     .db-v2-form-check
       = f.check_box :required
-      = f.label :required, "必須質問（途中不合格の対象）"
-    p.db-v2-form-hint
-      | シナリオで「必須質問が基準未満なら不合格」をオンにしている場合、この質問が対象になります。
+      = f.label :required, t("recrivo.dashboard.questions.required")
+    p.db-v2-form-hint = t("recrivo.dashboard.questions.required_hint")
 
   .db-v2-form-group
-    = f.label :category, "カテゴリ", class: "db-v2-form-label"
-    = f.text_field :category, class: "db-v2-form-control", placeholder: "例: 技術, コミュニケーション"
+    = f.label :category, t("recrivo.dashboard.questions.category"), class: "db-v2-form-label"
+    = f.text_field :category, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.questions.category_ph")
 
   .db-v2-form-section
-    h3.db-v2-form-section__title 分岐ルール（任意）
-    p.db-v2-form-hint style="margin-bottom:12px"
-      | 条件を満たすときだけこの質問を出します。未設定なら通常どおり出題します。
+    h3.db-v2-form-section__title = t("recrivo.dashboard.questions.branch_title")
+    p.db-v2-form-hint style="margin-bottom:12px" = t("recrivo.dashboard.questions.branch_lead")
 
     .db-v2-form-group
       .db-v2-form-check
         input#question_branch_enabled type="checkbox" name="question[branch_enabled]" value="1" checked=branch_enabled
-        label for="question_branch_enabled" 分岐条件を使う
+        label for="question_branch_enabled" = t("recrivo.dashboard.questions.branch_enable")
 
     .db-v2-form-group
-      label.db-v2-form-label for="question_branch_source_order" 参照する質問の表示順
+      label.db-v2-form-label for="question_branch_source_order" = t("recrivo.dashboard.questions.branch_source")
       input#question_branch_source_order.db-v2-form-control type="number" name="question[branch_source_order]" min="1" value=(branch_cond[:source_question_order] || 1)
-      p.db-v2-form-hint 例: 1 なら「表示順1の質問」への回答を参照します。
+      p.db-v2-form-hint = t("recrivo.dashboard.questions.branch_source_hint")
 
     .db-v2-form-group
-      label.db-v2-form-label for="question_branch_type" 条件タイプ
+      label.db-v2-form-label for="question_branch_type" = t("recrivo.dashboard.questions.branch_type")
       select#question_branch_type.db-v2-form-control name="question[branch_type]"
-        - [["回答済み", "answered"], ["選択肢が一致", "selected_option"], ["スコア以上", "score_above"], ["スコア未満", "score_below"]].each do |label, val|
+        - [[t("recrivo.dashboard.questions.branch_answered"), "answered"], [t("recrivo.dashboard.questions.branch_selected"), "selected_option"], [t("recrivo.dashboard.questions.branch_score_above"), "score_above"], [t("recrivo.dashboard.questions.branch_score_below"), "score_below"]].each do |label, val|
           option value=val selected=(branch_cond[:type].to_s == val || (branch_cond[:type].blank? && val == "answered")) = label
 
     .db-v2-form-group
-      label.db-v2-form-label for="question_branch_value" 条件値（選択肢文 or 点数）
-      input#question_branch_value.db-v2-form-control type="text" name="question[branch_value]" value=(branch_cond[:value].to_s) placeholder="例: はい / 70"
-      p.db-v2-form-hint 「回答済み」のときは不要です。
+      label.db-v2-form-label for="question_branch_value" = t("recrivo.dashboard.questions.branch_value")
+      input#question_branch_value.db-v2-form-control type="text" name="question[branch_value]" value=(branch_cond[:value].to_s) placeholder=t("recrivo.dashboard.questions.branch_value_ph")
+      p.db-v2-form-hint = t("recrivo.dashboard.questions.branch_value_hint")
 
     .db-v2-form-group
-      label.db-v2-form-label for="question_branch_action" 条件が真のとき
+      label.db-v2-form-label for="question_branch_action" = t("recrivo.dashboard.questions.branch_action")
       select#question_branch_action.db-v2-form-control name="question[branch_action]"
-        option value="include" selected=(branch_cond[:action].to_s != "exclude") この質問を出す
-        option value="exclude" selected=(branch_cond[:action].to_s == "exclude") この質問を出さない
+        option value="include" selected=(branch_cond[:action].to_s != "exclude") = t("recrivo.dashboard.questions.branch_include")
+        option value="exclude" selected=(branch_cond[:action].to_s == "exclude") = t("recrivo.dashboard.questions.branch_exclude")
 
     .db-v2-form-group
-      label.db-v2-form-label for="question_branch_default_action" 条件が偽のとき（デフォルト）
+      label.db-v2-form-label for="question_branch_default_action" = t("recrivo.dashboard.questions.branch_default")
       select#question_branch_default_action.db-v2-form-control name="question[branch_default_action]"
         - default_act = (branch_rules && branch_rules[:default_action]).to_s
-        option value="exclude" selected=(default_act != "include") 出さない
-        option value="include" selected=(default_act == "include") 出す
+        option value="exclude" selected=(default_act != "include") = t("recrivo.dashboard.questions.branch_default_exclude")
+        option value="include" selected=(default_act == "include") = t("recrivo.dashboard.questions.branch_default_include")
 
   .db-v2-form-actions
-    = f.submit @question.persisted? ? "更新する" : "作成する", class: "db-v2-btn db-v2-btn--primary"
+    = f.submit @question.persisted? ? t("recrivo.dashboard.questions.update") : t("recrivo.dashboard.questions.create"), class: "db-v2-btn db-v2-btn--primary"
     = link_to situation_path(@situation), class: "db-v2-btn db-v2-btn--ghost" do
-      span キャンセル
+      span = t("recrivo.dashboard.common.cancel")

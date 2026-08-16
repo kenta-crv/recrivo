@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   layout :layout_for_request
 
   before_action :set_locale
+  before_action :stash_omniauth_locale
   before_action :init_breadcrumbs
   before_action :set_active_storage_url_options
   helper_method :breadcrumbs, :current_locale, :locale_root_href, :href_for_locale,
@@ -63,7 +64,35 @@ class ApplicationController < ActionController::Base
   def set_locale
     locale = resolve_ui_locale
     I18n.locale = locale
-    session[:ui_locale] = locale.to_s
+
+    path = request.path.to_s.sub(%r{\A/en(?=/|$)}, "")
+    path = "/" if path.blank?
+    # 公開SEO用URLは表示localeを強制するが、ユーザーのUI希望(session/cookie)は消さない
+    return if public_switchable_path?(path)
+
+    persist_ui_locale!(locale)
+  end
+
+  def persist_ui_locale!(locale)
+    value = locale.to_s
+    return unless Client::LOCALES.include?(value)
+
+    session[:ui_locale] = value
+    cookies[:ui_locale] = {
+      value: value,
+      expires: 1.year,
+      path: "/",
+      same_site: :lax
+    }
+  end
+
+  # OAuth は /clients/auth/*（/en 外）へ飛ぶため、開始時点の UI locale を session に残す
+  def stash_omniauth_locale
+    return unless request.path.to_s.start_with?("/clients/auth/")
+    return if request.path.to_s.include?("/callback")
+
+    locale = session[:ui_locale].presence || I18n.locale.to_s
+    session[:omniauth_locale] = locale if Client::LOCALES.include?(locale)
   end
 
   def resolve_ui_locale
@@ -81,6 +110,9 @@ class ApplicationController < ActionController::Base
 
     session_locale = session[:ui_locale].to_s
     return session_locale.to_sym if Client::LOCALES.include?(session_locale)
+
+    cookie_locale = cookies[:ui_locale].to_s
+    return cookie_locale.to_sym if Client::LOCALES.include?(cookie_locale)
 
     :ja
   end

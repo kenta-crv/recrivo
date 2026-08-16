@@ -1,7 +1,7 @@
 .db-v2-header
   .db-v2-header__left
-    h1.db-v2-header__title 面接管理
-    p.db-v2-header__subtitle 候補者・評価・合否をまとめて確認できます
+    h1.db-v2-header__title = t("recrivo.dashboard.candidates.title")
+    p.db-v2-header__subtitle = t("recrivo.dashboard.candidates.subtitle")
   .db-v2-header__right
     = render "/dashboard/theme_switch"
 
@@ -9,35 +9,35 @@
   .db-v2-bottom-card__body
     = form_with url: dashboard_candidates_path, method: :get, local: true, html: { class: "db-v2-suggest-grid", style: "margin-bottom:16px" } do
       .db-v2-form-group
-        label.db-v2-form-label シナリオ
-        = select_tag :situation_id, options_from_collection_for_select(@situations, :id, :title, @situation_filter), include_blank: "すべて", class: "db-v2-form-control"
+        label.db-v2-form-label = t("recrivo.dashboard.candidates.filter_scenario")
+        = select_tag :situation_id, options_from_collection_for_select(@situations, :id, :title, @situation_filter), include_blank: t("recrivo.dashboard.common.all"), class: "db-v2-form-control"
       .db-v2-form-group
-        label.db-v2-form-label 運用ステータス
-        = select_tag :ops_status, options_for_select(ops_status_options, @ops_filter), include_blank: "すべて", class: "db-v2-form-control"
+        label.db-v2-form-label = t("recrivo.dashboard.candidates.filter_ops")
+        = select_tag :ops_status, options_for_select(ops_status_options, @ops_filter), include_blank: t("recrivo.dashboard.common.all"), class: "db-v2-form-control"
       .db-v2-form-group
         label.db-v2-form-label &nbsp;
-        button.db-v2-btn.db-v2-btn--primary type="submit" 絞り込み
+        button.db-v2-btn.db-v2-btn--primary type="submit" = t("recrivo.dashboard.candidates.filter_submit")
 
     - if @interviews.blank?
       .db-v2-empty-state
-        p.db-v2-empty-state__text まだ面接がありません
-        p.db-v2-muted シナリオを作成し、招待リンクを候補者へ共有してください。
+        p.db-v2-empty-state__text = t("recrivo.dashboard.candidates.empty")
+        p.db-v2-muted = t("recrivo.dashboard.candidates.empty_lead")
         - unless admin_signed_in?
           = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
-            span シナリオを作成
+            span = t("recrivo.dashboard.home.create_scenario")
     - else
       .db-v2-leads-table-wrap
         table.db-v2-leads-table.db-v2-deals-table
           thead
             tr
-              th ID
-              th 候補者
-              th シナリオ
-              th 面接
-              th 運用
-              th 判定
-              th スコア
-              th 更新
+              th = t("recrivo.dashboard.candidates.col_id")
+              th = t("recrivo.dashboard.candidates.col_candidate")
+              th = t("recrivo.dashboard.candidates.col_scenario")
+              th = t("recrivo.dashboard.candidates.col_interview")
+              th = t("recrivo.dashboard.candidates.col_ops")
+              th = t("recrivo.dashboard.candidates.col_decision")
+              th = t("recrivo.dashboard.candidates.col_score")
+              th = t("recrivo.dashboard.candidates.col_updated")
               th
           tbody
             - @interviews.each do |interview|
@@ -62,6 +62,6 @@
                 td = l(interview.updated_at, format: :short)
                 td
                   .db-v2-result-actions
-                    = link_to "詳細", dashboard_candidate_path(interview), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+                    = link_to t("recrivo.dashboard.common.detail"), dashboard_candidate_path(interview), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
                     - if result
-                      = link_to "評価", dashboard_interview_result_path(result), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"
+                      = link_to t("recrivo.dashboard.candidates.evaluation"), dashboard_interview_result_path(result), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs"

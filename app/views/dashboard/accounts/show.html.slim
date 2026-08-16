@@ -1,3 +1,15 @@
+.db-v2-bottom-card
+  .db-v2-bottom-card__header
+    h2.db-v2-bottom-card__title
+      i.fa-solid.fa-globe aria-hidden="true"
+      |  
+      = t("recrivo.dashboard.account.language_title")
+  .db-v2-bottom-card__body
+    p.db-v2-locale-switch__hint = t("recrivo.dashboard.account.language_hint")
+    .db-v2-locale-switch role="group" aria-label=t("recrivo.dashboard.account.language_title")
+      = link_to t("recrivo.dashboard.account.language_ja"), locale_switch_path_for(:ja, return_to: dashboard_account_path), class: "db-v2-locale-switch__btn#{' is-active' if current_locale.to_s == 'ja'}", "aria-pressed": (current_locale.to_s == "ja").to_s
+      = link_to t("recrivo.dashboard.account.language_en"), locale_switch_path_for(:en, return_to: dashboard_account_path), class: "db-v2-locale-switch__btn#{' is-active' if current_locale.to_s == 'en'}", "aria-pressed": (current_locale.to_s == "en").to_s
+
 = form_with model: @client, url: dashboard_account_path, method: :patch, local: true do |f|
   - if @client.errors.any?
     .db-v2-bottom-card style="margin-bottom:1.25rem"
@@ -11,63 +23,61 @@
     .db-v2-bottom-card__header
       h2.db-v2-bottom-card__title
         i.fa-solid.fa-building aria-hidden="true"
-        |  企業情報
+        |  
+        = t("recrivo.dashboard.account.title")
     .db-v2-bottom-card__body
       .db-v2-form-group
-        = f.label :company, "会社名", class: "db-v2-form-label"
+        = f.label :company, t("recrivo.dashboard.account.company"), class: "db-v2-form-label"
         = f.text_field :company, class: "db-v2-form-control", required: true
 
       .db-v2-form-group
-        = f.label :name, "担当者名", class: "db-v2-form-label"
+        = f.label :name, t("recrivo.dashboard.account.name"), class: "db-v2-form-label"
         = f.text_field :name, class: "db-v2-form-control", required: true
 
       .db-v2-form-group
-        = f.label :email, "メールアドレス", class: "db-v2-form-label"
+        = f.label :email, t("recrivo.dashboard.account.email"), class: "db-v2-form-label"
         = f.email_field :email, class: "db-v2-form-control", required: true
 
       .db-v2-form-group
-        = f.label :tel, "電話番号", class: "db-v2-form-label"
+        = f.label :tel, t("recrivo.dashboard.account.tel"), class: "db-v2-form-label"
         = f.telephone_field :tel, class: "db-v2-form-control", required: true
 
       .db-v2-form-group
-        = f.label :address, "住所", class: "db-v2-form-label"
+        = f.label :address, t("recrivo.dashboard.account.address"), class: "db-v2-form-label"
         = f.text_field :address, class: "db-v2-form-control", required: true
 
       .db-v2-form-group
-        = f.label :url, "URL", class: "db-v2-form-label"
+        = f.label :url, t("recrivo.dashboard.account.url"), class: "db-v2-form-label"
         = f.url_field :url, class: "db-v2-form-control", placeholder: "https://example.com"
 
   .db-v2-bottom-card style="margin-top:1.25rem"
     .db-v2-bottom-card__header
       h2.db-v2-bottom-card__title
         i.fa-solid.fa-envelope aria-hidden="true"
-        |  採用・不採用メール文面
+        |  
+        = t("recrivo.dashboard.account.emails_title")
     .db-v2-bottom-card__body
-      p.db-v2-muted.db-v2-account-email__lead
-        | 面接管理から送る採用・不採用メールの文面です。空欄の項目はシステム標準文面を使います。
-      p.db-v2-muted.db-v2-account-email__vars-label 差し込み変数（そのままコピーして使えます）
+      p.db-v2-muted.db-v2-account-email__lead = t("recrivo.dashboard.account.emails_lead")
+      p.db-v2-muted.db-v2-account-email__vars-label = t("recrivo.dashboard.account.emails_vars")
       .db-v2-account-email__vars
         - %w[{{candidate_name}} {{candidate_email}} {{company}} {{situation_title}} {{average_score}}].each do |var|
           code.db-v2-account-email__var = var
 
-      - hire_subject_ph = "空欄でデフォルト（【採用のご連絡】{{company}}）"
-      - reject_subject_ph = "空欄でデフォルト（【選考結果のご連絡】{{company}}）"
+      .db-v2-form-group
+        = f.label :hire_email_subject, t("recrivo.dashboard.account.hire_subject"), class: "db-v2-form-label"
+        = f.text_field :hire_email_subject, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.account.hire_subject_ph")
 
       .db-v2-form-group
-        = f.label :hire_email_subject, "採用メール件名", class: "db-v2-form-label"
-        = f.text_field :hire_email_subject, class: "db-v2-form-control", placeholder: hire_subject_ph
+        = f.label :hire_email_body, t("recrivo.dashboard.account.hire_body"), class: "db-v2-form-label"
+        = f.text_area :hire_email_body, class: "db-v2-form-control", rows: 10, placeholder: t("recrivo.dashboard.account.hire_body_ph")
 
       .db-v2-form-group
-        = f.label :hire_email_body, "採用メール本文", class: "db-v2-form-label"
-        = f.text_area :hire_email_body, class: "db-v2-form-control", rows: 10, placeholder: "空欄でデフォルトの採用通知文面を使用"
+        = f.label :reject_email_subject, t("recrivo.dashboard.account.reject_subject"), class: "db-v2-form-label"
+        = f.text_field :reject_email_subject, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.account.reject_subject_ph")
 
       .db-v2-form-group
-        = f.label :reject_email_subject, "不採用メール件名", class: "db-v2-form-label"
-        = f.text_field :reject_email_subject, class: "db-v2-form-control", placeholder: reject_subject_ph
-
-      .db-v2-form-group
-        = f.label :reject_email_body, "不採用メール本文", class: "db-v2-form-label"
-        = f.text_area :reject_email_body, class: "db-v2-form-control", rows: 10, placeholder: "空欄でデフォルトの不採用通知文面を使用"
+        = f.label :reject_email_body, t("recrivo.dashboard.account.reject_body"), class: "db-v2-form-label"
+        = f.text_area :reject_email_body, class: "db-v2-form-control", rows: 10, placeholder: t("recrivo.dashboard.account.reject_body_ph")
 
       .db-v2-form-actions
-        = f.submit "保存する", class: "db-v2-btn db-v2-btn--primary"
+        = f.submit t("recrivo.dashboard.account.save"), class: "db-v2-btn db-v2-btn--primary"

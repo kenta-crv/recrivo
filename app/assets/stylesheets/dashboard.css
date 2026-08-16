@@ -823,6 +823,69 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-theme-switch__
   color: #fff;
 }
 
+/* Locale switch — match theme-switch size */
+.dashboard-v2-container .db-v2-locale-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--db-input-bg);
+  border: 1px solid var(--db-input-border);
+  box-shadow: var(--db-input-glow);
+  gap: 2px;
+}
+
+.dashboard-v2-container .db-v2-locale-switch__hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--db-text-muted);
+}
+
+.dashboard-v2-container .db-v2-locale-switch__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--db-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard-v2-container .db-v2-locale-switch--sidebar {
+  margin: 0 10px 10px;
+  width: calc(100% - 20px);
+  box-sizing: border-box;
+}
+
+.dashboard-v2-container .db-v2-locale-switch--sidebar .db-v2-locale-switch__btn {
+  flex: 1;
+}
+
+.dashboard-v2-container .db-v2-locale-switch__btn:hover {
+  color: var(--db-heading);
+}
+
+.dashboard-v2-container .db-v2-locale-switch__btn.is-active {
+  background: linear-gradient(135deg, var(--db-btn-grad-from), var(--db-btn-grad-to));
+  color: #fff;
+  box-shadow: 0 0 14px var(--db-brand-soft);
+}
+
+html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-locale-switch__btn.is-active {
+  background: linear-gradient(135deg, var(--db-btn-grad-from), var(--db-btn-grad-to));
+  color: #fff;
+}
+
 /* KPI cards */
 .dashboard-v2-container .db-v2-summary-grid {
   display: grid;
@@ -3892,7 +3955,8 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-breadcrumb__se
   color: #94a3b8;
 }
 
-html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-theme-switch__btn:not(.is-active) {
+html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-theme-switch__btn:not(.is-active),
+html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-locale-switch__btn:not(.is-active) {
   color: #475569;
 }
 
@@ -4569,7 +4633,24 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
 .dashboard-v2-container .db-v2-pricing__viewport {
   width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  touch-action: pan-x;
+}
+
+.dashboard-v2-container .db-v2-pricing__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-v2-container .db-v2-pricing__viewport.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  user-select: none;
 }
 
 .dashboard-v2-container .db-v2-pricing__arrow {
@@ -4623,8 +4704,6 @@ html[data-dashboard-theme="light"] .dashboard-v2-container .db-v2-subscription-s
   width: max-content;
   min-width: 100%;
   padding: 18px 8px 8px;
-  transition: transform 0.35s ease;
-  will-change: transform;
 }
 
 .dashboard-v2-container .db-v2-pricing__card {

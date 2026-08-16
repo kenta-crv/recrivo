@@ -1,51 +1,51 @@
 .db-v2-header
   .db-v2-header__left
-    nav.db-v2-breadcrumb aria-label="パンくず"
-      = link_to "面接管理", dashboard_candidates_path, class: "db-v2-breadcrumb__link"
+    nav.db-v2-breadcrumb aria-label=t("recrivo.dashboard.common.breadcrumb")
+      = link_to t("recrivo.dashboard.candidates.title"), dashboard_candidates_path, class: "db-v2-breadcrumb__link"
       i.fa-solid.fa-chevron-right.db-v2-breadcrumb__sep aria-hidden="true"
       span.db-v2-breadcrumb__current = @result.interview.user&.name.presence || @result.interview.user&.email || "##{@result.id}"
     h1.db-v2-header__title
-      = @result.interview.user&.name.presence || @result.interview.user&.email || "評価詳細"
+      = @result.interview.user&.name.presence || @result.interview.user&.email || t("recrivo.dashboard.results.fallback_title")
     p.db-v2-header__subtitle
       = @result.interview.situation&.title
-      |  ／ 
+      = t("recrivo.dashboard.common.sep")
       span class=final_status_badge_class(@result.final_status) = final_status_label(@result.final_status)
   .db-v2-header__right
     = render "/dashboard/theme_switch"
     - if @result.pending_review? || @result.interview.situation&.manual_judgment?
-      = button_to judge_pass_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary", data: { confirm: "合格に確定しますか？" } do
-        span 合格にする
-      = button_to judge_fail_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: "不合格に確定しますか？" } do
-        span 不合格にする
-    = button_to notify_hire_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary", data: { confirm: "採用通知メールを送信しますか？" } do
+      = button_to judge_pass_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary", data: { confirm: t("recrivo.dashboard.results.judge_pass_confirm") } do
+        span = t("recrivo.dashboard.results.judge_pass")
+      = button_to judge_fail_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: t("recrivo.dashboard.results.judge_fail_confirm") } do
+        span = t("recrivo.dashboard.results.judge_fail")
+    = button_to notify_hire_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary", data: { confirm: t("recrivo.dashboard.results.hire_confirm") } do
       i.fa-solid.fa-envelope aria-hidden="true"
-      span 採用通知を送る
-    = button_to notify_reject_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: "不採用通知メールを送信しますか？" } do
+      span = t("recrivo.dashboard.results.hire_email")
+    = button_to notify_reject_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--ghost", data: { confirm: t("recrivo.dashboard.results.reject_confirm") } do
       i.fa-solid.fa-envelope aria-hidden="true"
-      span 不採用通知を送る
+      span = t("recrivo.dashboard.results.reject_email")
     = link_to dashboard_candidate_path(@result.interview), class: "db-v2-btn db-v2-btn--ghost" do
       i.fa-solid.fa-arrow-left aria-hidden="true"
-      span 候補者へ戻る
+      span = t("recrivo.dashboard.results.back_to_candidate")
 
 .db-v2-bottom-card
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 受験者情報
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.results.applicant_info")
   .db-v2-bottom-card__body
     - user = @result.interview.user
     .db-v2-leads-table-wrap
       table.db-v2-leads-table.db-v2-leads-table--defs
         tbody
           tr
-            th 氏名
+            th = t("recrivo.dashboard.results.name")
             td = user&.name.presence || "—"
           tr
-            th メール
+            th = t("recrivo.dashboard.results.email")
             td = user&.email.presence || "—"
           tr
-            th 電話番号
+            th = t("recrivo.dashboard.results.phone")
             td = user&.tel.presence || "—"
           tr
-            th 住所
+            th = t("recrivo.dashboard.results.address")
             td = user&.address.presence || "—"
 
 .db-v2-summary-grid
@@ -53,62 +53,62 @@
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--green
       i.fa-solid.fa-flag-checkered aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 判定
+      .db-v2-summary-card__label = t("recrivo.dashboard.results.metric_decision")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = final_status_label(@result.final_status, detailed: true)
       - failure_reason = @result.results_data.is_a?(Hash) && (@result.results_data["failure_reason"] || @result.results_data[:failure_reason])
       - failure_reason ||= @result.interview.rejection_reason
       - if @result.failed? && failure_reason.present?
-        p.db-v2-muted style="margin-top:8px;font-size:0.9rem;line-height:1.5;" = "理由: #{failure_reason}"
+        p.db-v2-muted style="margin-top:8px;font-size:0.9rem;line-height:1.5;" = t("recrivo.dashboard.results.reason", reason: failure_reason)
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--gold
       i.fa-solid.fa-star aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 平均点
+      .db-v2-summary-card__label = t("recrivo.dashboard.results.metric_score")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value = @result.average_score || "—"
   .db-v2-summary-card
     .db-v2-summary-card__icon-wrap.db-v2-summary-card__icon-wrap--blue
       i.fa-solid.fa-list-ol aria-hidden="true"
     .db-v2-summary-card__content
-      .db-v2-summary-card__label 回答数
+      .db-v2-summary-card__label = t("recrivo.dashboard.results.metric_answers")
       .db-v2-summary-card__value-row
         span.db-v2-summary-card__value
           = "#{@result.answered_questions.to_i} / #{@result.total_questions.to_i}"
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
-    h2.db-v2-bottom-card__title AI総評
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.results.summary_title")
     - if @result.summary.blank?
-      = button_to "総評を生成", regenerate_summary_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary db-v2-btn--xs"
+      = button_to t("recrivo.dashboard.results.generate_summary"), regenerate_summary_dashboard_interview_result_path(@result), method: :post, class: "db-v2-btn db-v2-btn--primary db-v2-btn--xs"
   .db-v2-bottom-card__body
-    p style="white-space:pre-wrap;line-height:1.7;" = @result.summary.presence || "AI総評はまだ生成されていません。「総評を生成」から作成できます。"
+    p style="white-space:pre-wrap;line-height:1.7;" = @result.summary.presence || t("recrivo.dashboard.results.summary_empty")
 
-    h3.db-v2-panel__title style="margin-top:1rem" 強み
+    h3.db-v2-panel__title style="margin-top:1rem" = t("recrivo.dashboard.results.strengths")
     - if Array(@result.strengths).blank?
-      p.db-v2-muted なし
+      p.db-v2-muted = t("recrivo.dashboard.results.none")
     - else
       ul
         - Array(@result.strengths).each do |item|
           li = item
 
-    h3.db-v2-panel__title style="margin-top:1rem" 改善点
+    h3.db-v2-panel__title style="margin-top:1rem" = t("recrivo.dashboard.results.weaknesses")
     - if Array(@result.weaknesses).blank?
-      p.db-v2-muted なし
+      p.db-v2-muted = t("recrivo.dashboard.results.none")
     - else
       ul
         - Array(@result.weaknesses).each do |item|
           li = item
 
-    h3.db-v2-panel__title style="margin-top:1rem" 推奨アクション
+    h3.db-v2-panel__title style="margin-top:1rem" = t("recrivo.dashboard.results.recommendation")
     p style="white-space:pre-wrap;" = @result.recommendation.presence || "—"
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header
-    h2.db-v2-bottom-card__title 回答ログ（録音・動画）
+    h2.db-v2-bottom-card__title = t("recrivo.dashboard.results.log_title")
   .db-v2-bottom-card__body
     - if @responses.blank?
-      p.db-v2-muted 回答がありません
+      p.db-v2-muted = t("recrivo.dashboard.results.log_empty")
     - else
       .db-v2-answer-log
         - @responses.each_with_index do |resp, idx|
@@ -116,24 +116,26 @@
             .db-v2-answer-log__meta
               span.db-v2-answer-log__index = "Q#{idx + 1}"
               span.db-v2-answer-log__score
-                | スコア: 
+                = t("recrivo.dashboard.results.score_label")
                 strong = resp.score.presence || "—"
             p.db-v2-answer-log__question = resp.question&.question_text
             .db-v2-answer-log__transcript
-              p.db-v2-answer-log__label 回答テキスト
+              p.db-v2-answer-log__label = t("recrivo.dashboard.results.answer_text")
               p.db-v2-text-block = resp.audio_transcript.presence || "—"
             .db-v2-answer-log__media
               - if resp.answer_audio.attached?
                 .db-v2-recording-play
                   p.db-v2-recording-play__label
                     i.fa-solid.fa-circle-play aria-hidden="true"
-                    |  録音を再生
+                    |  
+                    = t("recrivo.dashboard.results.play_audio")
                   audio.db-v2-audio-player controls=true preload="metadata" src=rails_blob_path(resp.answer_audio, only_path: true)
               - if resp.answer_video.attached?
                 .db-v2-recording-play.db-v2-recording-play--video
                   p.db-v2-recording-play__label
                     i.fa-solid.fa-circle-play aria-hidden="true"
-                    |  動画を再生
+                    |  
+                    = t("recrivo.dashboard.results.play_video")
                   video.db-v2-video-player controls=true preload="metadata" playsinline=true src=rails_blob_path(resp.answer_video, only_path: true)
               - unless resp.answer_audio.attached? || resp.answer_video.attached?
-                p.db-v2-muted 録音・動画なし
+                p.db-v2-muted = t("recrivo.dashboard.results.no_media")
