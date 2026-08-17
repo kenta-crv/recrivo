@@ -7,6 +7,14 @@ module ApplicationHelper
     controller_path.to_s.start_with?("admins/")
   end
 
+  # 本番で未プリコンパイルの CSS があっても認証画面ごと 500 にしない
+  def stylesheet_link_tag_if_compiled(source, **options)
+    stylesheet_link_tag(source, **options)
+  rescue Sprockets::Rails::Helper::AssetNotFound => e
+    Rails.logger.error("[assets] missing precompiled stylesheet #{source}: #{e.message}")
+    nil
+  end
+
   def default_meta_tags
     {
       site: SITE_NAME,
