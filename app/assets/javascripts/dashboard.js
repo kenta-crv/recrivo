@@ -1,3 +1,4 @@
+//= require turbo
 //= require rails-ujs
 //= require activestorage
 //= require meetia_page_init
