@@ -33,38 +33,38 @@
           span = t("recrivo.dashboard.situations.create_first")
     - else
       .db-v2-leads-table-wrap
-        table.db-v2-leads-table.db-v2-deals-table
+        table.db-v2-leads-table.db-v2-deals-table.db-v2-situations-table
           thead
             tr
               th = t("recrivo.dashboard.situations.col_id")
               - if acting_as_admin?
                 th = t("recrivo.dashboard.situations.col_company")
-              th = t("recrivo.dashboard.situations.col_title")
-              th = t("recrivo.dashboard.situations.col_language")
-              th = t("recrivo.dashboard.situations.col_questions")
-              th = t("recrivo.dashboard.situations.col_status")
-              th = t("recrivo.dashboard.situations.col_updated")
-              th = t("recrivo.dashboard.situations.col_actions")
+              th.db-v2-situations-table__title = t("recrivo.dashboard.situations.col_title")
+              th.db-v2-situations-table__num = t("recrivo.dashboard.situations.col_language")
+              th.db-v2-situations-table__num = t("recrivo.dashboard.situations.col_questions")
+              th.db-v2-situations-table__status = t("recrivo.dashboard.situations.col_status")
+              th.db-v2-situations-table__date = t("recrivo.dashboard.situations.col_updated")
+              th.db-v2-situations-table__actions = t("recrivo.dashboard.situations.col_actions")
           tbody
             - @situations.each do |situation|
               tr
-                td.db-v2-deals-table__id = situation.id
+                td.db-v2-situations-table__id.db-v2-deals-table__id = situation.id
                 - if acting_as_admin?
                   td = situation.client&.company.presence || situation.client&.email || "—"
-                td.db-v2-deals-table__title
-                  = link_to situation.title, situation_path(situation), class: "db-v2-deals-table__link"
-                  - if situation.industry.present? || situation.job_title.present?
-                    br
-                    span style="color:#64748b;font-size:12px;" = [situation.industry.presence, situation.job_title.presence].compact.join(t("recrivo.dashboard.common.sep"))
-                td = situation.language.to_s.upcase
-                td = situation.questions.size
-                td
+                td.db-v2-situations-table__title.db-v2-deals-table__title
+                  .db-v2-situations-table__title-inner
+                    = link_to situation.title, situation_path(situation), class: "db-v2-deals-table__link"
+                    - if situation.industry.present? || situation.job_title.present?
+                      span.db-v2-situations-table__meta = [situation.industry.presence, situation.job_title.presence].compact.join(t("recrivo.dashboard.common.sep"))
+                td.db-v2-situations-table__num = situation.language.to_s.upcase
+                td.db-v2-situations-table__num = situation.questions.size
+                td.db-v2-situations-table__status
                   - if situation.archived?
                     span.db-v2-status-badge = t("recrivo.dashboard.common.archived")
                   - else
                     span.db-v2-status-badge.db-v2-status-badge--live = t("recrivo.dashboard.common.active")
-                td = l(situation.updated_at, format: :short)
-                td
+                td.db-v2-situations-table__date = l(situation.updated_at, format: :short)
+                td.db-v2-situations-table__actions
                   .db-v2-deals-table__actions
                     = link_to situation_path(situation), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
                       span = t("recrivo.dashboard.common.detail")

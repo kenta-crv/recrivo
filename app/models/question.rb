@@ -10,23 +10,28 @@ class Question < ApplicationRecord
   scope :ordered, -> { order(:order) }
   scope :required_only, -> { where(required: true) }
   scope :published_only, -> { where(published: true) }
+  scope :for_interview, -> { ordered }
+
+  before_validation :publish_for_interview
 
   def published?
     published
   end
 
-  def has_branching_rules?
-    branching_rules.present?
-  end
-
   def parsed_branching_rules
-    return nil unless has_branching_rules?
+    return nil if branching_rules.blank?
 
     rules = branching_rules
     rules = JSON.parse(rules) if rules.is_a?(String)
+    return nil unless rules.is_a?(Hash)
+
     rules.deep_symbolize_keys
-  rescue JSON::ParserError
+  rescue JSON::ParserError, TypeError
     nil
+  end
+
+  def has_branching_rules?
+    parsed_branching_rules.present?
   end
 
   def multiple_choice?
@@ -48,6 +53,10 @@ class Question < ApplicationRecord
   end
 
   private
+
+  def publish_for_interview
+    self.published = true
+  end
 
   def options_required_for_multiple_choice
     return unless multiple_choice?

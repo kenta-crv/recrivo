@@ -20,8 +20,8 @@ class Situation < ApplicationRecord
   validates :min_required_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
   validates :max_consecutive_fails, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 50 }
   validates :reject_notify_method, inclusion: { in: %w[in_app email none] }
-  validates :judgment_mode, inclusion: { in: %w[automatic manual] }
-  validates :candidate_result_visibility, inclusion: { in: %w[immediate hidden] }
+  validates :judgment_mode, presence: true, inclusion: { in: %w[automatic manual] }
+  validates :candidate_result_visibility, presence: true, inclusion: { in: %w[immediate hidden] }
   validate :at_least_one_answer_mode_enabled
 
   enum language: { en: 'en', ja: 'ja' }
@@ -53,6 +53,30 @@ class Situation < ApplicationRecord
 
   def allow_voice_answer?
     allow_voice_answer
+  end
+
+  def answer_mode
+    if allow_text_answer && !allow_voice_answer
+      "text"
+    elsif allow_voice_answer && !allow_text_answer
+      "voice"
+    else
+      "both"
+    end
+  end
+
+  def answer_mode=(value)
+    case value.to_s
+    when "text"
+      self.allow_text_answer = true
+      self.allow_voice_answer = false
+    when "both"
+      self.allow_text_answer = true
+      self.allow_voice_answer = true
+    else
+      self.allow_text_answer = false
+      self.allow_voice_answer = true
+    end
   end
 
   def record_camera?

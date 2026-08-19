@@ -37,7 +37,7 @@ class Dashboard::CandidatesController < Dashboard::BaseController
     scope = Interview.real.joins(:situation)
     if client_signed_in?
       scope.where(situations: { client_id: current_client.id })
-    elsif admin_signed_in?
+    elsif acting_as_admin?
       scope
     else
       Interview.none

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::Interviews', type: :request do
   let(:client) { create(:client) }
-  let(:situation) { create(:situation, :with_questions, client: client) }
+  let(:situation) { create(:situation, :with_questions, :both_answer_modes, client: client) }
   let!(:user) { create(:user) }
   let(:candidate_email) { "candidate-#{SecureRandom.hex(4)}@example.com" }
   let(:start_payload) do
@@ -72,6 +72,16 @@ RSpec.describe 'Api::Interviews', type: :request do
       second_id = JSON.parse(response.body)['interview_id']
 
       expect(second_id).to eq(first_id)
+    end
+
+    it 'starts interview when the situation has questions' do
+      situation.questions.update_all(published: false)
+
+      post '/api/interviews/start', params: start_payload, as: :json
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body['success']).to be true
     end
   end
 
@@ -208,6 +218,19 @@ RSpec.describe 'Api::Interviews', type: :request do
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body['interview_complete']).to be true
+    end
+
+    it 'returns the next question even if the leftover published flag is false' do
+      allow_any_instance_of(InterviewEngine::TTSClient).to receive(:speak).and_return(nil)
+      situation.questions.update_all(published: false)
+
+      get "/api/interviews/#{interview.id}/next_question",
+        headers: { 'X-Interview-Token' => interview.access_token }
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body['success']).to be true
+      expect(body['question']).to be_present
     end
 
     it 'returns error for not-in-progress interview' do

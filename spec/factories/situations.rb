@@ -16,7 +16,7 @@ FactoryBot.define do
     min_required_score { 70 }
     max_consecutive_fails { 0 }
     reject_notify_method { 'in_app' }
-    allow_text_answer { true }
+    allow_text_answer { false }
     allow_voice_answer { true }
     record_camera { true }
 
@@ -32,6 +32,11 @@ FactoryBot.define do
 
     trait :voice_only do
       allow_text_answer { false }
+      allow_voice_answer { true }
+    end
+
+    trait :both_answer_modes do
+      allow_text_answer { true }
       allow_voice_answer { true }
     end
 

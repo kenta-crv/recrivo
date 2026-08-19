@@ -94,7 +94,9 @@ RSpec.describe Interview, type: :model do
       interview = create(:interview, :completed, user: user, situation: situation)
       interview.status = :in_progress
       expect(interview).not_to be_valid
-      expect(interview.errors[:status]).to include('cannot transition from completed to in_progress')
+      expect(interview.errors[:status]).to include(
+        I18n.t('activerecord.errors.models.interview.attributes.status.invalid_transition', from: :completed, to: :in_progress)
+      )
     end
 
     it 'rejects not_started to completed' do
@@ -213,7 +215,17 @@ RSpec.describe Interview, type: :model do
       empty_situation = create(:situation, client: client)
       interview = build(:interview, user: user, situation: empty_situation)
       expect(interview).not_to be_valid
-      expect(interview.errors[:situation]).to include('must have at least 1 question')
+      expect(interview.errors[:situation]).to include(
+        I18n.t('activerecord.errors.models.interview.attributes.situation.must_have_questions')
+      )
+    end
+
+    it 'accepts interview when the situation has questions' do
+      draft_situation = create(:situation, client: client)
+      create(:question, situation: draft_situation)
+      draft_situation.questions.update_all(published: false)
+      interview = build(:interview, user: user, situation: draft_situation)
+      expect(interview).to be_valid
     end
   end
 

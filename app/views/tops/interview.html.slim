@@ -28,6 +28,10 @@ javascript:
             | 必要事項を入力して、面接室に入場してください。
 
       .interview-room__panel
+        - interview_ready = @situation.questions.exists?
+        - unless interview_ready
+          .interview-room__error style="display:block" role="alert"
+            = t("recrivo.interview.invite.not_ready")
         - unless @situation.skip_candidate_registration? || preview_mode
           - SituationCandidateRegistration::CANDIDATE_INFO_FIELDS.each do |key|
             - mode = candidate_fields[key]
@@ -50,7 +54,7 @@ javascript:
           p.interview-room__hint style="margin-bottom:12px"
             | この面接ではカメラ映像の表示・録画を行います。ブラウザでカメラの許可をお願いします。
 
-        button#enter_room.interview-room__primary type="button" 面接室に入る
+        button#enter_room.interview-room__primary type="button" disabled=(!interview_ready) 面接室に入る
 
   /! ===== 開始オーバーレイ =====
   #phase-overlay.interview-room__overlay hidden=true role="dialog" aria-modal="true" aria-labelledby="start-overlay-title"
@@ -91,7 +95,7 @@ javascript:
               p#question_text.interview-room__question 面接を開始すると質問が表示されます。
               .interview-cinema__audio-row hidden=true
                 audio#question_audio.interview-room__audio hidden=true preload="auto"
-                = render "tops/shared/presentation_play_btn", btn_id: "replay_question", grad_id: "interviewPlayGrad"
+                = render "tops/shared/presentation_play_btn", btn_id: "replay_question", grad_id: "interviewPlayGrad", hero_play: false
 
               #answer_stage.interview-cinema__answer-stage hidden=true
                 #mcq_options.interview-room__mcq

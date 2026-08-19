@@ -26,8 +26,9 @@ module ApiErrorHandler
   end
 
   def render_validation_error(exception)
+    details = exception.record.errors.full_messages.join("、")
     render_api_error(
-      "Validation failed: #{exception.record.errors.full_messages.join(', ')}",
+      I18n.t("recrivo.interview.errors.validation_failed", details: details),
       status: :unprocessable_entity
     )
   end

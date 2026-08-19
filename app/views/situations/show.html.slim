@@ -60,7 +60,7 @@
   .db-v2-bottom-card__body
     p.db-v2-muted = situation_judgment_summary(@situation)
 
-.db-v2-bottom-card#questions style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation) data-i18n-add-questions=t("recrivo.dashboard.js.add_questions") data-i18n-add-basic=t("recrivo.dashboard.js.add_basic") data-i18n-apply-count=t("recrivo.dashboard.js.apply_count") data-i18n-adding=t("recrivo.dashboard.js.adding") data-i18n-no-suggest-url=t("recrivo.dashboard.js.no_suggest_url") data-i18n-need-industry-job=t("recrivo.dashboard.js.need_industry_job") data-i18n-generating=t("recrivo.dashboard.js.generating") data-i18n-suggest-failed=t("recrivo.dashboard.js.suggest_failed") data-i18n-suggested=t("recrivo.dashboard.js.suggested") data-i18n-session-expired=t("recrivo.dashboard.js.session_expired") data-i18n-server-error=t("recrivo.dashboard.js.server_error") data-i18n-parse-error=t("recrivo.dashboard.js.parse_error") data-i18n-network-error=t("recrivo.dashboard.js.network_error") data-i18n-required=t("recrivo.dashboard.js.required") data-i18n-optional=t("recrivo.dashboard.js.optional") data-i18n-general=t("recrivo.dashboard.js.general")
+.db-v2-bottom-card#questions style="margin-top: 1.25rem" data-ai-suggest-card="1" data-suggest-url=suggest_questions_situation_path(@situation) data-apply-url=apply_suggested_questions_situation_path(@situation) data-i18n-add-questions=t("recrivo.dashboard.js.add_questions") data-i18n-add-basic=t("recrivo.dashboard.js.add_basic") data-i18n-apply-count=t("recrivo.dashboard.js.apply_count") data-i18n-adding=t("recrivo.dashboard.js.adding") data-i18n-no-suggest-url=t("recrivo.dashboard.js.no_suggest_url") data-i18n-need-industry-job=t("recrivo.dashboard.js.need_industry_job") data-i18n-generating=t("recrivo.dashboard.js.generating") data-i18n-suggest-failed=t("recrivo.dashboard.js.suggest_failed") data-i18n-suggest-timeout=t("recrivo.dashboard.js.suggest_timeout") data-i18n-suggested=t("recrivo.dashboard.js.suggested") data-i18n-session-expired=t("recrivo.dashboard.js.session_expired") data-i18n-server-error=t("recrivo.dashboard.js.server_error") data-i18n-parse-error=t("recrivo.dashboard.js.parse_error") data-i18n-network-error=t("recrivo.dashboard.js.network_error") data-i18n-required=t("recrivo.dashboard.js.required") data-i18n-optional=t("recrivo.dashboard.js.optional") data-i18n-general=t("recrivo.dashboard.js.general")
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split
     h2.db-v2-bottom-card__title = t("recrivo.dashboard.situations.suggest_title")
     span.db-v2-deals-count = t("recrivo.dashboard.situations.suggest_badge")
@@ -87,28 +87,36 @@
     .db-v2-form-section style="margin-top:1.25rem"
       h3.db-v2-form-section__title = t("recrivo.dashboard.situations.ai_title")
       p.db-v2-muted style="margin-bottom:12px" = t("recrivo.dashboard.situations.ai_lead")
-      .db-v2-suggest-grid
-        .db-v2-form-group
-          label.db-v2-form-label for="suggest-industry" = t("recrivo.dashboard.situations.industry")
-          input#suggest-industry.db-v2-form-control type="text" value=(@situation.industry.to_s) placeholder=t("recrivo.dashboard.situations.form.industry_ph") data-ai-suggest-industry="1"
-        .db-v2-form-group
-          label.db-v2-form-label for="suggest-job-title" = t("recrivo.dashboard.situations.job_title")
-          input#suggest-job-title.db-v2-form-control type="text" value=(@situation.job_title.to_s) placeholder=t("recrivo.dashboard.situations.form.job_title_ph") data-ai-suggest-job="1"
-        .db-v2-form-group
-          label.db-v2-form-label for="suggest-count" = t("recrivo.dashboard.situations.suggest_count")
-          select#suggest-count.db-v2-form-control data-ai-suggest-count="1"
-            option value="3" = t("recrivo.dashboard.situations.questions_n", count: 3)
-            option value="5" selected="selected" = t("recrivo.dashboard.situations.questions_n", count: 5)
-            option value="8" = t("recrivo.dashboard.situations.questions_n", count: 8)
-      .db-v2-form-actions style="margin-top:4px"
-        button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-run="1"
-          i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
-          span = t("recrivo.dashboard.situations.suggest_run")
-        span.db-v2-muted data-ai-suggest-status="1"
+      = form_with url: suggest_questions_situation_path(@situation), method: :post, local: true, html: { class: "db-v2-suggest-form", data: { turbo: false } } do
+        .db-v2-suggest-grid
+          .db-v2-form-group
+            label.db-v2-form-label for="suggest-industry" = t("recrivo.dashboard.situations.industry")
+            input#suggest-industry.db-v2-form-control type="text" name="industry" value=(@situation.industry.to_s) placeholder=t("recrivo.dashboard.situations.form.industry_ph") required=true data-ai-suggest-industry="1"
+          .db-v2-form-group
+            label.db-v2-form-label for="suggest-job-title" = t("recrivo.dashboard.situations.job_title")
+            input#suggest-job-title.db-v2-form-control type="text" name="job_title" value=(@situation.job_title.to_s) placeholder=t("recrivo.dashboard.situations.form.job_title_ph") required=true data-ai-suggest-job="1"
+          .db-v2-form-group
+            label.db-v2-form-label for="suggest-count" = t("recrivo.dashboard.situations.suggest_count")
+            select#suggest-count.db-v2-form-control name="count" data-ai-suggest-count="1"
+              option value="3" = t("recrivo.dashboard.situations.questions_n", count: 3)
+              option value="5" selected="selected" = t("recrivo.dashboard.situations.questions_n", count: 5)
+              option value="8" = t("recrivo.dashboard.situations.questions_n", count: 8)
+        .db-v2-form-actions style="margin-top:4px"
+          button.db-v2-btn.db-v2-btn--primary type="submit"
+            i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
+            span = t("recrivo.dashboard.situations.suggest_run")
 
-      .db-v2-suggest-results data-ai-suggest-results="1" hidden=true
+      .db-v2-suggest-results data-ai-suggest-results="1" hidden=(true if @suggested_questions.blank?)
         p.db-v2-muted style="margin:16px 0 8px" = t("recrivo.dashboard.situations.suggest_results")
         .db-v2-suggest-list data-ai-suggest-list="1"
+          - Array(@suggested_questions).each_with_index do |q, idx|
+            - q = q.with_indifferent_access if q.respond_to?(:with_indifferent_access)
+            label.db-v2-suggest-item.db-v2-suggest-item--selectable
+              input.db-v2-suggest-item__input type="checkbox" data-question=( { question_text: q[:question_text], question_type: q[:question_type].presence || "open", required: ActiveModel::Type::Boolean.new.cast(q[:required]), category: q[:category].presence || t("recrivo.dashboard.js.general") }.to_json )
+              span.db-v2-suggest-item__check aria-hidden="true"
+              span.db-v2-suggest-item__body
+                span.db-v2-suggest-item__text = "#{idx + 1}. #{q[:question_text]}"
+                span.db-v2-suggest-item__meta = [q[:category], (ActiveModel::Type::Boolean.new.cast(q[:required]) ? t("recrivo.dashboard.common.required") : t("recrivo.dashboard.common.optional")), q[:reason]].compact.join(t("recrivo.dashboard.common.sep"))
         .db-v2-form-actions style="margin-top:12px"
           button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
             i.fa-solid.fa-plus aria-hidden="true"
@@ -138,19 +146,9 @@
               p.db-v2-question-list__text = q.question_text
               .db-v2-question-list__meta
                 span.db-v2-question-list__chip = question_type_label(q.question_type)
-                - if q.published?
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--required = t("recrivo.dashboard.common.published")
-                - else
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional = t("recrivo.dashboard.common.draft")
-                - if q.required?
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--required = t("recrivo.dashboard.common.required")
-                - else
-                  span.db-v2-question-list__chip.db-v2-question-list__chip--optional = t("recrivo.dashboard.common.optional")
                 - if q.has_branching_rules?
                   span.db-v2-question-list__chip = t("recrivo.dashboard.situations.branched")
             .db-v2-question-list__actions
-              = button_to toggle_publish_situation_question_path(@situation, q), method: :post, class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs", form: { class: "db-v2-inline-form" } do
-                span = q.published? ? t("recrivo.dashboard.situations.unpublish") : t("recrivo.dashboard.situations.publish")
               = link_to edit_situation_question_path(@situation, q), class: "db-v2-btn db-v2-btn--ghost db-v2-btn--xs" do
                 i.fa-solid.fa-pen aria-hidden="true"
                 span = t("recrivo.dashboard.common.edit")

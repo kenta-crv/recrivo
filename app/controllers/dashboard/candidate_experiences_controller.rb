@@ -18,7 +18,7 @@ class Dashboard::CandidateExperiencesController < Dashboard::BaseController
   private
 
   def situations_scope
-    if admin_signed_in?
+    if acting_as_admin?
       Situation.all
     else
       current_client.situations

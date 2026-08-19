@@ -3,6 +3,11 @@
 class Clients::RegistrationsController < Devise::RegistrationsController
   layout "auth"
 
+  before_action :reject_client_auth_while_admin!, only: [:new, :create]
+  before_action :configure_sign_up_params, only: [:create]
+  before_action :configure_account_update_params, only: [:update]
+  before_action :stash_oauth_locale_from_auth_page, only: [:new]
+
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up, keys: [
       :company,
@@ -25,10 +30,6 @@ class Clients::RegistrationsController < Devise::RegistrationsController
     ])
   end
 
-  before_action :configure_sign_up_params, only: [:create]
-  before_action :configure_account_update_params, only: [:update]
-  before_action :stash_oauth_locale_from_auth_page, only: [:new]
-
   def create
     build_resource(sign_up_params)
     resource.preferred_locale = resolved_signup_locale
@@ -39,6 +40,8 @@ class Clients::RegistrationsController < Devise::RegistrationsController
       if resource.active_for_authentication?
         set_flash_message! :notice, :signed_up
         sign_up(resource_name, resource)
+        persist_ui_locale!(resource.preferred_locale)
+        I18n.locale = resource.preferred_locale.to_sym
         respond_with resource, location: after_sign_up_path_for(resource)
       else
         set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
@@ -61,11 +64,10 @@ class Clients::RegistrationsController < Devise::RegistrationsController
   private
 
   def stash_oauth_locale_from_auth_page
-    session[:omniauth_locale] = I18n.locale.to_s if Client::LOCALES.include?(I18n.locale.to_s)
+    session[:omniauth_locale] = auth_url_locale
   end
 
   def resolved_signup_locale
-    locale = I18n.locale.to_s
-    Client::LOCALES.include?(locale) ? locale : "ja"
+    auth_url_locale
   end
 end

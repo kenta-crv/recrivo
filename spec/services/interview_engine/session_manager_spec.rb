@@ -60,6 +60,25 @@ RSpec.describe InterviewEngine::SessionManager do
       interview = manager.start_interview
       expect(interview.access_token).to be_present
     end
+
+    it '保存に失敗した場合は日本語のエラーを返す' do
+      empty_situation = create(:situation, client: client)
+      empty_manager = described_class.new(user, empty_situation)
+
+      expect {
+        empty_manager.start_interview(language: 'ja')
+      }.to raise_error(InterviewEngine::SessionManager::SessionError, /面接を開始できませんでした/)
+    end
+
+    it '質問があれば開始できる' do
+      draft_situation = create(:situation, client: client)
+      question = create(:question, situation: draft_situation)
+      question.update_column(:published, false)
+      draft_manager = described_class.new(user, draft_situation)
+
+      interview = draft_manager.start_interview(language: 'ja')
+      expect(interview).to be_in_progress
+    end
   end
 
   describe '.start_by_token' do
@@ -252,6 +271,14 @@ RSpec.describe InterviewEngine::SessionManager do
   end
 
   describe '#complete_interview' do
+    it '回答が1件もない場合はSessionErrorを発生する' do
+      interview = create(:interview, :in_progress, user: user, situation: situation)
+
+      expect {
+        manager.complete_interview(interview.id)
+      }.to raise_error(InterviewEngine::SessionManager::SessionError, /回答が1件もない/)
+    end
+
     it 'pending回答がある場合はSessionErrorを発生する' do
       interview = create(:interview, :in_progress, user: user, situation: situation)
       question = situation.questions.first

@@ -25,8 +25,9 @@
   function clickEl(e) {
     var t = e && e.target;
     if (!t) return null;
-    if (t.nodeType === 3) t = t.parentElement;
-    return t && t.closest ? t : null;
+    if (t.nodeType !== 1) t = t.parentElement;
+    while (t && typeof t.closest !== 'function') t = t.parentElement;
+    return t || null;
   }
 
 // ログインドロップダウン（Turbo未ロードでも動くよう onPageReady）
@@ -71,9 +72,23 @@ function dashboardThemeBackground(theme) {
 }
 
 function applyDashboardTheme(theme) {
+  if (typeof window.applyMeetiaDashboardTheme === 'function') {
+    window.applyMeetiaDashboardTheme(theme);
+    return;
+  }
   var nextTheme = theme === 'light' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-dashboard-theme', nextTheme);
-  document.documentElement.style.backgroundColor = dashboardThemeBackground(nextTheme);
+  var root = document.documentElement;
+  root.setAttribute('data-dashboard-theme', nextTheme);
+  root.classList.toggle('dashboard-theme-dark', nextTheme === 'dark');
+  root.classList.toggle('dashboard-theme-light', nextTheme === 'light');
+  root.style.backgroundColor = dashboardThemeBackground(nextTheme);
+  root.style.colorScheme = nextTheme;
+
+  var container = document.getElementById('dashboard-v2-container');
+  if (container) {
+    container.classList.toggle('is-theme-dark', nextTheme === 'dark');
+    container.classList.toggle('is-theme-light', nextTheme === 'light');
+  }
 
   try {
     localStorage.setItem(MEETIA_DASHBOARD_THEME_KEY, nextTheme);
@@ -89,8 +104,19 @@ function applyDashboardTheme(theme) {
 }
 
 function initDashboardTheme() {
-  if (!document.getElementById('dashboard-v2-container')) return;
+  var container = document.getElementById('dashboard-v2-container');
+  if (!container) return;
   applyDashboardTheme(getDashboardTheme());
+
+  if (container.getAttribute('data-dashboard-theme-ready') === 'true') return;
+  container.setAttribute('data-dashboard-theme-ready', 'true');
+  container.addEventListener('click', function(e) {
+    var t = clickEl(e);
+    var themeBtn = t && t.closest('[data-dashboard-theme-value]');
+    if (!themeBtn) return;
+    e.preventDefault();
+    applyDashboardTheme(themeBtn.getAttribute('data-dashboard-theme-value'));
+  });
 }
 
 function initDashboardSidebar() {
@@ -349,7 +375,7 @@ function renderSuggestedQuestions(card, questions) {
     var cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.className = 'db-v2-suggest-item__input';
-    cb.checked = true;
+    cb.checked = false;
     cb.dataset.question = JSON.stringify({
       question_text: q.question_text,
       question_type: q.question_type || 'open',
@@ -388,9 +414,11 @@ function renderSuggestedQuestions(card, questions) {
   refreshSuggestApplyState(card);
 }
 
-function setSuggestStatus(card, text) {
+function setSuggestStatus(card, text, kind) {
   var statusEl = card.querySelector('[data-ai-suggest-status]');
-  if (statusEl) statusEl.textContent = text || '';
+  if (!statusEl) return;
+  statusEl.textContent = text || '';
+  statusEl.classList.toggle('is-error', kind === 'error' && !!text);
 }
 
 function selectedQuestionsFromList(list) {
@@ -453,7 +481,7 @@ function applyBasicSuggestedQuestions(card) {
 function runAiSuggest(card) {
   var suggestUrl = card.getAttribute('data-suggest-url');
   if (!suggestUrl) {
-    setSuggestStatus(card, dashboardI18n(card, 'no-suggest-url', 'Suggestion URL is missing.'));
+    setSuggestStatus(card, dashboardI18n(card, 'no-suggest-url', 'Suggestion URL is missing.'), 'error');
     return;
   }
 
@@ -466,28 +494,36 @@ function runAiSuggest(card) {
   var count = countEl ? (countEl.value || '5') : '5';
 
   if (!industry || !jobTitle) {
-    setSuggestStatus(card, dashboardI18n(card, 'need-industry-job', 'Enter industry and job title.'));
+    setSuggestStatus(card, dashboardI18n(card, 'need-industry-job', 'Enter industry and job title.'), 'error');
     return;
   }
 
   if (btn) btn.disabled = true;
   setSuggestStatus(card, dashboardI18n(card, 'generating', 'Generating suggestions…'));
 
+  var body = new URLSearchParams();
+  body.set('authenticity_token', csrfToken());
+  body.set('industry', industry);
+  body.set('job_title', jobTitle);
+  body.set('count', String(count));
+  body.set('persist', '1');
+
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = window.setTimeout(function() {
+    if (controller) controller.abort();
+  }, 20000);
+
   fetch(suggestUrl, {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
-      'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       'X-CSRF-Token': csrfToken(),
       'X-Requested-With': 'XMLHttpRequest'
     },
-    body: JSON.stringify({
-      industry: industry,
-      job_title: jobTitle,
-      count: count,
-      persist: '1'
-    })
+    body: body.toString(),
+    signal: controller ? controller.signal : undefined
   }).then(function(res) {
     return res.text().then(function(text) {
       var data = null;
@@ -507,33 +543,74 @@ function runAiSuggest(card) {
     });
   }).then(function(result) {
     if (!result.ok || !result.data.success) {
-      setSuggestStatus(card, (result.data && result.data.error) || dashboardI18n(card, 'suggest-failed', 'Suggestion failed.'));
+      setSuggestStatus(card, (result.data && result.data.error) || dashboardI18n(card, 'suggest-failed', 'Suggestion failed.'), 'error');
       return;
     }
     var questions = result.data.questions || [];
+    if (!questions.length) {
+      setSuggestStatus(card, dashboardI18n(card, 'suggest-failed', 'Suggestion failed.'), 'error');
+      return;
+    }
     setSuggestStatus(card, dashboardI18n(card, 'suggested', 'Suggested %{count}.').replace('%{count}', questions.length));
     renderSuggestedQuestions(card, questions);
   }).catch(function(err) {
+    if (err && err.name === 'AbortError') {
+      setSuggestStatus(card, dashboardI18n(card, 'suggest-timeout', 'Suggestion timed out. Please try again.'), 'error');
+      return;
+    }
     if (err && err.message === 'non_json') {
       if (err.status === 401 || err.status === 403) {
-        setSuggestStatus(card, dashboardI18n(card, 'session-expired', 'Your session expired. Please sign in again.'));
+        setSuggestStatus(card, dashboardI18n(card, 'session-expired', 'Your session expired. Please sign in again.'), 'error');
       } else if (err.status >= 500) {
-        setSuggestStatus(card, dashboardI18n(card, 'server-error', 'Server error. Try again in a moment.'));
+        setSuggestStatus(card, dashboardI18n(card, 'server-error', 'Server error. Try again in a moment.'), 'error');
       } else {
-        setSuggestStatus(card, dashboardI18n(card, 'parse-error', 'Could not parse the response. Reload and try again.'));
+        setSuggestStatus(card, dashboardI18n(card, 'parse-error', 'Could not parse the response. Reload and try again.'), 'error');
       }
       return;
     }
-    setSuggestStatus(card, dashboardI18n(card, 'network-error', 'Network error. Check your connection and try again.'));
+    setSuggestStatus(card, dashboardI18n(card, 'network-error', 'Network error. Check your connection and try again.'), 'error');
   }).finally(function() {
+    window.clearTimeout(timer);
     if (btn) btn.disabled = false;
   });
+}
+
+function questionFormFrom(el) {
+  return el && el.closest ? el.closest('[data-question-form]') : null;
+}
+
+function handleChoiceRowClick(e, t) {
+  var addBtn = t.closest('[data-choice-add]');
+  if (addBtn) {
+    e.preventDefault();
+    var addForm = questionFormFrom(addBtn);
+    if (addForm) addChoiceRow(addForm, '');
+    return true;
+  }
+  var removeBtn = t.closest('[data-choice-remove]');
+  if (!removeBtn) return false;
+  e.preventDefault();
+  var form = questionFormFrom(removeBtn);
+  var row = removeBtn.closest('[data-choice-row]');
+  if (!form || !row) return true;
+  var rows = form.querySelectorAll('[data-choice-row]');
+  if (rows.length <= 2) {
+    var input = row.querySelector('[data-choice-text]');
+    if (input) input.value = '';
+    syncCorrectChoiceOptions(form);
+    return true;
+  }
+  row.remove();
+  renumberChoiceRows(form);
+  syncCorrectChoiceOptions(form);
+  return true;
 }
 
 // ダッシュボード操作はすべて document 委譲（インライン Slim JS 禁止）
 document.addEventListener('click', function(e) {
   var t = clickEl(e);
   if (!t) return;
+  if (handleChoiceRowClick(e, t)) return;
   var themeBtn = t.closest('[data-dashboard-theme-value]');
   if (themeBtn && document.getElementById('dashboard-v2-container')) {
     e.preventDefault();
@@ -562,11 +639,6 @@ document.addEventListener('click', function(e) {
 
   var suggestCard = t.closest('[data-ai-suggest-card]');
   if (suggestCard) {
-    if (t.closest('[data-ai-suggest-run]')) {
-      e.preventDefault();
-      runAiSuggest(suggestCard);
-      return;
-    }
     if (t.closest('[data-ai-suggest-apply]')) {
       e.preventDefault();
       applySuggestedQuestions(suggestCard);
@@ -619,6 +691,14 @@ document.addEventListener('click', function(e) {
 document.addEventListener('change', function(e) {
   var t = clickEl(e);
   if (!t) return;
+  if (t.matches('[data-question-type-radio], [data-question-type-select]')) {
+    var typeForm = questionFormFrom(t);
+    if (typeForm) syncQuestionChoiceUi(typeForm);
+  }
+  if (t.matches('[data-branch-enabled], [data-branch-type]')) {
+    var branchForm = questionFormFrom(t);
+    if (branchForm) syncQuestionBranchUi(branchForm);
+  }
   var card = t.closest('[data-ai-suggest-card]');
   if (!card) return;
   if (!e.target.matches('input[type="checkbox"]')) return;
@@ -635,13 +715,40 @@ function isChoiceQuestionType(type) {
   return type === 'mcq' || type === 'choice' || type === 'multiple_choice';
 }
 
-function syncQuestionChoiceUi(form) {
+function questionTypeValue(form) {
+  var checked = form.querySelector('[data-question-type-radio]:checked');
+  if (checked) return checked.value;
   var typeSelect = form.querySelector('[data-question-type-select]');
+  return typeSelect ? typeSelect.value : 'open';
+}
+
+function syncQuestionChoiceUi(form) {
   var panel = form.querySelector('[data-choice-options-panel]');
-  if (!typeSelect || !panel) return;
-  panel.style.display = isChoiceQuestionType(typeSelect.value) ? '' : 'none';
+  if (!panel) return;
+  var isChoice = isChoiceQuestionType(questionTypeValue(form));
+  if (isChoice) {
+    var rows = form.querySelectorAll('[data-choice-row]');
+    while (rows.length < 2) {
+      addChoiceRow(form, '');
+      rows = form.querySelectorAll('[data-choice-row]');
+    }
+  }
   renumberChoiceRows(form);
   syncCorrectChoiceOptions(form);
+}
+
+function syncQuestionBranchUi(form) {
+  var enabled = form.querySelector('[data-branch-enabled]');
+  var fields = form.querySelector('[data-branch-fields]');
+  var typeSelect = form.querySelector('[data-branch-type]');
+  var valueGroup = form.querySelector('[data-branch-value-group]');
+  if (enabled && fields) {
+    fields.hidden = !enabled.checked;
+  }
+  if (typeSelect && valueGroup) {
+    var needsValue = typeSelect.value === 'selected_option' || typeSelect.value === 'score_above' || typeSelect.value === 'score_below';
+    valueGroup.hidden = !needsValue;
+  }
 }
 
 function renumberChoiceRows(form) {
@@ -690,7 +797,7 @@ function addChoiceRow(form, value) {
   var row = document.createElement('div');
   row.className = 'db-v2-choice-row';
   row.setAttribute('data-choice-row', '1');
-  var choicePh = dashboardI18n(form, 'choice-ph', 'e.g. Yes / No');
+  var choicePh = dashboardI18n(form, 'choice-ph', 'e.g. Full-time');
   var choiceRemove = dashboardI18n(form, 'choice-remove', 'Remove this option');
   var deleteLabel = dashboardI18n(form, 'delete', 'Delete');
   row.innerHTML =
@@ -712,52 +819,14 @@ function initQuestionForm() {
   form.setAttribute('data-question-form-ready', 'true');
 
   syncQuestionChoiceUi(form);
-
-  var typeSelect = form.querySelector('[data-question-type-select]');
-  if (typeSelect) {
-    typeSelect.addEventListener('change', function() {
-      syncQuestionChoiceUi(form);
-      if (isChoiceQuestionType(typeSelect.value)) {
-        var rows = form.querySelectorAll('[data-choice-row]');
-        if (rows.length < 2) {
-          while (form.querySelectorAll('[data-choice-row]').length < 2) addChoiceRow(form, '');
-        }
-      }
-    });
-  }
-
-  form.addEventListener('click', function(e) {
-    var t = clickEl(e);
-    if (!t) return;
-    if (t.closest('[data-choice-add]')) {
-      e.preventDefault();
-      addChoiceRow(form, '');
-      return;
-    }
-    var removeBtn = t.closest('[data-choice-remove]');
-    if (removeBtn) {
-      e.preventDefault();
-      var rows = form.querySelectorAll('[data-choice-row]');
-      var row = removeBtn.closest('[data-choice-row]');
-      if (!row) return;
-      if (rows.length <= 2) {
-        var input = row.querySelector('[data-choice-text]');
-        if (input) input.value = '';
-        syncCorrectChoiceOptions(form);
-        return;
-      }
-      row.remove();
-      renumberChoiceRows(form);
-      syncCorrectChoiceOptions(form);
-    }
-  });
-
-  form.addEventListener('input', function(e) {
-    if (e.target && e.target.matches('[data-choice-text]')) {
-      syncCorrectChoiceOptions(form);
-    }
-  });
+  syncQuestionBranchUi(form);
 }
+
+document.addEventListener('input', function(e) {
+  if (!e.target || !e.target.matches('[data-choice-text]')) return;
+  var form = questionFormFrom(e.target);
+  if (form) syncCorrectChoiceOptions(form);
+});
 
 var problemModalBound = false;
 
@@ -822,6 +891,10 @@ function bootDashboardUi() {
   initSituationForm();
   initQuestionForm();
   initProblemModal();
+  document.querySelectorAll('[data-ai-suggest-card]').forEach(function(card) {
+    refreshSuggestApplyState(card);
+    refreshBasicSuggestApplyState(card);
+  });
   document.documentElement.setAttribute('data-dashboard-js', 'ready');
 }
 
@@ -835,7 +908,10 @@ window.addEventListener('hashchange', function() {
 
 document.addEventListener('turbo:before-cache', function() {
   var container = document.getElementById('dashboard-v2-container');
-  if (container) container.removeAttribute('data-dashboard-sidebar-ready');
+  if (container) {
+    container.removeAttribute('data-dashboard-sidebar-ready');
+    container.removeAttribute('data-dashboard-theme-ready');
+  }
   document.querySelectorAll('[data-deal-tabs-ready]').forEach(function(el) {
     el.removeAttribute('data-deal-tabs-ready');
   });

@@ -40,7 +40,7 @@ class TopsController < ApplicationController
 
   def preview_mode_for?(situation)
     return false unless ActiveModel::Type::Boolean.new.cast(params[:preview])
-    return true if admin_signed_in?
+    return true if acting_as_admin?
     return true if client_signed_in? && situation.client_id == current_client.id
 
     false

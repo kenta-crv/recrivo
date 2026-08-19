@@ -38,7 +38,7 @@
         span.db-v2-summary-card__value = @interviews_this_month
       .db-v2-summary-card__trend
         span.db-v2-summary-card__trend-label
-          - if admin_signed_in?
+          - if acting_as_admin?
             = t("recrivo.dashboard.home.metric_month_all")
           - elsif @monthly_limit
             = t("recrivo.dashboard.home.metric_month_limit", count: @monthly_limit)
@@ -135,7 +135,7 @@
       .db-v2-empty-state
         p.db-v2-empty-state__text = t("recrivo.dashboard.home.empty")
         p.db-v2-muted = t("recrivo.dashboard.home.empty_lead")
-        - unless admin_signed_in?
+        - unless acting_as_admin?
           = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
             span = t("recrivo.dashboard.home.create_scenario")
     - else

@@ -1,6 +1,6 @@
 class Dashboard::DashboardController < Dashboard::BaseController
   def index
-    if admin_signed_in?
+    if acting_as_admin?
       situations_scope_rel = Situation.all
       results_scope = InterviewResult.includes(interview: [:user, :situation])
                                     .joins(:interview).where(interviews: { preview: false })
@@ -41,7 +41,7 @@ class Dashboard::DashboardController < Dashboard::BaseController
     @experience_score = experience[:average_score]
     @experience_has_gaps = experience[:items].any? { |item| item.gaps.any? }
 
-    unless admin_signed_in?
+    unless acting_as_admin?
       @monthly_limit = current_client.monthly_interview_limit
     end
 

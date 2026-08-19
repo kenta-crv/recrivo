@@ -6,7 +6,7 @@ class Dashboard::BaseController < ApplicationController
   private
 
   def authenticate_dashboard_user!
-    return if client_signed_in? || admin_signed_in?
+    return if client_signed_in? || acting_as_admin?
 
     redirect_to helpers.client_sign_in_path_for_locale, alert: t("recrivo.dashboard.flash.login_required")
   end
@@ -21,7 +21,7 @@ class Dashboard::BaseController < ApplicationController
   def situations_scope
     if client_signed_in?
       current_client.situations
-    elsif admin_signed_in?
+    elsif acting_as_admin?
       Situation.all
     else
       Situation.none
@@ -32,7 +32,7 @@ class Dashboard::BaseController < ApplicationController
     scope = InterviewResult.joins(interview: :situation).where(interviews: { preview: false })
     if client_signed_in?
       scope.where(situations: { client_id: current_client.id })
-    elsif admin_signed_in?
+    elsif acting_as_admin?
       scope
     else
       InterviewResult.none

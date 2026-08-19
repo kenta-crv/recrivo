@@ -140,6 +140,8 @@ ja:
         trial: トライアル中
         trial_ended: トライアル終了（閲覧のみ）
         cancel_pending: 解約手続き済み
+        cancelled: 解約
+        expired: 期限切れ
         active: 有効
       candidates:
         title: 面接管理
@@ -348,6 +350,17 @@ ja:
         body_ph: 発生した問題の内容・再現手順など
         company_ph: 株式会社〇〇〇〇
         submit: 報告する
+      banner:
+        trial_ended_title: トライアルが終了しました
+        trial_ended_body: 閲覧は継続できます。本格運用はスタンダード（%{price}/月・初回3ヶ月15%OFF）へ。
+        view_plans: プランを見る
+        trialing_title: 無料トライアル利用中
+        trial_ends: '終了日: %{date} ／'
+        trialing_body: 上限到達後は閲覧のみ。有料プランへいつでも移行できます。
+        plans_billing: プラン・料金
+        quota_title: 利用枠が残りわずかです
+        quota_body: 今月の使用量が上限の80%に達しています。プラン変更で枠を増やせます。
+        check_plans: プランを確認
       situations:
         index_title: シナリオ管理
         index_subtitle_admin: 全契約企業の面接シナリオ一覧
@@ -484,21 +497,25 @@ ja:
           language_ja: 日本語
           language_en: English
           judgment_section: 合否と回答方式
+          choose: 選択してください
           passing_score: 合格ライン（平均点）
-          passing_hint: "例: 70 なら平均 70 点以上で合格。"
-          answer_modes: 許可する回答手段
+          passing_hint: "自動判定のとき、平均点がこの点数以上なら合格です。例: 70"
+          answer_modes: 候補者の回答手段
           text: テキスト
           voice: 音声
-          answer_hint: 少なくとも一方は有効にしてください。
-          advanced: 詳細設定（通常は変更不要）
+          answer_both: テキストと音声
+          answer_text: テキストのみ
+          answer_voice: 音声のみ
+          advanced: その他の設定
           judgment: 判定
           judgment_mode: 判定モード
           judgment_automatic: 自動判定（スコアで合否）
-          judgment_manual: 面接官が判定（結果は要確認）
+          judgment_manual: 採用担当が判定する
+          judgment_hint: スコアで自動合否にするか、採用担当が後から判定するかを選びます。
           result_visibility: 候補者への結果表示
-          result_hidden: 非表示（推奨・後日連絡）
-          result_immediate: その場で詳細を表示
-          result_hint: 総評・推薦は採用側向けです。通常は非表示のままにしてください。
+          result_hidden: 候補者には出さない（後日連絡）
+          result_immediate: 面接直後に候補者へ表示する
+          result_hint: 候補者の画面に合否を出すかどうかです。評価内容の確認と連絡は採用担当側で行う運用が一般的です。
           auto_reject_section: 途中での不合格条件
           auto_reject_hint: 不要ならオフのままにしてください。
           auto_reject_enable: 途中不合格を使う
@@ -530,15 +547,22 @@ ja:
         edit_title: 質問を編集
         edit_current: 質問編集
         crumb_situations: シナリオ
-        content_title: 質問内容
-        question_text: 質問内容
+        content_title: 質問
+        question_text: 質問文
         question_type: 質問タイプ
         type_open: 自由回答
         type_mcq: 選択式
-        type_hint: 自由回答は音声・テキストで答えます。選択式は下で選択肢を作ります。
-        choices: 選択肢
-        choices_hint: 1行に1つ。最低2つ必要です。正解がある場合だけ選んでください（任意）。
-        choice_ph: "例: はい / いいえ / 具体的な選択肢"
+        type_open_desc: 名前や経験談など、声や文字で答える
+        type_mcq_desc: 画面のボタンから1つ選ぶ
+        type_hint_voice: 候補者は声で答えます。名前や経験談など、決まった選択肢がない質問に使います。
+        type_hint_text: 候補者は文字で答えます。名前や経験談など、決まった選択肢がない質問に使います。
+        type_hint_both: 候補者は音声またはテキストで答えます。名前や経験談など、決まった選択肢がない質問に使います。
+        type_hint_mcq: 候補者は画面のボタンから1つ選びます。雇用形態や経験年数など、答えが限られる質問に使います。はい／いいえ以外の項目も自由に作れます。
+        choices: 画面に出すボタン
+        choices_hint: ここに書いた文言が、候補者の画面でボタンになります。正社員・3年未満など、聞きたい項目をそのまま書いてください。
+        choice_ph: "例: 正社員"
+        choice_ph_2: "例: 契約社員"
+        choice_ph_3: "例: 業務委託"
         choice_remove: この選択肢を削除
         add_choice: 選択肢を追加
         correct: 正解（任意）
@@ -546,24 +570,24 @@ ja:
         correct_hint: 正解を指定すると、その選択肢かどうかで採点します。
         order: 表示順
         publish: 公開する（面接に出す）
-        publish_hint: オフの間は下書きです。AI提案から追加した質問は初期状態で非公開です。
-        required: 必須質問（途中不合格の対象）
-        required_hint: シナリオで「必須質問が基準未満なら不合格」をオンにしている場合、この質問が対象になります。
+        publish_hint: ""
+        required: 必須質問
+        required_hint: ""
         category: カテゴリ
         category_ph: "例: 技術, コミュニケーション"
         branch_title: 分岐ルール（任意）
-        branch_lead: 条件を満たすときだけこの質問を出します。未設定なら通常どおり出題します。
-        branch_enable: 分岐条件を使う
-        branch_source: 参照する質問の表示順
-        branch_source_hint: "例: 1 なら「表示順1の質問」への回答を参照します。"
-        branch_type: 条件タイプ
-        branch_answered: 回答済み
-        branch_selected: 選択肢が一致
-        branch_score_above: スコア以上
-        branch_score_below: スコア未満
-        branch_value: 条件値（選択肢文 or 点数）
+        branch_lead: 前の質問の答えによって、この質問を出すかどうかを決めます。使わない場合はそのまま閉じてください。
+        branch_enable: 条件を設定する
+        branch_source: どの質問の答えを見るか（表示順）
+        branch_source_hint: "例: 1 なら、1問目の答えを見て出題を決めます。"
+        branch_type: どんなときに出すか
+        branch_answered: その質問に答えたとき
+        branch_selected: 特定の選択肢を選んだとき
+        branch_score_above: スコアがこの点数以上のとき
+        branch_score_below: スコアがこの点数未満のとき
+        branch_value: 選択肢の文言、または点数
         branch_value_ph: "例: はい / 70"
-        branch_value_hint: 「回答済み」のときは不要です。
+        branch_value_hint: 上で選んだ条件に合わせた値を入れてください。
         branch_action: 条件が真のとき
         branch_include: この質問を出す
         branch_exclude: この質問を出さない
@@ -584,6 +608,7 @@ ja:
         need_industry_job: 業種と募集職種を入力してください。
         generating: 提案を生成中…
         suggest_failed: 提案に失敗しました。
+        suggest_timeout: 提案に時間がかかっています。もう一度お試しください。
         suggested: "%{count}問を提案しました。必要なものだけ選んで追加できます。"
         session_expired: ログインの有効期限が切れました。再ログインしてください。
         server_error: サーバーエラーが発生しました。しばらくして再試行してください。
@@ -593,7 +618,7 @@ ja:
         optional: 任意
         general: 一般
         no_correct: 正解なし（情報確認のみ）
-        choice_ph: "例: はい / いいえ / 具体的な選択肢"
+        choice_ph: "例: 正社員"
         choice_remove: この選択肢を削除
         delete: 削除
       flash:
@@ -796,6 +821,8 @@ en:
         trial: Trial
         trial_ended: Trial ended (view only)
         cancel_pending: Cancellation scheduled
+        cancelled: Cancelled
+        expired: Expired
         active: Active
       candidates:
         title: Interviews
@@ -1004,6 +1031,17 @@ en:
         body_ph: What happened and how to reproduce it
         company_ph: Acme Inc.
         submit: Submit
+      banner:
+        trial_ended_title: Your trial has ended
+        trial_ended_body: You can still browse. For full use, upgrade to Standard (%{price}/mo · 15% off first 3 months).
+        view_plans: View plans
+        trialing_title: Free trial active
+        trial_ends: 'Ends: %{date} / '
+        trialing_body: After limits, browse-only. Upgrade anytime.
+        plans_billing: Billing
+        quota_title: Usage nearly full
+        quota_body: You've used 80% of this month's quota. Upgrade for more.
+        check_plans: Check plans
       situations:
         index_title: Scenarios
         index_subtitle_admin: Interview scenarios across all companies
@@ -1140,21 +1178,25 @@ en:
           language_ja: 日本語
           language_en: English
           judgment_section: Scoring and answer modes
+          choose: Select
           passing_score: Passing score (average)
-          passing_hint: "e.g. 70 means pass at 70+ average."
-          answer_modes: Allowed answer modes
+          passing_hint: "Used for automatic decisions. e.g. 70 means pass at 70+ average."
+          answer_modes: Candidate answer method
           text: Text
           voice: Voice
-          answer_hint: Enable at least one.
-          advanced: Advanced (usually leave as-is)
+          answer_both: Text and voice
+          answer_text: Text only
+          answer_voice: Voice only
+          advanced: More settings
           judgment: Decision
           judgment_mode: Decision mode
           judgment_automatic: Automatic (score-based)
-          judgment_manual: Manual (reviewer decides)
+          judgment_manual: Hiring team decides
+          judgment_hint: Choose whether scores decide pass/fail, or the hiring team reviews later.
           result_visibility: Show result to candidate
-          result_hidden: Hidden (recommended — follow up later)
-          result_immediate: Show details immediately
-          result_hint: Summary and recommendation are for the hiring team. Keep hidden in most cases.
+          result_hidden: Do not show to candidate (follow up later)
+          result_immediate: Show to candidate right after the interview
+          result_hint: Controls whether the candidate sees pass/fail. Reviewing and notifying is usually done by the hiring team.
           auto_reject_section: Mid-interview fail rules
           auto_reject_hint: Leave off unless you need them.
           auto_reject_enable: Enable mid-interview fail
@@ -1187,39 +1229,46 @@ en:
         edit_current: Edit question
         crumb_situations: Scenarios
         content_title: Question
-        question_text: Question
+        question_text: Question text
         question_type: Type
-        type_open: Open
+        type_open: Open answer
         type_mcq: Multiple choice
-        type_hint: Open answers use voice or text. Multiple choice uses the options below.
-        choices: Options
-        choices_hint: One per line. At least two. Set a correct answer only if you want scoring.
-        choice_ph: "e.g. Yes / No / a specific option"
+        type_open_desc: Names, stories — answered by voice or text
+        type_mcq_desc: Candidate taps one on-screen button
+        type_hint_voice: Candidates answer by voice. Use this for names, stories, and anything without a fixed list.
+        type_hint_text: Candidates type their answer. Use this for names, stories, and anything without a fixed list.
+        type_hint_both: Candidates answer by voice or text. Use this for names, stories, and anything without a fixed list.
+        type_hint_mcq: Candidates tap one button on screen. Use this when answers are limited (employment type, years, etc.). Options are not limited to yes/no.
+        choices: Buttons shown to the candidate
+        choices_hint: Each line becomes a button on the candidate screen. Write the options you want, such as Full-time or Under 3 years.
+        choice_ph: "e.g. Full-time"
+        choice_ph_2: "e.g. Contract"
+        choice_ph_3: "e.g. Freelance"
         choice_remove: Remove this option
         add_choice: Add option
         correct: Correct answer (optional)
         no_correct: No correct answer (info only)
         correct_hint: If set, we score against that option.
         order: Display order
-        publish: Publish (include in the interview)
-        publish_hint: Off = draft. AI-suggested questions start unpublished.
-        required: Required (counts toward mid-interview fail)
-        required_hint: Used when the scenario fails required questions below the bar.
+        publish: Publish
+        publish_hint: ""
+        required: Required
+        required_hint: ""
         category: Category
         category_ph: "e.g. technical, communication"
         branch_title: Branching (optional)
-        branch_lead: Show this question only when a condition is met. Otherwise it always appears.
-        branch_enable: Use a branch condition
-        branch_source: Source question order
-        branch_source_hint: "e.g. 1 refers to the answer to question 1."
-        branch_type: Condition
-        branch_answered: Answered
-        branch_selected: Option matches
-        branch_score_above: Score at or above
-        branch_score_below: Score below
-        branch_value: Value (option text or score)
+        branch_lead: Show this question based on a previous answer. Leave closed if you don’t need it.
+        branch_enable: Set a condition
+        branch_source: Which question to check (display order)
+        branch_source_hint: "e.g. 1 uses the answer to question 1."
+        branch_type: Show this question when
+        branch_answered: That question was answered
+        branch_selected: A specific option was chosen
+        branch_score_above: Score is at or above
+        branch_score_below: Score is below
+        branch_value: Option text or score
         branch_value_ph: "e.g. Yes / 70"
-        branch_value_hint: Not needed for “Answered”.
+        branch_value_hint: Enter a value that matches the condition above.
         branch_action: When true
         branch_include: Show this question
         branch_exclude: Hide this question
@@ -1240,6 +1289,7 @@ en:
         need_industry_job: Enter industry and job title.
         generating: Generating suggestions…
         suggest_failed: Suggestion failed.
+        suggest_timeout: Suggestion timed out. Please try again.
         suggested: "Suggested %{count}. Pick the ones you want to add."
         session_expired: Your session expired. Please sign in again.
         server_error: Server error. Try again in a moment.
@@ -1249,7 +1299,7 @@ en:
         optional: Optional
         general: General
         no_correct: No correct answer (info only)
-        choice_ph: "e.g. Yes / No / a specific option"
+        choice_ph: "e.g. Full-time"
         choice_remove: Remove this option
         delete: Delete
       flash:

@@ -1,10 +1,14 @@
 - choice_texts = Array((@question.parsed_options["choices"] || @question.parsed_options[:choices])).map(&:to_s)
+- choice_placeholders = default_choice_placeholders
 - choice_texts = ["", ""] if choice_texts.blank?
 - correct_choice = (@question.parsed_options["correct"] || @question.parsed_options[:correct]).to_s
 - is_choice_type = %w[mcq choice multiple_choice].include?(@question.question_type.to_s)
 - branch_rules = @question.parsed_branching_rules
 - branch_cond = (branch_rules && branch_rules[:conditions].is_a?(Array) && branch_rules[:conditions].first) || {}
 - branch_enabled = @question.has_branching_rules?
+- branch_type = branch_cond[:type].to_s
+- branch_needs_value = %w[selected_option score_above score_below].include?(branch_type)
+- default_act = (branch_rules && branch_rules[:default_action]).to_s
 
 = form_with model: [@situation, @question], local: true, html: { class: "db-v2-question-form", data: { question_form: "1", i18n_no_correct: t("recrivo.dashboard.js.no_correct"), i18n_choice_ph: t("recrivo.dashboard.js.choice_ph"), i18n_choice_remove: t("recrivo.dashboard.js.choice_remove"), i18n_delete: t("recrivo.dashboard.js.delete") } } do |f|
   .db-v2-form-group
@@ -12,18 +16,25 @@
     = f.text_area :question_text, class: "db-v2-form-control", rows: 3, required: true
 
   .db-v2-form-group
-    = f.label :question_type, t("recrivo.dashboard.questions.question_type"), class: "db-v2-form-label"
-    = f.select :question_type, [[t("recrivo.dashboard.questions.type_open"), "open"], [t("recrivo.dashboard.questions.type_mcq"), "mcq"]], { selected: (is_choice_type ? "mcq" : "open") }, class: "db-v2-form-control", data: { question_type_select: "1" }
-    p.db-v2-form-hint = t("recrivo.dashboard.questions.type_hint")
+    span.db-v2-form-label = t("recrivo.dashboard.questions.question_type")
+    .db-v2-type-picks
+      label.db-v2-type-pick
+        = f.radio_button :question_type, "open", checked: !is_choice_type, data: { question_type_radio: "1" }
+        span.db-v2-type-pick__title = t("recrivo.dashboard.questions.type_open")
+        span.db-v2-type-pick__desc = t("recrivo.dashboard.questions.type_open_desc")
+      label.db-v2-type-pick
+        = f.radio_button :question_type, "mcq", checked: is_choice_type, data: { question_type_radio: "1" }
+        span.db-v2-type-pick__title = t("recrivo.dashboard.questions.type_mcq")
+        span.db-v2-type-pick__desc = t("recrivo.dashboard.questions.type_mcq_desc")
 
-  .db-v2-form-group data-choice-options-panel="1" style=("display:none" unless is_choice_type)
+  .db-v2-form-group.db-v2-choice-panel data-choice-options-panel="1"
     label.db-v2-form-label = t("recrivo.dashboard.questions.choices")
     p.db-v2-form-hint style="margin-bottom:10px" = t("recrivo.dashboard.questions.choices_hint")
     .db-v2-choice-rows data-choice-rows="1"
       - choice_texts.each_with_index do |text, idx|
         .db-v2-choice-row data-choice-row="1"
           span.db-v2-choice-row__num = idx + 1
-          input.db-v2-form-control type="text" name="question[choice_texts][]" value=text placeholder=t("recrivo.dashboard.questions.choice_ph") data-choice-text="1" autocomplete="off"
+          input.db-v2-form-control type="text" name="question[choice_texts][]" value=text placeholder=(choice_placeholders[idx] || t("recrivo.dashboard.questions.choice_ph")) data-choice-text="1" autocomplete="off"
           button.db-v2-btn.db-v2-btn--ghost.db-v2-btn--xs type="button" data-choice-remove="1" aria-label=t("recrivo.dashboard.questions.choice_remove")
             i.fa-solid.fa-trash aria-hidden="true"
             span = t("recrivo.dashboard.common.delete")
@@ -45,59 +56,34 @@
     = f.label :order, t("recrivo.dashboard.questions.order"), class: "db-v2-form-label"
     = f.number_field :order, class: "db-v2-form-control", min: 1
 
-  .db-v2-form-group
-    .db-v2-form-check
-      = f.check_box :published, checked: (@question.published.nil? ? true : @question.published?)
-      = f.label :published, t("recrivo.dashboard.questions.publish")
-    p.db-v2-form-hint = t("recrivo.dashboard.questions.publish_hint")
+  details.db-v2-details data-branch-accordion="1"
+    summary.db-v2-details__summary = t("recrivo.dashboard.questions.branch_title")
+    .db-v2-details__body
+      p.db-v2-form-hint style="margin-bottom:12px" = t("recrivo.dashboard.questions.branch_lead")
+      .db-v2-form-group
+        .db-v2-form-check
+          input#question_branch_enabled type="checkbox" name="question[branch_enabled]" value="1" checked=branch_enabled data-branch-enabled="1"
+          label for="question_branch_enabled" = t("recrivo.dashboard.questions.branch_enable")
 
-  .db-v2-form-group
-    .db-v2-form-check
-      = f.check_box :required
-      = f.label :required, t("recrivo.dashboard.questions.required")
-    p.db-v2-form-hint = t("recrivo.dashboard.questions.required_hint")
+      .db-v2-branch-fields data-branch-fields="1" hidden=(true unless branch_enabled)
+        input type="hidden" name="question[branch_action]" value=(branch_cond[:action].presence || "include")
+        input type="hidden" name="question[branch_default_action]" value=(default_act.presence || "exclude")
 
-  .db-v2-form-group
-    = f.label :category, t("recrivo.dashboard.questions.category"), class: "db-v2-form-label"
-    = f.text_field :category, class: "db-v2-form-control", placeholder: t("recrivo.dashboard.questions.category_ph")
+        .db-v2-form-group
+          label.db-v2-form-label for="question_branch_source_order" = t("recrivo.dashboard.questions.branch_source")
+          input#question_branch_source_order.db-v2-form-control type="number" name="question[branch_source_order]" min="1" value=(branch_cond[:source_question_order] || 1)
+          p.db-v2-form-hint = t("recrivo.dashboard.questions.branch_source_hint")
 
-  .db-v2-form-section
-    h3.db-v2-form-section__title = t("recrivo.dashboard.questions.branch_title")
-    p.db-v2-form-hint style="margin-bottom:12px" = t("recrivo.dashboard.questions.branch_lead")
+        .db-v2-form-group
+          label.db-v2-form-label for="question_branch_type" = t("recrivo.dashboard.questions.branch_type")
+          select#question_branch_type.db-v2-form-control name="question[branch_type]" data-branch-type="1"
+            - [[t("recrivo.dashboard.questions.branch_answered"), "answered"], [t("recrivo.dashboard.questions.branch_selected"), "selected_option"], [t("recrivo.dashboard.questions.branch_score_above"), "score_above"], [t("recrivo.dashboard.questions.branch_score_below"), "score_below"]].each do |label, val|
+              option value=val selected=(branch_type == val || (branch_type.blank? && val == "answered")) = label
 
-    .db-v2-form-group
-      .db-v2-form-check
-        input#question_branch_enabled type="checkbox" name="question[branch_enabled]" value="1" checked=branch_enabled
-        label for="question_branch_enabled" = t("recrivo.dashboard.questions.branch_enable")
-
-    .db-v2-form-group
-      label.db-v2-form-label for="question_branch_source_order" = t("recrivo.dashboard.questions.branch_source")
-      input#question_branch_source_order.db-v2-form-control type="number" name="question[branch_source_order]" min="1" value=(branch_cond[:source_question_order] || 1)
-      p.db-v2-form-hint = t("recrivo.dashboard.questions.branch_source_hint")
-
-    .db-v2-form-group
-      label.db-v2-form-label for="question_branch_type" = t("recrivo.dashboard.questions.branch_type")
-      select#question_branch_type.db-v2-form-control name="question[branch_type]"
-        - [[t("recrivo.dashboard.questions.branch_answered"), "answered"], [t("recrivo.dashboard.questions.branch_selected"), "selected_option"], [t("recrivo.dashboard.questions.branch_score_above"), "score_above"], [t("recrivo.dashboard.questions.branch_score_below"), "score_below"]].each do |label, val|
-          option value=val selected=(branch_cond[:type].to_s == val || (branch_cond[:type].blank? && val == "answered")) = label
-
-    .db-v2-form-group
-      label.db-v2-form-label for="question_branch_value" = t("recrivo.dashboard.questions.branch_value")
-      input#question_branch_value.db-v2-form-control type="text" name="question[branch_value]" value=(branch_cond[:value].to_s) placeholder=t("recrivo.dashboard.questions.branch_value_ph")
-      p.db-v2-form-hint = t("recrivo.dashboard.questions.branch_value_hint")
-
-    .db-v2-form-group
-      label.db-v2-form-label for="question_branch_action" = t("recrivo.dashboard.questions.branch_action")
-      select#question_branch_action.db-v2-form-control name="question[branch_action]"
-        option value="include" selected=(branch_cond[:action].to_s != "exclude") = t("recrivo.dashboard.questions.branch_include")
-        option value="exclude" selected=(branch_cond[:action].to_s == "exclude") = t("recrivo.dashboard.questions.branch_exclude")
-
-    .db-v2-form-group
-      label.db-v2-form-label for="question_branch_default_action" = t("recrivo.dashboard.questions.branch_default")
-      select#question_branch_default_action.db-v2-form-control name="question[branch_default_action]"
-        - default_act = (branch_rules && branch_rules[:default_action]).to_s
-        option value="exclude" selected=(default_act != "include") = t("recrivo.dashboard.questions.branch_default_exclude")
-        option value="include" selected=(default_act == "include") = t("recrivo.dashboard.questions.branch_default_include")
+        .db-v2-form-group data-branch-value-group="1" hidden=(true unless branch_needs_value)
+          label.db-v2-form-label for="question_branch_value" = t("recrivo.dashboard.questions.branch_value")
+          input#question_branch_value.db-v2-form-control type="text" name="question[branch_value]" value=(branch_cond[:value].to_s) placeholder=t("recrivo.dashboard.questions.branch_value_ph")
+          p.db-v2-form-hint = t("recrivo.dashboard.questions.branch_value_hint")
 
   .db-v2-form-actions
     = f.submit @question.persisted? ? t("recrivo.dashboard.questions.update") : t("recrivo.dashboard.questions.create"), class: "db-v2-btn db-v2-btn--primary"

@@ -60,3 +60,62 @@ ja:
       long: "%Y年%m月%d日 %H:%M"
     am: "午前"
     pm: "午後"
+  support:
+    array:
+      words_connector: "、"
+      two_words_connector: "と"
+      last_word_connector: "、"
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      accepted: を受諾してください
+      blank: を入力してください
+      present: は入力しないでください
+      confirmation: と%{attribute}の入力が一致しません
+      empty: を入力してください
+      equal_to: は%{count}にしてください
+      even: は偶数にしてください
+      exclusion: は予約されています
+      greater_than: は%{count}より大きい値にしてください
+      greater_than_or_equal_to: は%{count}以上の値にしてください
+      inclusion: は一覧にありません
+      invalid: は不正な値です
+      less_than: は%{count}より小さい値にしてください
+      less_than_or_equal_to: は%{count}以下の値にしてください
+      model_invalid: "バリデーションに失敗しました: %{errors}"
+      not_a_number: は数値で入力してください
+      not_an_integer: は整数で入力してください
+      odd: は奇数にしてください
+      other_than: は%{count}以外の値にしてください
+      record_invalid: "バリデーションに失敗しました: %{errors}"
+      required: を入力してください
+      taken: はすでに存在します
+      too_long: は%{count}文字以内で入力してください
+      too_short: は%{count}文字以上で入力してください
+      wrong_length: は%{count}文字で入力してください
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "%{record}が存在しているので削除できません"
+          has_many: "%{record}が存在しているので削除できません"
+      models:
+        interview:
+          attributes:
+            base:
+              already_completed: この面接は既に受験済みです
+            situation:
+              must_have_questions: に質問が1問以上必要です
+            status:
+              invalid_transition: は%{from}から%{to}へ変更できません
+    models:
+      interview: 面接
+      situation: 面接シナリオ
+    attributes:
+      interview:
+        user: 候補者
+        situation: 面接シナリオ
+        language: 言語
+        status: ステータス
+        access_token: アクセストークン

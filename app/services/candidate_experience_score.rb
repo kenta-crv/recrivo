@@ -109,7 +109,7 @@ class CandidateExperienceScore
   end
 
   def score_published_questions(situation, breakdown, gaps)
-    count = situation.questions.published_only.count
+    count = situation.questions.count
     max = WEIGHTS[:published_questions]
     breakdown[:published_questions] = proportional_score(
       [count, PUBLISHED_QUESTIONS_FULL_COUNT].min,

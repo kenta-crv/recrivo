@@ -26,6 +26,14 @@ module Api
       end
 
       preview = preview_request?(situation)
+      if situation.questions.none?
+        return render_api_error(
+          I18n.t("recrivo.interview.errors.no_questions"),
+          status: :unprocessable_entity,
+          reason: "no_questions"
+        )
+      end
+
       unless preview
         client = situation.client
         unless client&.can_start_interview?
@@ -152,6 +160,14 @@ module Api
       end
 
       selector = InterviewEngine::QuestionSelector.new(@interview)
+
+      if selector.no_askable_questions?
+        return render_api_error(
+          I18n.t("recrivo.interview.errors.no_questions"),
+          status: :unprocessable_entity,
+          reason: "no_questions"
+        )
+      end
 
       unless selector.should_continue_interview?
         return render json: {
@@ -663,7 +679,7 @@ module Api
 
     def preview_request?(situation)
       return false unless ActiveModel::Type::Boolean.new.cast(params[:preview])
-      return true if admin_signed_in?
+      return true if acting_as_admin?
       return true if client_signed_in? && situation.client_id == current_client.id
 
       false

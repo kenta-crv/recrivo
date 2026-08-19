@@ -56,6 +56,26 @@ RSpec.describe InterviewEngine::QuestionSelector do
     end
   end
 
+  describe '#no_askable_questions?' do
+    it '公開中の未回答質問がある場合はfalseを返す' do
+      expect(selector.no_askable_questions?).to be false
+    end
+
+    it '質問があれば published フラグに関係なく出題する' do
+      situation.questions.update_all(published: false)
+      expect(selector.no_askable_questions?).to be false
+      expect(selector.get_next_question).to eq(q1)
+    end
+
+    it '全問回答済みの場合はfalseを返す（正規の完了）' do
+      situation.questions.each do |q|
+        create(:interview_response, interview: interview, question: q)
+      end
+
+      expect(selector.no_askable_questions?).to be false
+    end
+  end
+
   describe '#get_question_text' do
     it '質問テキストを含むハッシュを返す' do
       result = selector.get_question_text(q1)
@@ -182,13 +202,49 @@ RSpec.describe InterviewEngine::QuestionSelector do
       end
 
       it 'ソース質問が未回答の場合は質問を除外する' do
-        # q1は未回答だがq2,q3は回答済み
         create(:interview_response, interview: interview, question: q2)
         create(:interview_response, interview: interview, question: q3)
 
-        # q1は未回答なので最初にq1が返される（branching_qは除外）
         question = selector.get_next_question
         expect(question).to eq(q1)
+      end
+    end
+
+    context '先頭質問が自分を参照して除外される設定' do
+      before do
+        q1.update!(
+          branching_rules: {
+            conditions: [
+              { type: 'answered', source_question_order: 1, action: 'include' }
+            ],
+            default_action: 'exclude'
+          }
+        )
+      end
+
+      it '開始時に1問目を出題する' do
+        expect(selector.get_next_question).to eq(q1)
+      end
+    end
+
+    context '全問が分岐で除外される設定' do
+      before do
+        [q1, q2, q3].each_with_index do |question, idx|
+          question.update_columns(
+            order: idx + 10,
+            branching_rules: {
+              'conditions' => [
+                { 'type' => 'answered', 'source_question_order' => 1, 'action' => 'include' }
+              ],
+              'default_action' => 'exclude'
+            }
+          )
+        end
+      end
+
+      it '開始時は先頭の未回答を出す' do
+        expect(selector.no_askable_questions?).to be false
+        expect(selector.get_next_question).to eq(q1)
       end
     end
 

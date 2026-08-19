@@ -145,7 +145,7 @@ class Interview < ApplicationRecord
   end
 
   def total_questions
-    situation.questions.published_only.count
+    situation.questions.count
   end
 
   def progress_percentage
@@ -175,12 +175,12 @@ class Interview < ApplicationRecord
     return if preview?
 
     existing = Interview.by_user_and_situation(user, situation).real.completed_or_failed.exists?
-    errors.add(:base, "User has already completed this interview") if existing
+    errors.add(:base, :already_completed) if existing
   end
 
   def ensure_situation_has_questions
     return if situation.nil?
-    errors.add(:situation, "must have at least 1 question") if situation.questions.empty?
+    errors.add(:situation, :must_have_questions) if situation.questions.none?
   end
 
   def valid_status_transition
@@ -188,7 +188,7 @@ class Interview < ApplicationRecord
     to = status&.to_sym
     return if from.nil?
     unless VALID_TRANSITIONS[from]&.include?(to)
-      errors.add(:status, "cannot transition from #{from} to #{to}")
+      errors.add(:status, :invalid_transition, from: from, to: to)
     end
   end
 end

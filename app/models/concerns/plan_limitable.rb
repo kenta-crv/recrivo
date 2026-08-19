@@ -46,4 +46,13 @@ module PlanLimitable
   def interview_limit_message
     "今月の面接実施数の上限（#{monthly_interview_limit}件）に達しています。プランをアップグレードしてください。"
   end
+
+  def approaching_limit?(threshold: 0.8)
+    [
+      [situation_limit, active_services_count],
+      [monthly_interview_limit, interviews_this_month_count]
+    ].any? do |limit, used|
+      limit.to_i.positive? && used.to_f / limit >= threshold
+    end
+  end
 end

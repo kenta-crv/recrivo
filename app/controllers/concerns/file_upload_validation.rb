@@ -6,8 +6,8 @@ module FileUploadValidation
 
   AUDIO_CONTENT_TYPES = %w[
     audio/mpeg audio/mp3 audio/mp4 audio/wav audio/webm
-    audio/x-wav audio/x-m4a audio/ogg
-    video/webm
+    audio/x-wav audio/x-m4a audio/m4a audio/aac audio/ogg
+    video/webm video/mp4
   ].freeze
 
   VIDEO_CONTENT_TYPES = %w[
@@ -34,6 +34,10 @@ module FileUploadValidation
     end
 
     content_type = file.content_type.to_s.split(';').first.to_s.strip.downcase
+    if content_type.blank?
+      content_type = Rack::Mime.mime_type(File.extname(file.original_filename.to_s).downcase, '')
+      content_type = content_type.to_s.split(';').first.to_s.strip.downcase
+    end
     unless allowed_types.include?(content_type)
       raise ActionController::BadRequest,
         "#{label} file type '#{file.content_type}' not allowed. Accepted: #{allowed_types.join(', ')}"

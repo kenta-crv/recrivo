@@ -1,0 +1,21 @@
+ja:
+  recrivo:
+    interview:
+      errors:
+        start_failed: "面接を開始できませんでした。%{details}"
+        validation_failed: "入力内容を確認してください。%{details}"
+        no_questions: "出題できる質問がありません。シナリオに質問を1問以上用意してください。"
+        cannot_complete_without_answers: "回答が1件もないため面接を完了できません。"
+      invite:
+        not_ready: "この面接はまだ準備中です。シナリオに質問を1問以上追加してください。"
+
+en:
+  recrivo:
+    interview:
+      errors:
+        start_failed: "Failed to start interview. %{details}"
+        validation_failed: "Validation failed. %{details}"
+        no_questions: "No questions are available for this interview. Add at least one question to the scenario."
+        cannot_complete_without_answers: "Cannot complete an interview with no answers."
+      invite:
+        not_ready: "This interview is not ready. Add at least one question to the scenario."

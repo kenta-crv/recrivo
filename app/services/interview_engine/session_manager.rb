@@ -50,7 +50,9 @@ module InterviewEngine
       enqueue_incomplete_reminders!(interview) unless preview
       interview
     rescue ActiveRecord::RecordInvalid => e
-      raise SessionError, "Failed to start interview: #{e.message}"
+      details = e.record.errors.full_messages.to_sentence
+      Rails.logger.error("[SessionManager] start_interview invalid: #{e.record.class} #{details}")
+      raise SessionError, I18n.t("recrivo.interview.errors.start_failed", details: details)
     end
 
     # トークンで面接を開始/復帰（Devise認証不要）
@@ -183,6 +185,10 @@ module InterviewEngine
     # Complete interview and generate results
     def complete_interview(interview_id)
       interview = Interview.find(interview_id)
+
+      if interview.interview_responses.none?
+        raise SessionError, I18n.t("recrivo.interview.errors.cannot_complete_without_answers")
+      end
 
       # Ensure all responses are evaluated
       pending_responses = interview.interview_responses.where(evaluation_status: :pending)

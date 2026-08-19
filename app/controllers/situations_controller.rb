@@ -1,4 +1,5 @@
 class SituationsController < Dashboard::BaseController
+  wrap_parameters false
   before_action :set_situation, only: [
     :show, :edit, :update, :destroy, :regenerate_invite_token,
     :suggest_questions, :apply_suggested_questions,
@@ -19,6 +20,7 @@ class SituationsController < Dashboard::BaseController
     @follow_up_templates = @situation.interview_follow_up_templates.ordered
     @faqs = @situation.situation_faqs.ordered
     @analytics = InterviewEngine::AnalyticsSummaryService.call(situation_ids: [@situation.id])
+    @suggested_questions = Array(session.delete(:ai_suggested_questions))
   end
 
   def new
@@ -140,48 +142,40 @@ class SituationsController < Dashboard::BaseController
 
   # POST /situations/:id/suggest_questions
   def suggest_questions
-    industry = params[:industry].presence || @situation.industry
-    job_title = params[:job_title].presence || @situation.job_title
+    industry = suggest_param(:industry).presence || @situation.industry
+    job_title = suggest_param(:job_title).presence || @situation.job_title
 
     if industry.blank? || job_title.blank?
-      return render json: {
-        success: false,
-        error: t("recrivo.dashboard.js.need_industry_job")
-      }, status: :unprocessable_entity
+      message = t("recrivo.dashboard.js.need_industry_job")
+      if request.format.json?
+        return render json: { success: false, error: message }, status: :unprocessable_entity
+      end
+      return redirect_to situation_path(@situation, anchor: "questions"), alert: message
     end
 
-    @situation.update(industry: industry, job_title: job_title) if params[:persist].to_s == "1"
+    persist = suggest_param(:persist).to_s == "1" || suggest_param(:persist).nil?
+    @situation.update(industry: industry, job_title: job_title) if persist
 
-    count = (params[:count].presence || 5).to_i.clamp(3, 8)
-    result = InterviewEngine::LLMClient.new.suggest_interview_questions(
-      industry: industry,
-      job_title: job_title,
-      language: @situation.language,
-      count: count,
-      situation_title: @situation.title
-    )
-
-    render json: {
-      success: true,
-      industry: industry,
-      job_title: job_title,
-      questions: result["questions"]
-    }
-  rescue StandardError => e
-    Rails.logger.error("suggest_questions failed: #{e.class}: #{e.message}")
-    fallback = InterviewEngine::LLMClient.new.fallback_suggestions(
+    count = (suggest_param(:count).presence || 5).to_i.clamp(3, 8)
+    questions = InterviewEngine::LLMClient.new.fallback_suggestions(
       industry.to_s,
       job_title.to_s,
       @situation.language,
-      (params[:count].presence || 5).to_i.clamp(3, 8)
-    )
-    render json: {
-      success: true,
-      industry: industry,
-      job_title: job_title,
-      questions: fallback["questions"],
-      fallback: true
-    }
+      count
+    )["questions"]
+
+    if request.format.json?
+      return render json: {
+        success: true,
+        industry: industry,
+        job_title: job_title,
+        questions: questions
+      }
+    end
+
+    session[:ai_suggested_questions] = Array(questions).map { |q| q.respond_to?(:to_h) ? q.to_h.stringify_keys : q }
+    redirect_to situation_path(@situation, anchor: "questions"),
+                notice: t("recrivo.dashboard.js.suggested", count: questions.size)
   end
 
   # POST /situations/:id/apply_suggested_questions
@@ -210,10 +204,10 @@ class SituationsController < Dashboard::BaseController
         @situation.questions.create!(
           question_text: text,
           question_type: "open",
-          required: ActiveModel::Type::Boolean.new.cast(item[:required]),
+          required: true,
           category: item[:category].to_s.presence || t("recrivo.dashboard.js.general"),
           order: next_order,
-          published: false
+          published: true
         )
         next_order += 1
         created += 1
@@ -237,6 +231,10 @@ class SituationsController < Dashboard::BaseController
     @situation = situations_scope.find(params[:id])
   end
 
+  def suggest_param(key)
+    params[key].presence || params.dig(:situation, key)
+  end
+
   def situation_params
     permitted = [
       :title, :description, :language, :archived,
@@ -245,7 +243,7 @@ class SituationsController < Dashboard::BaseController
       :passing_score, :auto_reject_enabled, :reject_on_required_fail,
       :min_required_score, :max_consecutive_fails, :reject_notify_method,
       :judgment_mode, :candidate_result_visibility,
-      :allow_text_answer, :allow_voice_answer, :record_camera,
+      :answer_mode, :record_camera,
       :enable_satisfaction_survey, :follow_up_next_step_url,
       :skip_candidate_registration
     ]
@@ -263,11 +261,16 @@ class SituationsController < Dashboard::BaseController
   def build_new_situation(attrs = nil)
     record =
       if client_signed_in?
-        current_client.situations.new(language: "ja", record_camera: true)
+        current_client.situations.new(language: "ja", record_camera: true, allow_text_answer: false, allow_voice_answer: true)
       else
-        Situation.new(language: "ja", record_camera: true)
+        Situation.new(language: "ja", record_camera: true, allow_text_answer: false, allow_voice_answer: true)
       end
-    record.assign_attributes(attrs) if attrs.present?
+    if attrs.present?
+      record.assign_attributes(attrs)
+    else
+      record.judgment_mode = nil
+      record.candidate_result_visibility = nil
+    end
     record
   end
 

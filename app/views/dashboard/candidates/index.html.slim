@@ -22,7 +22,7 @@
       .db-v2-empty-state
         p.db-v2-empty-state__text = t("recrivo.dashboard.candidates.empty")
         p.db-v2-muted = t("recrivo.dashboard.candidates.empty_lead")
-        - unless admin_signed_in?
+        - unless acting_as_admin?
           = link_to new_situation_path, class: "db-v2-btn db-v2-btn--primary" do
             span = t("recrivo.dashboard.home.create_scenario")
     - else

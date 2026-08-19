@@ -71,6 +71,42 @@ RSpec.describe Situation, type: :model do
     it 'is valid for text-only' do
       expect(build(:situation, :text_only)).to be_valid
     end
+
+    it 'maps answer_mode to the boolean flags' do
+      situation = build(:situation)
+      situation.answer_mode = 'text'
+      expect(situation.allow_text_answer).to be true
+      expect(situation.allow_voice_answer).to be false
+      expect(situation.answer_mode).to eq('text')
+
+      situation.answer_mode = 'voice'
+      expect(situation.allow_text_answer).to be false
+      expect(situation.allow_voice_answer).to be true
+      expect(situation.answer_mode).to eq('voice')
+
+      situation.answer_mode = 'both'
+      expect(situation.allow_text_answer).to be true
+      expect(situation.allow_voice_answer).to be true
+      expect(situation.answer_mode).to eq('both')
+    end
+
+    it 'defaults to voice-only' do
+      expect(build(:situation).answer_mode).to eq('voice')
+    end
+  end
+
+  describe 'judgment fields' do
+    it 'is invalid without judgment_mode' do
+      situation = build(:situation, judgment_mode: nil)
+      expect(situation).not_to be_valid
+      expect(situation.errors[:judgment_mode]).to be_present
+    end
+
+    it 'is invalid without candidate_result_visibility' do
+      situation = build(:situation, candidate_result_visibility: nil)
+      expect(situation).not_to be_valid
+      expect(situation.errors[:candidate_result_visibility]).to be_present
+    end
   end
 
   describe '#auto_reject_enabled?' do

@@ -12,7 +12,7 @@
         = link_to dashboard_index_path, class: sidebar_link_class(:dashboard) do
           i.fa-solid.fa-gauge-high aria-hidden="true"
           span = t("recrivo.dashboard.nav.dashboard")
-        - if client_signed_in? && !admin_signed_in?
+        - if client_signed_in? && !acting_as_admin?
           = link_to dashboard_notifications_path, class: sidebar_link_class(:notifications) do
             i.fa-solid.fa-bell aria-hidden="true"
             span = t("recrivo.dashboard.nav.notifications")
@@ -31,45 +31,35 @@
 
       .db-v2-sidebar__section
         p.db-v2-sidebar__section-label = t("recrivo.dashboard.nav.section_account")
-        - if client_signed_in? && !admin_signed_in?
+        - if client_signed_in? && !acting_as_admin?
           = link_to dashboard_subscription_path, class: sidebar_link_class(:subscription) do
             i.fa-solid.fa-credit-card aria-hidden="true"
             span = t("recrivo.dashboard.nav.plan_billing")
-        - if admin_signed_in?
+          = link_to dashboard_account_path, class: sidebar_link_class(:account) do
+            i.fa-solid.fa-globe aria-hidden="true"
+            span = t("recrivo.dashboard.nav.account_language")
+          button.db-v2-sidebar__link type="button" data-problem-modal-open=""
+            i.fa-solid.fa-bug aria-hidden="true"
+            span = t("recrivo.dashboard.nav.report_problem")
+        - if acting_as_admin?
           = link_to dashboard_management_path, class: sidebar_link_class(:management) do
             i.fa-solid.fa-building-columns aria-hidden="true"
             span = t("recrivo.dashboard.nav.companies")
           = link_to admin_interview_results_path, class: sidebar_link_class(:admin_interview_results) do
             i.fa-solid.fa-clipboard-list aria-hidden="true"
             span = t("recrivo.dashboard.nav.admin_results")
+        = render "shared/sign_out_button", path: (acting_as_admin? ? destroy_admin_session_path : destroy_client_session_path), variant: :sidebar, label: t("recrivo.dashboard.common.sign_out")
 
     .db-v2-sidebar__footer
-      - avatar_name = admin_signed_in? ? current_admin.email : sidebar_user_display_name
-      - sign_out_path = admin_signed_in? ? destroy_admin_session_path : destroy_client_session_path
-      .db-v2-sidebar__account data-sidebar-account=""
-        button.db-v2-sidebar__user type="button" data-sidebar-account-toggle="" aria-expanded="false" aria-haspopup="true" aria-controls="sidebar-account-menu"
+      - avatar_name = acting_as_admin? ? current_admin.email : sidebar_user_display_name
+      .db-v2-sidebar__account
+        .db-v2-sidebar__user
           .db-v2-sidebar__user-avatar
             img src="https://ui-avatars.com/api/?name=#{CGI.escape(avatar_name)}&background=0f766e&color=fff&size=64" alt=""
           .db-v2-sidebar__user-meta
-            - if admin_signed_in?
+            - if acting_as_admin?
               span.db-v2-sidebar__user-name = current_admin.email
               span.db-v2-sidebar__user-role = t("recrivo.dashboard.nav.admin_role")
             - else
               span.db-v2-sidebar__user-name = sidebar_user_display_name
               span.db-v2-sidebar__user-role = sidebar_plan_label
-          i.fa-solid.fa-chevron-up.db-v2-sidebar__account-caret aria-hidden="true"
-
-        #sidebar-account-menu.db-v2-sidebar__account-menu role="menu" aria-label=t("recrivo.dashboard.nav.account_menu")
-          p.db-v2-sidebar__account-menu-label = t("recrivo.dashboard.account.language_title")
-          .db-v2-locale-switch.db-v2-locale-switch--sidebar role="group" aria-label=t("recrivo.dashboard.account.language_title")
-            = link_to t("recrivo.dashboard.account.language_ja"), locale_switch_path_for(:ja), class: "db-v2-locale-switch__btn#{' is-active' if current_locale.to_s == 'ja'}", role: "menuitem", "aria-pressed": (current_locale.to_s == "ja").to_s
-            = link_to t("recrivo.dashboard.account.language_en"), locale_switch_path_for(:en), class: "db-v2-locale-switch__btn#{' is-active' if current_locale.to_s == 'en'}", role: "menuitem", "aria-pressed": (current_locale.to_s == "en").to_s
-          p.db-v2-sidebar__account-menu-label = t("recrivo.dashboard.nav.settings")
-          - if client_signed_in? && !admin_signed_in?
-            = link_to dashboard_account_path, class: "db-v2-sidebar__link", role: "menuitem" do
-              i.fa-solid.fa-globe aria-hidden="true"
-              span = t("recrivo.dashboard.nav.account_language")
-            button.db-v2-sidebar__link type="button" role="menuitem" data-problem-modal-open=""
-              i.fa-solid.fa-bug aria-hidden="true"
-              span = t("recrivo.dashboard.nav.report_problem")
-          = render "shared/sign_out_button", path: sign_out_path, variant: :sidebar, label: t("recrivo.dashboard.common.sign_out")

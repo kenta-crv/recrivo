@@ -92,6 +92,14 @@ class Client < ApplicationRecord
     subscription_plan == "trial" && trial_ends_at.present? && trial_ends_at > Time.current
   end
 
+  def trial_expired_without_paid?
+    subscription = current_subscription
+    return true if subscription&.expired?
+    return true if subscription_plan == "trial" && trial_ends_at.present? && trial_ends_at <= Time.current
+
+    false
+  end
+
   def subscription_active?
     subscription_status == "active"
   end

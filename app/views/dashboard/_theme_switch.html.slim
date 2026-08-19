@@ -1,5 +1,5 @@
 .db-v2-theme-switch role="group" aria-label=t("recrivo.dashboard.common.theme_switch")
-  button.db-v2-theme-switch__btn type="button" data-dashboard-theme-value="dark" aria-pressed="false"
-    i.fa-solid.fa-moon aria-hidden="true"
-  button.db-v2-theme-switch__btn.is-active type="button" data-dashboard-theme-value="light" aria-pressed="true"
+  button.db-v2-theme-switch__btn.is-active type="button" data-dashboard-theme-value="light" aria-pressed="true" onclick="window.applyMeetiaDashboardTheme&&window.applyMeetiaDashboardTheme('light');return false;"
     i.fa-solid.fa-sun aria-hidden="true"
+  button.db-v2-theme-switch__btn type="button" data-dashboard-theme-value="dark" aria-pressed="false" onclick="window.applyMeetiaDashboardTheme&&window.applyMeetiaDashboardTheme('dark');return false;"
+    i.fa-solid.fa-moon aria-hidden="true"

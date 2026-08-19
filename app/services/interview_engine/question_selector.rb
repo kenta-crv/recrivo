@@ -52,18 +52,27 @@ module InterviewEngine
       eligible_questions.any?
     end
 
+    # 未回答のまま出題できる質問が1問もない（未公開のみ、または分岐ですべて除外）
+    def no_askable_questions?
+      eligible_questions.empty? && @interview.interview_responses.none?
+    end
+
     private
 
     # All unanswered published questions (no branching filter)
     def unanswered_questions
-      @interview.situation.questions.published_only.where.not(
+      @interview.situation.questions.for_interview.where.not(
         id: @interview.interview_responses.select(:question_id)
-      ).order(:order)
+      )
     end
 
-    # Unanswered questions filtered by branching rules
     def eligible_questions
-      unanswered_questions.select { |q| evaluate_branching_rules(q) }
+      unanswered = unanswered_questions.to_a
+      filtered = unanswered.select { |q| evaluate_branching_rules(q) }
+      return filtered if filtered.any?
+      return unanswered.first(1) if unanswered.any? && @interview.interview_responses.none?
+
+      filtered
     end
 
     # Total count of eligible questions (answered + remaining eligible)
@@ -80,12 +89,19 @@ module InterviewEngine
       rules = question.parsed_branching_rules
       return true if rules.nil?
 
-      conditions = rules[:conditions]
+      conditions = Array(rules[:conditions])
       default_action = rules[:default_action] || 'include'
+      question_order = question.order.to_i
 
-      return default_action == 'include' if conditions.blank?
+      # 自分以前の質問を参照できない条件は、開始時点で全問除外になるので無視する
+      usable = conditions.select do |condition|
+        source_order = condition[:source_question_order].to_i
+        source_order.positive? && (question_order.zero? || source_order < question_order)
+      end
 
-      conditions.each do |condition|
+      return true if usable.blank?
+
+      usable.each do |condition|
         result = evaluate_condition(condition)
         action = condition[:action] || 'include'
 
@@ -94,7 +110,6 @@ module InterviewEngine
         end
       end
 
-      # No condition matched — use default
       default_action == 'include'
     end
 

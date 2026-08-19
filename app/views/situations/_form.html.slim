@@ -31,6 +31,16 @@
   .db-v2-form-section
     h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.judgment_section")
     .db-v2-form-group
+      = f.label :judgment_mode, t("recrivo.dashboard.situations.form.judgment_mode"), class: "db-v2-form-label"
+      = f.select :judgment_mode, [[t("recrivo.dashboard.situations.form.judgment_automatic"), "automatic"], [t("recrivo.dashboard.situations.form.judgment_manual"), "manual"]], { include_blank: t("recrivo.dashboard.situations.form.choose") }, class: "db-v2-form-control", required: true
+      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.judgment_hint")
+
+    .db-v2-form-group
+      = f.label :candidate_result_visibility, t("recrivo.dashboard.situations.form.result_visibility"), class: "db-v2-form-label"
+      = f.select :candidate_result_visibility, [[t("recrivo.dashboard.situations.form.result_hidden"), "hidden"], [t("recrivo.dashboard.situations.form.result_immediate"), "immediate"]], { include_blank: t("recrivo.dashboard.situations.form.choose") }, class: "db-v2-form-control", required: true
+      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.result_hint")
+
+    .db-v2-form-group
       = f.label :passing_score, t("recrivo.dashboard.situations.form.passing_score"), class: "db-v2-form-label"
       = f.number_field :passing_score, class: "db-v2-form-control", min: 0, max: 100
       p.db-v2-form-hint = t("recrivo.dashboard.situations.form.passing_hint")
@@ -38,27 +48,18 @@
     .db-v2-form-group
       label.db-v2-form-label = t("recrivo.dashboard.situations.form.answer_modes")
       .db-v2-form-check
-        = f.check_box :allow_text_answer
-        = f.label :allow_text_answer, t("recrivo.dashboard.situations.form.text")
+        = f.radio_button :answer_mode, "voice"
+        = f.label :answer_mode_voice, t("recrivo.dashboard.situations.form.answer_voice")
       .db-v2-form-check
-        = f.check_box :allow_voice_answer
-        = f.label :allow_voice_answer, t("recrivo.dashboard.situations.form.voice")
-      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.answer_hint")
+        = f.radio_button :answer_mode, "both"
+        = f.label :answer_mode_both, t("recrivo.dashboard.situations.form.answer_both")
+      .db-v2-form-check
+        = f.radio_button :answer_mode, "text"
+        = f.label :answer_mode_text, t("recrivo.dashboard.situations.form.answer_text")
 
   details.db-v2-details
     summary.db-v2-details__summary = t("recrivo.dashboard.situations.form.advanced")
     .db-v2-details__body
-      .db-v2-form-section
-        h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.judgment")
-        .db-v2-form-group
-          = f.label :judgment_mode, t("recrivo.dashboard.situations.form.judgment_mode"), class: "db-v2-form-label"
-          = f.select :judgment_mode, [[t("recrivo.dashboard.situations.form.judgment_automatic"), "automatic"], [t("recrivo.dashboard.situations.form.judgment_manual"), "manual"]], {}, class: "db-v2-form-control"
-
-        .db-v2-form-group
-          = f.label :candidate_result_visibility, t("recrivo.dashboard.situations.form.result_visibility"), class: "db-v2-form-label"
-          = f.select :candidate_result_visibility, [[t("recrivo.dashboard.situations.form.result_hidden"), "hidden"], [t("recrivo.dashboard.situations.form.result_immediate"), "immediate"]], {}, class: "db-v2-form-control"
-          p.db-v2-form-hint = t("recrivo.dashboard.situations.form.result_hint")
-
       .db-v2-form-section
         h3.db-v2-form-section__title = t("recrivo.dashboard.situations.form.auto_reject_section")
         p.db-v2-form-hint style="margin-bottom:12px" = t("recrivo.dashboard.situations.form.auto_reject_hint")

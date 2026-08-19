@@ -263,6 +263,7 @@
 
   function initHeroPlayButton() {
     document.querySelectorAll('[data-hero-play]').forEach(function(btn) {
+      if (btn.id === 'replay_question' || btn.closest('.interview-room')) return;
       MeetiaPageInit.bindOnce(btn, 'data-hero-play-bound', function(button) {
         function setPlaying(playing) {
           button.classList.toggle('presentation-play-btn--playing', !!playing);

@@ -64,7 +64,7 @@ module DashboardHelper
   end
 
   def subscription_path_options
-    if admin_signed_in? && defined?(@target_client) && @target_client.present?
+    if acting_as_admin? && defined?(@target_client) && @target_client.present?
       { client_id: @target_client.id }
     else
       {}
@@ -72,13 +72,9 @@ module DashboardHelper
   end
 
   def subscription_can_cancel?(client)
-    return false if admin_signed_in?
+    return false if acting_as_admin?
 
     client.subscription_cancellable?
-  end
-
-  def acting_as_admin?
-    admin_signed_in? && !client_signed_in?
   end
 
   def ops_status_label(status)

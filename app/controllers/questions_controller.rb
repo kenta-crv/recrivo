@@ -66,6 +66,8 @@ class QuestionsController < Dashboard::BaseController
     attrs = permitted.to_h
     apply_choice_options!(attrs)
     apply_branching_rules!(attrs)
+    attrs["published"] = true
+    attrs["required"] = true
     attrs
   end
 
