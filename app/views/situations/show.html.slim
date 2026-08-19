@@ -106,23 +106,23 @@
             i.fa-solid.fa-wand-magic-sparkles aria-hidden="true"
             span = t("recrivo.dashboard.situations.suggest_run")
 
-      .db-v2-suggest-results data-ai-suggest-results="1" hidden=(true if @suggested_questions.blank?)
-        p.db-v2-muted style="margin:16px 0 8px" = t("recrivo.dashboard.situations.suggest_results")
-        .db-v2-suggest-list data-ai-suggest-list="1"
-          - Array(@suggested_questions).each_with_index do |q, idx|
-            - q = q.with_indifferent_access if q.respond_to?(:with_indifferent_access)
-            label.db-v2-suggest-item.db-v2-suggest-item--selectable
-              input.db-v2-suggest-item__input type="checkbox" data-question=( { question_text: q[:question_text], question_type: q[:question_type].presence || "open", required: ActiveModel::Type::Boolean.new.cast(q[:required]), category: q[:category].presence || t("recrivo.dashboard.js.general") }.to_json )
-              span.db-v2-suggest-item__check aria-hidden="true"
-              span.db-v2-suggest-item__body
-                span.db-v2-suggest-item__text = "#{idx + 1}. #{q[:question_text]}"
-                span.db-v2-suggest-item__meta = [q[:category], (ActiveModel::Type::Boolean.new.cast(q[:required]) ? t("recrivo.dashboard.common.required") : t("recrivo.dashboard.common.optional")), q[:reason]].compact.join(t("recrivo.dashboard.common.sep"))
-        .db-v2-form-actions style="margin-top:12px"
-          button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
-            i.fa-solid.fa-plus aria-hidden="true"
-            span = t("recrivo.dashboard.situations.add_selected")
-          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" = t("recrivo.dashboard.situations.select_all")
-          button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" = t("recrivo.dashboard.situations.clear_selection")
+    .db-v2-suggest-results data-ai-suggest-results="1" hidden=(true if @suggested_questions.blank?)
+      p.db-v2-muted style="margin:16px 0 8px" = t("recrivo.dashboard.situations.suggest_results")
+      .db-v2-suggest-list data-ai-suggest-list="1"
+        - Array(@suggested_questions).each_with_index do |q, idx|
+          - q = q.with_indifferent_access if q.respond_to?(:with_indifferent_access)
+          label.db-v2-suggest-item.db-v2-suggest-item--selectable
+            input.db-v2-suggest-item__input type="checkbox" data-question=( { question_text: q[:question_text], question_type: q[:question_type].presence || "open", required: ActiveModel::Type::Boolean.new.cast(q[:required]), category: q[:category].presence || t("recrivo.dashboard.js.general") }.to_json )
+            span.db-v2-suggest-item__check aria-hidden="true"
+            span.db-v2-suggest-item__body
+              span.db-v2-suggest-item__text = "#{idx + 1}. #{q[:question_text]}"
+              span.db-v2-suggest-item__meta = [q[:category], (ActiveModel::Type::Boolean.new.cast(q[:required]) ? t("recrivo.dashboard.common.required") : t("recrivo.dashboard.common.optional")), q[:reason]].compact.join(t("recrivo.dashboard.common.sep"))
+      .db-v2-form-actions style="margin-top:12px"
+        button.db-v2-btn.db-v2-btn--primary type="button" data-ai-suggest-apply="1" disabled=true
+          i.fa-solid.fa-plus aria-hidden="true"
+          span = t("recrivo.dashboard.situations.add_selected")
+        button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-select-all="1" = t("recrivo.dashboard.situations.select_all")
+        button.db-v2-btn.db-v2-btn--ghost type="button" data-ai-suggest-clear="1" = t("recrivo.dashboard.situations.clear_selection")
 
 .db-v2-bottom-card style="margin-top: 1.25rem"
   .db-v2-bottom-card__header.db-v2-bottom-card__header--split

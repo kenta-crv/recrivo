@@ -444,6 +444,7 @@ function applyQuestionsFromList(card, listSelector, applyBtn, statusText) {
   var form = document.createElement('form');
   form.method = 'POST';
   form.action = applyUrl;
+  form.setAttribute('data-turbo', 'false');
 
   var token = document.createElement('input');
   token.type = 'hidden';
@@ -686,6 +687,15 @@ document.addEventListener('click', function(e) {
       return;
     }
   }
+});
+
+document.addEventListener('submit', function(e) {
+  var form = e.target;
+  if (!form || !form.classList.contains('db-v2-suggest-form')) return;
+  var card = form.closest('[data-ai-suggest-card]');
+  if (!card) return;
+  e.preventDefault();
+  runAiSuggest(card);
 });
 
 document.addEventListener('change', function(e) {
