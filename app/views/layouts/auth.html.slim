@@ -17,4 +17,5 @@ html.meetia-lp-html class=(admin_auth_screen? ? "meetia-auth-html--dark" : nil) 
     = render "layouts/lp_atmosphere"
     .meetia-modern-lp.meetia-auth class=(admin_auth_screen? ? "meetia-auth--dark" : nil)
       = yield
+    script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.13/dist/turbo.es2017-umd.js"
     = javascript_include_tag "application", "data-turbo-track": "reload"

@@ -1,4 +1,3 @@
-//= require turbo
 //= require rails-ujs
 //= require activestorage
 //= require meetia_page_init
@@ -479,6 +478,101 @@ function applyBasicSuggestedQuestions(card) {
   );
 }
 
+function bindSuggestCardActions(card) {
+  if (!card || card.getAttribute('data-ai-suggest-bound') === '1') return;
+  card.setAttribute('data-ai-suggest-bound', '1');
+
+  var form = card.querySelector('.db-v2-suggest-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      runAiSuggest(card);
+    });
+  }
+
+  var aiApplyBtn = card.querySelector('[data-ai-suggest-apply]');
+  if (aiApplyBtn) {
+    aiApplyBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      applySuggestedQuestions(card);
+    });
+  }
+
+  var basicApplyBtn = card.querySelector('[data-basic-suggest-apply]');
+  if (basicApplyBtn) {
+    basicApplyBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      applyBasicSuggestedQuestions(card);
+    });
+  }
+
+  var aiSelectAllBtn = card.querySelector('[data-ai-suggest-select-all]');
+  if (aiSelectAllBtn) {
+    aiSelectAllBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var listAll = card.querySelector('[data-ai-suggest-list]');
+      if (!listAll) return;
+      listAll.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = true; });
+      refreshSuggestApplyState(card);
+    });
+  }
+
+  var basicSelectAllBtn = card.querySelector('[data-basic-suggest-select-all]');
+  if (basicSelectAllBtn) {
+    basicSelectAllBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var basicListAll = card.querySelector('[data-basic-suggest-list]');
+      if (!basicListAll) return;
+      basicListAll.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = true; });
+      refreshBasicSuggestApplyState(card);
+    });
+  }
+
+  var aiClearBtn = card.querySelector('[data-ai-suggest-clear]');
+  if (aiClearBtn) {
+    aiClearBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var listClear = card.querySelector('[data-ai-suggest-list]');
+      if (!listClear) return;
+      listClear.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+      refreshSuggestApplyState(card);
+    });
+  }
+
+  var basicClearBtn = card.querySelector('[data-basic-suggest-clear]');
+  if (basicClearBtn) {
+    basicClearBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var basicListClear = card.querySelector('[data-basic-suggest-list]');
+      if (!basicListClear) return;
+      basicListClear.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+      refreshBasicSuggestApplyState(card);
+    });
+  }
+
+  card.addEventListener('change', function(e) {
+    var target = e.target;
+    if (!target || !target.matches('input[type="checkbox"]')) return;
+    if (target.closest('[data-basic-suggest-list]')) {
+      refreshBasicSuggestApplyState(card);
+      return;
+    }
+    if (target.closest('[data-ai-suggest-list]')) {
+      refreshSuggestApplyState(card);
+    }
+  });
+
+  refreshBasicSuggestApplyState(card);
+  refreshSuggestApplyState(card);
+}
+
 function runAiSuggest(card) {
   var suggestUrl = card.getAttribute('data-suggest-url');
   if (!suggestUrl) {
@@ -696,6 +790,12 @@ document.addEventListener('submit', function(e) {
   if (!card) return;
   e.preventDefault();
   runAiSuggest(card);
+});
+
+onReady(function() {
+  document.querySelectorAll('[data-ai-suggest-card]').forEach(function(card) {
+    bindSuggestCardActions(card);
+  });
 });
 
 document.addEventListener('change', function(e) {

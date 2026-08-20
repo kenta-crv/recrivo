@@ -51,7 +51,7 @@ module ApplicationHelper
   end
 
   def site_og_image_url
-    image_url("top_hero.png")
+    image_url("recrivo_hero_screen.png")
   end
 
   def site_public_host
@@ -160,5 +160,31 @@ module ApplicationHelper
 
   def lp_structured_data_json
     lp_structured_data.to_json.html_safe
+  end
+
+  def yahoo_ads_conversion_tags
+    <<~HTML.html_safe
+      <script>
+        ytag({
+          "type":"yjad_conversion",
+          "config":{
+            "yahoo_ydn_conv_io": "3LsTvKiI1CWLYpM0iEzVcQ..",
+            "yahoo_ydn_conv_label": "OS76L09XX08810RLPU1366130",
+            "yahoo_ydn_conv_transaction_id": "",
+            "yahoo_ydn_conv_value": "1",
+            "yahoo_email": "",
+            "yahoo_phone_number": ""
+          }
+        });
+        ytag({
+          "type": "yss_conversion",
+          "config": {
+            "yahoo_conversion_id": "1001407956",
+            "yahoo_conversion_label": "Y7OuCIfD4tkcEIu2l7NE",
+            "yahoo_conversion_value": "1"
+          }
+        });
+      </script>
+    HTML
   end
 end

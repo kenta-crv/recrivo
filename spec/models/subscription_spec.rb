@@ -34,11 +34,18 @@ RSpec.describe Subscription, type: :model do
       expect(config[:intro_coupon_env]).to eq("STRIPE_COUPON_STANDARD_INTRO")
     end
 
+    it 'has expected standard limits' do
+      config = Subscription.plan_config(:standard)
+      expect(config[:situation_limit]).to eq(3)
+      expect(config[:monthly_interview_limit]).to eq(60)
+      expect(config[:follow_up_automation]).to be true
+    end
+
     it 'has expected business limits and featured flag' do
       config = Subscription.plan_config(:business)
       expect(config[:price]).to eq(98_000)
-      expect(config[:situation_limit]).to eq(30)
-      expect(config[:monthly_interview_limit]).to eq(2_000)
+      expect(config[:situation_limit]).to eq(10)
+      expect(config[:monthly_interview_limit]).to eq(500)
       expect(config[:follow_up_automation]).to be true
       expect(config[:priority_support]).to be true
       expect(config[:featured]).to be true
@@ -68,7 +75,6 @@ RSpec.describe Subscription, type: :model do
     end
 
     it 'shows cross for excluded boolean features' do
-      expect(Subscription.format_feature_value(:trial, :priority_support)).to eq('✕')
       expect(Subscription.format_feature_value(:trial, :follow_up_automation)).to eq('✕')
     end
   end

@@ -20,17 +20,24 @@ class SituationsController < Dashboard::BaseController
     @follow_up_templates = @situation.interview_follow_up_templates.ordered
     @faqs = @situation.situation_faqs.ordered
     @analytics = InterviewEngine::AnalyticsSummaryService.call(situation_ids: [@situation.id])
-    @suggested_questions = Array(session.delete(:ai_suggested_questions))
+    @suggested_questions = load_suggested_questions_for(@situation.id)
   end
 
   def new
     @situation = build_new_situation
     load_clients_for_admin
+    assign_company_name_for_form
   end
 
   def create
     @situation = build_new_situation(situation_params)
-    if @situation.save
+    assign_company_name_for_form
+    if company_name_missing_for_situation_owner?
+      @situation.errors.add(:base, t("recrivo.dashboard.flash.company_required"))
+      load_clients_for_admin
+      render :new, status: :unprocessable_entity
+    elsif @situation.save
+      sync_company_to_situation_owner
       redirect_to @situation, notice: t("recrivo.dashboard.flash.situation_created")
     else
       load_clients_for_admin
@@ -39,10 +46,16 @@ class SituationsController < Dashboard::BaseController
   end
 
   def edit
+    assign_company_name_for_form
   end
 
   def update
-    if @situation.update(situation_params)
+    assign_company_name_for_form
+    if company_name_missing_for_situation_owner?
+      @situation.errors.add(:base, t("recrivo.dashboard.flash.company_required"))
+      render :edit, status: :unprocessable_entity
+    elsif @situation.update(situation_params)
+      sync_company_to_situation_owner
       redirect_to @situation, notice: t("recrivo.dashboard.flash.situation_updated")
     else
       render :edit, status: :unprocessable_entity
@@ -164,6 +177,8 @@ class SituationsController < Dashboard::BaseController
       count
     )["questions"]
 
+    store_suggested_questions_for(@situation.id, questions)
+
     if request.format.json?
       return render json: {
         success: true,
@@ -172,8 +187,6 @@ class SituationsController < Dashboard::BaseController
         questions: questions
       }
     end
-
-    session[:ai_suggested_questions] = Array(questions).map { |q| q.respond_to?(:to_h) ? q.to_h.stringify_keys : q }
     redirect_to situation_path(@situation, anchor: "questions"),
                 notice: t("recrivo.dashboard.js.suggested", count: questions.size)
   end
@@ -217,6 +230,7 @@ class SituationsController < Dashboard::BaseController
     if created.zero?
       redirect_to @situation, alert: t("recrivo.dashboard.flash.no_valid_questions")
     else
+      clear_suggested_questions_for(@situation.id)
       redirect_to @situation, notice: t("recrivo.dashboard.flash.questions_added", count: created)
     end
   rescue JSON::ParserError
@@ -233,6 +247,34 @@ class SituationsController < Dashboard::BaseController
 
   def suggest_param(key)
     params[key].presence || params.dig(:situation, key)
+  end
+
+  def suggested_questions_session
+    store = session[:ai_suggested_questions]
+    store.is_a?(Hash) ? store : {}
+  end
+
+  def load_suggested_questions_for(situation_id)
+    store = suggested_questions_session
+    return Array(store[situation_id.to_s]) if store.key?(situation_id.to_s)
+    return Array(store[situation_id]) if store.key?(situation_id)
+
+    # Backward compatibility: legacy global array from older versions.
+    legacy = session[:ai_suggested_questions]
+    legacy.is_a?(Array) ? legacy : []
+  end
+
+  def store_suggested_questions_for(situation_id, questions)
+    store = suggested_questions_session
+    store[situation_id.to_s] = Array(questions).map { |q| q.respond_to?(:to_h) ? q.to_h.stringify_keys : q }
+    session[:ai_suggested_questions] = store
+  end
+
+  def clear_suggested_questions_for(situation_id)
+    store = suggested_questions_session
+    store.delete(situation_id.to_s)
+    store.delete(situation_id)
+    session[:ai_suggested_questions] = store
   end
 
   def situation_params
@@ -278,6 +320,31 @@ class SituationsController < Dashboard::BaseController
     return unless acting_as_admin?
 
     @clients = Client.order(:company, :email)
+  end
+
+  def assign_company_name_for_form
+    @company_name = company_name_param.presence || situation_owner_client&.company.to_s
+  end
+
+  def company_name_param
+    params.dig(:situation, :company).to_s.strip.presence
+  end
+
+  def situation_owner_client
+    return current_client if client_signed_in?
+
+    @situation&.client || Client.find_by(id: params.dig(:situation, :client_id))
+  end
+
+  def company_name_missing_for_situation_owner?
+    company_name_param.blank?
+  end
+
+  def sync_company_to_situation_owner
+    client = situation_owner_client
+    return if client.blank?
+
+    client.update_company_name(company_name_param)
   end
 
   def ensure_client_can_create!

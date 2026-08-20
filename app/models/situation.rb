@@ -28,6 +28,7 @@ class Situation < ApplicationRecord
 
   before_validation :ensure_invite_token, on: :create
   after_create :ensure_follow_up_templates!
+  after_create :increment_client_situation_counter
 
   scope :active, -> { where(archived: false) }
 
@@ -146,6 +147,10 @@ class Situation < ApplicationRecord
 
   def ensure_invite_token
     self.invite_token = self.class.generate_unique_invite_token if invite_token.blank?
+  end
+
+  def increment_client_situation_counter
+    client&.increment!(:total_situations_created)
   end
 
   def at_least_one_answer_mode_enabled

@@ -484,6 +484,9 @@ ja:
           client: 契約企業
           client_blank: 企業を選択
           client_hint: このシナリオを紐づける企業アカウントを選択してください。
+          company: 会社名
+          company_ph: "例: 株式会社サンプル"
+          company_hint: Managementの社名に反映されます。面接開始時のAI音声でも読み上げます。
           title: タイトル
           title_ph: "例: エンジニア一次面接"
           industry: 業種
@@ -641,6 +644,7 @@ ja:
         reject_label: 不採用
         candidate_fallback: 候補者
         company_fallback: 弊社
+        company_required: 会社名を入力してください。
         invalid_plan: 無効なプランです。
         same_plan: 同じプランです。
         no_active_sub: 現在有効なサブスクリプションはありません。
@@ -1165,6 +1169,9 @@ en:
           client: Company
           client_blank: Select a company
           client_hint: Choose the company account this scenario belongs to.
+          company: Company name
+          company_ph: "e.g. Acme Inc."
+          company_hint: Saved as the company name in Management. The AI also says this name at the start of the interview.
           title: Title
           title_ph: "e.g. Engineering first interview"
           industry: Industry
@@ -1322,6 +1329,7 @@ en:
         reject_label: Reject
         candidate_fallback: Candidate
         company_fallback: our company
+        company_required: Enter your company name.
         invalid_plan: Invalid plan.
         same_plan: Already on this plan.
         no_active_sub: No active subscription.

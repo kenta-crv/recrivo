@@ -14,7 +14,7 @@ module PlanLimitable
   end
 
   def active_services_count
-    situations.active.count
+    on_trial? ? total_situations_created.to_i : situations.active.count
   end
 
   def service_limit

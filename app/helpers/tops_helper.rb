@@ -78,7 +78,7 @@ module TopsHelper
     { category: "service", q: "合否はどう決まりますか？", a: "回答内容をAIが評価し、シナリオに設定した合格点・必須項目をもとに自動判定します。基準はシナリオごとに変更できます。" },
     { category: "service", q: "日本語と英語に対応していますか？", a: "はい。シナリオ単位で言語を指定でき、評価もその言語に合わせて動作します。" },
     { category: "pricing", q: "無料トライアルの条件は？", a: "#{Subscription::TRIAL_DAYS}日間・0円・カード不要です。上限はシナリオ1本・月間面接5件。終了後は自動課金せず、スタンダード（月額59,800円・初回3ヶ月15%OFF）へ誘導します。" },
-    { category: "pricing", q: "料金プランと上限を教えてください。", a: "スタンダード月額59,800円（シナリオ10・月500面接、フォロー自動化あり）／Business 98,000円（30・2,000、優先サポートあり）／エンタープライズ198,000円（シナリオ・面接とも無制限）。詳細は料金表をご確認ください。" },
+    { category: "pricing", q: "料金プランと上限を教えてください。", a: "スタンダード月額59,800円（シナリオ3・月60面接、フォロー自動化あり）／Business 98,000円（10・500、優先サポートあり）／エンタープライズ198,000円（シナリオ・面接とも無制限）。詳細は料金表をご確認ください。" },
     { category: "pricing", q: "トライアル中に解約したら課金されますか？", a: "トライアルはカード不要で、期間終了時も自動課金しません。有料プランは管理画面から手動でご契約ください。" },
     { category: "pricing", q: "プラン変更や請求書払いはできますか？", a: "プラン変更は管理画面からいつでも可能です。請求書払いは契約内容により対応できる場合があります。法人でご希望の場合はお問い合わせください。" },
     { category: "setup", q: "申し込みから初回面接までの手順は？", a: "①「無料トライアル」からアカウント登録（メール・パスワードのみ）→②ダッシュボードでトライアル開始→③管理画面でシナリオを作成→④招待リンクを候補者へ送付、の順です。リンク送付後すぐ実施できます。" },
@@ -98,7 +98,7 @@ module TopsHelper
     { category: "service", q: "How is pass/fail decided?", a: "AI scores answers against your scenario’s passing score and required items. Criteria can differ per scenario." },
     { category: "service", q: "Do you support Japanese and English?", a: "Yes. Set language per scenario; scoring follows that language." },
     { category: "pricing", q: "What are the free trial terms?", a: "#{Subscription::TRIAL_DAYS} days at ¥0, no credit card required. Up to 1 scenario and 5 interviews/month. When the trial ends there is no auto-charge — you are guided to Standard (¥59,800/month, 15% off for the first 3 months)." },
-    { category: "pricing", q: "What are the plans and limits?", a: "Standard ¥59,800/mo (10 scenarios, 500 interviews, follow-up automation) / Business ¥98,000 (30, 2,000, priority support) / Enterprise ¥198,000 (unlimited scenarios & interviews). See the pricing table for details." },
+    { category: "pricing", q: "What are the plans and limits?", a: "Standard ¥59,800/mo (3 scenarios, 60 interviews, follow-up automation) / Business ¥98,000 (10, 500, priority support) / Enterprise ¥198,000 (unlimited scenarios & interviews). See the pricing table for details." },
     { category: "pricing", q: "If I cancel during the trial, am I charged?", a: "The trial needs no card and does not auto-charge when it ends. Start a paid plan anytime from the dashboard." },
     { category: "pricing", q: "Can we change plans or pay by invoice?", a: "Yes — change plans anytime from the dashboard. Invoice payment may be available depending on contract; contact us for corporate needs." },
     { category: "setup", q: "What are the steps from signup to the first interview?", a: "1) Create an account via Free trial (email and password only) → 2) Land on the dashboard with trial started → 3) Build a scenario → 4) Send the invite link to candidates. You can run interviews immediately after sharing the link." },
@@ -236,8 +236,7 @@ module TopsHelper
     { key: :auto_scoring, label: "Auto scoring & pass/fail" },
     { key: :guest_invite, label: "Invite links (no login)" },
     { key: :result_dashboard, label: "Results dashboard" },
-    { key: :follow_up_automation, label: "Follow-up automation" },
-    { key: :priority_support, label: "Priority support" }
+    { key: :follow_up_automation, label: "Follow-up automation" }
   ].freeze
 
   def lp_english?

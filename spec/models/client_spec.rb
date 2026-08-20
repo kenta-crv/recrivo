@@ -56,3 +56,21 @@ RSpec.describe Client, type: :model do
     end
   end
 end
+
+RSpec.describe "Yahoo Ads trial conversion", type: :request do
+  it "新規登録でYAds CVフラグを立てる" do
+    email = "trial-cv-#{SecureRandom.hex(4)}@example.com"
+    post client_registration_path, params: {
+      client: {
+        email: email,
+        password: "password123",
+        password_confirmation: "password123"
+      }
+    }
+
+    expect(response).to redirect_to(dashboard_index_path)
+    expect(session[:yahoo_ads_trial_cv]).to eq(true)
+    expect(ApplicationController.helpers.yahoo_ads_conversion_tags).to include("OS76L09XX08810RLPU1366130")
+    expect(ApplicationController.helpers.yahoo_ads_conversion_tags).to include("yjad_conversion")
+  end
+end

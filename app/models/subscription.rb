@@ -8,6 +8,9 @@ class Subscription < ApplicationRecord
   validates :status, presence: true
   validates :stripe_subscription_id, uniqueness: true, allow_nil: true
 
+  after_commit :notify_registered, on: :create
+  after_commit :notify_updated, on: :update
+
   TRIAL_DAYS = 14
   STANDARD_INTRO_PERCENT_OFF = 15
   STANDARD_INTRO_MONTHS = 3
@@ -67,16 +70,16 @@ class Subscription < ApplicationRecord
       name_en: "Standard",
       price: 59_800,
       prices: { jpy: 59_800, usd: 399 },
-      situation_limit: 10,
-      monthly_interview_limit: 500,
+      situation_limit: 3,
+      monthly_interview_limit: 60,
       voice_ai_interview: true,
       auto_scoring: true,
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: true,
       priority_support: false,
-      description: "成長中の採用チーム向け。シナリオ10・月500面接。",
-      description_en: "For growing recruiting teams. 10 scenarios and 500 interviews/month.",
+      description: "成長中の採用チーム向け。シナリオ3・月60面接。",
+      description_en: "For growing recruiting teams. 3 scenarios and 60 interviews/month.",
       purchasable: true,
       public_on_lp: true,
       popular: true,
@@ -94,16 +97,16 @@ class Subscription < ApplicationRecord
       name_en: "Business",
       price: 98_000,
       prices: { jpy: 98_000, usd: 699 },
-      situation_limit: 30,
-      monthly_interview_limit: 2_000,
+      situation_limit: 10,
+      monthly_interview_limit: 500,
       voice_ai_interview: true,
       auto_scoring: true,
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: true,
       priority_support: true,
-      description: "本格運用向け。シナリオ30・月2,000面接。",
-      description_en: "For full-scale operations. 30 scenarios and 2,000 interviews/month.",
+      description: "本格運用向け。シナリオ10・月500面接。",
+      description_en: "For full-scale operations. 10 scenarios and 500 interviews/month.",
       purchasable: true,
       public_on_lp: true,
       featured: true,
@@ -288,5 +291,19 @@ class Subscription < ApplicationRecord
 
   def expire_trial_and_upgrade!
     expire_trial_without_charge!
+  end
+
+  private
+
+  def notify_registered
+    SubscriptionNotifier.registered(self)
+  end
+
+  def notify_updated
+    if saved_change_to_status? && cancelled?
+      SubscriptionNotifier.cancelled(self)
+    elsif saved_change_to_plan_type?
+      SubscriptionNotifier.changed(self, previous_plan: plan_type_before_last_save)
+    end
   end
 end

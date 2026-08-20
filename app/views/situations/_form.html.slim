@@ -8,6 +8,11 @@
         p.db-v2-form-hint = t("recrivo.dashboard.situations.form.client_hint")
 
     .db-v2-form-group
+      = label_tag "situation_company", t("recrivo.dashboard.situations.form.company"), class: "db-v2-form-label"
+      = text_field_tag "situation[company]", @company_name, class: "db-v2-form-control", required: true, id: "situation_company", placeholder: t("recrivo.dashboard.situations.form.company_ph"), autocomplete: "organization"
+      p.db-v2-form-hint = t("recrivo.dashboard.situations.form.company_hint")
+
+    .db-v2-form-group
       = f.label :title, t("recrivo.dashboard.situations.form.title"), class: "db-v2-form-label"
       = f.text_field :title, class: "db-v2-form-control", required: true, placeholder: t("recrivo.dashboard.situations.form.title_ph")
 

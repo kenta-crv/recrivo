@@ -12,4 +12,5 @@ html lang=I18n.locale data-turbo=(@hide_site_chrome ? "false" : nil)
       / 面接室はダッシュボード/LP用 application.js を読まない
       = javascript_include_tag "interview", "data-turbo-track": "reload"
     - else
+      script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.13/dist/turbo.es2017-umd.js"
       = javascript_include_tag "application", "data-turbolinks-track": "reload"

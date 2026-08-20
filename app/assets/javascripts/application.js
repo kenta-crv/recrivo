@@ -12,7 +12,6 @@
 //
 //= require rails-ujs
 //= require activestorage
-//= require turbo
 //= require meetia_page_init
 //= require db_v2_pricing_slider
 // interview.js は面接ページのみ明示読み込み（二重初期化防止）
