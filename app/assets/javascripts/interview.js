@@ -57,6 +57,17 @@
     var candidateCameraPreview = byId('candidate_camera_preview');
     var candidateCameraRec = byId('candidate_camera_rec');
     var cameraRetryBtn = byId('camera_retry_btn');
+    var railTabChat = byId('rail_tab_chat');
+    var railTabJob = byId('rail_tab_job');
+    var interviewJobPanel = byId('interview_job_panel');
+    var interviewJobBody = byId('interview_job_body');
+    var interviewJobChip = byId('interview_job_chip');
+    var faqChips = byId('faq_chips');
+    var faqChipsList = byId('faq_chips_list');
+    var interviewTimerEl = byId('interview_timer');
+    var remainingTimerId = null;
+    var remainingUntilMs = null;
+    var chatPanel = interviewChat ? interviewChat.closest('.interview-cinema__chat') : null;
     var resultStatus = byId('result_status');
     var resultFinal = byId('result_final_status');
     var resultAvg = byId('result_avg_score');
@@ -168,7 +179,121 @@
     function setProgress(progress, answered, total) {
       if (progressBar) progressBar.style.width = Math.max(0, Math.min(100, progress || 0)) + '%';
       if (questionCount) {
-        questionCount.textContent = (answered || 0) + '/' + (total || 0);
+        var current = 0;
+        if (total > 0) {
+          current = Math.min((answered || 0) + 1, total);
+        }
+        questionCount.textContent = current + ' / ' + (total || 0) + '問';
+      }
+    }
+
+    var jobInfoLabels = {
+      job_title: '職種',
+      employment_type: '雇用形態',
+      location: '勤務地',
+      salary_text: '給与',
+      job_summary: '仕事内容',
+      requirements_text: '応募条件',
+      selection_flow: '選考の流れ'
+    };
+
+    function formatRemaining(seconds) {
+      var s = Math.max(0, parseInt(seconds, 10) || 0);
+      var m = Math.floor(s / 60);
+      var r = s % 60;
+      return m + ':' + (r < 10 ? '0' : '') + r;
+    }
+
+    function stopRemainingTimer() {
+      if (remainingTimerId) {
+        clearInterval(remainingTimerId);
+        remainingTimerId = null;
+      }
+      remainingUntilMs = null;
+    }
+
+    function tickRemainingTimer() {
+      if (!interviewTimerEl || remainingUntilMs == null) return;
+      var left = Math.max(0, Math.round((remainingUntilMs - Date.now()) / 1000));
+      interviewTimerEl.hidden = false;
+      interviewTimerEl.textContent = formatRemaining(left);
+      if (left <= 0) stopRemainingTimer();
+    }
+
+    function startRemainingTimer(seconds) {
+      if (seconds == null || seconds === '') {
+        stopRemainingTimer();
+        if (interviewTimerEl) interviewTimerEl.hidden = true;
+        return;
+      }
+      remainingUntilMs = Date.now() + (parseInt(seconds, 10) || 0) * 1000;
+      tickRemainingTimer();
+      if (remainingTimerId) clearInterval(remainingTimerId);
+      remainingTimerId = setInterval(tickRemainingTimer, 1000);
+    }
+
+    function showRailTab(name) {
+      var isJob = name === 'job';
+      if (railTabChat) {
+        railTabChat.classList.toggle('is-active', !isJob);
+        railTabChat.setAttribute('aria-selected', isJob ? 'false' : 'true');
+      }
+      if (railTabJob) {
+        railTabJob.classList.toggle('is-active', isJob);
+        railTabJob.setAttribute('aria-selected', isJob ? 'true' : 'false');
+      }
+      if (chatPanel) chatPanel.hidden = isJob;
+      if (interviewJobPanel) interviewJobPanel.hidden = !isJob;
+    }
+
+    function renderJobInfoHtml(jobInfo) {
+      if (!jobInfo) return '';
+      var html = '';
+      Object.keys(jobInfoLabels).forEach(function(key) {
+        var val = jobInfo[key];
+        if (!val) return;
+        html += '<div class="interview-job-info-row"><span class="interview-job-info-label">' +
+          escapeHtml(jobInfoLabels[key]) + '</span><p class="interview-job-info-value">' +
+          escapeHtml(val) + '</p></div>';
+      });
+      return html;
+    }
+
+    function applyRoomContext(data) {
+      if (!data) return;
+      if (data.remaining_seconds != null) startRemainingTimer(data.remaining_seconds);
+
+      if (interviewJobChip && data.job_info) {
+        var chipParts = [];
+        if (data.company_name) chipParts.push(data.company_name);
+        if (data.job_info.job_title) chipParts.push(data.job_info.job_title);
+        if (chipParts.length) interviewJobChip.textContent = chipParts.join(' / ');
+      }
+
+      if (interviewJobBody && data.job_info) {
+        var jobHtml = renderJobInfoHtml(data.job_info);
+        if (jobHtml) {
+          interviewJobBody.innerHTML = jobHtml;
+          if (railTabJob) railTabJob.hidden = false;
+        }
+      }
+
+      if (faqChips && faqChipsList && data.faqs && data.faqs.length) {
+        faqChipsList.innerHTML = '';
+        data.faqs.forEach(function(faq) {
+          if (!faq || !faq.question) return;
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'interview-cinema__faq-chip';
+          btn.textContent = faq.question;
+          btn.addEventListener('click', function() {
+            showRailTab('chat');
+            appendChatMessage('user', faq.question);
+            appendChatMessage('ai', faq.answer || '');
+          });
+          faqChipsList.appendChild(btn);
+        });
+        faqChips.hidden = faqChipsList.children.length === 0;
       }
     }
 
@@ -258,7 +383,7 @@
         candidateAddress = '';
         candidateExtra = {};
         // 入室クリック時点で許可ダイアログを出す（後続API待ちだと出ない）
-        if (recordCamera) ensureCameraPreview({ quiet: true });
+        ensureCameraPreview({ quiet: true });
         showPhase('overlay');
         return;
       }
@@ -281,7 +406,7 @@
         showError('必須項目を入力してください。');
         return;
       }
-      if (recordCamera) ensureCameraPreview({ quiet: true });
+      ensureCameraPreview({ quiet: true });
       showPhase('overlay');
     }
 
@@ -307,9 +432,7 @@
       startBtn.textContent = '開始中...';
 
       // API待ちの後だとユーザージェスチャが切れ、許可ダイアログが出ないことがある
-      if (recordCamera) {
-        await ensureCameraPreview({ quiet: true });
-      }
+      await ensureCameraPreview({ quiet: true });
 
       var language = (byId('language') && byId('language').value) || defaultLanguage;
 
@@ -370,14 +493,15 @@
         interviewLanguage = data.language || language;
         applyAnswerSettingsFromApi(data.answer_settings);
         saveSession(interviewId, interviewLanguage, data.access_token);
+        applyRoomContext(data);
         showPhase('room');
         if (startBtn) {
           startBtn.disabled = false;
           startBtn.textContent = '面接を開始';
         }
-        if (recordCamera && !cameraStream) {
+        if (!cameraStream) {
           await ensureCameraPreview();
-        } else if (recordCamera && cameraStream && candidateCameraEl) {
+        } else if (cameraStream && candidateCameraEl) {
           candidateCameraEl.hidden = false;
           if (cameraRetryBtn) cameraRetryBtn.hidden = true;
         }
@@ -451,6 +575,8 @@
           showError(errMsg || '質問の取得に失敗しました。');
           return false;
         }
+
+        if (data.remaining_seconds != null) startRemainingTimer(data.remaining_seconds);
 
         if (data.interview_complete) {
           clearAnswerForm();
@@ -690,7 +816,6 @@
 
     async function ensureCameraPreview(opts) {
       opts = opts || {};
-      if (!recordCamera) return false;
       if (cameraStream) {
         var live = cameraStream.getTracks().some(function(t) { return t.readyState === 'live'; });
         if (live) {
@@ -920,6 +1045,7 @@
       stopCameraPreview();
       var closing = closingMessageText();
       setStatus('面接終了');
+      stopRemainingTimer();
       setAvatarState('idle');
       if (questionText) questionText.textContent = closing;
       appendChatMessage('ai', closing);
@@ -939,7 +1065,10 @@
       if (!avatarStage) return;
       avatarStage.classList.remove('is-idle', 'is-speaking', 'is-listening');
       avatarStage.classList.add('is-' + state);
-      if (avatarStateLabel) avatarStateLabel.textContent = '';
+      if (avatarStateLabel) {
+        var labels = { idle: '待機中', speaking: '発言中', listening: '聞いています' };
+        avatarStateLabel.textContent = labels[state] || '待機中';
+      }
     }
 
     function stopBrowserSpeech() {
@@ -1627,6 +1756,7 @@
         if (!data.success || !data.state) return;
         var state = data.state;
         setProgress(state.progress, state.answered_questions, state.total_questions);
+        if (state.remaining_seconds != null) startRemainingTimer(state.remaining_seconds);
       } catch (e) {
         // ignore
       }
@@ -1869,23 +1999,7 @@
       var jobPanel = byId('result_job_info');
       var jobBody = byId('result_job_info_body');
       if (jobPanel && jobBody && result.job_info) {
-        var labels = {
-          job_title: '職種',
-          employment_type: '雇用形態',
-          location: '勤務地',
-          salary_text: '給与',
-          job_summary: '仕事内容',
-          requirements_text: '応募条件',
-          selection_flow: '選考の流れ'
-        };
-        var html = '';
-        Object.keys(labels).forEach(function(key) {
-          var val = result.job_info[key];
-          if (!val) return;
-          html += '<div class="interview-job-info-row"><span class="interview-job-info-label">' +
-            escapeHtml(labels[key]) + '</span><p class="interview-job-info-value">' +
-            escapeHtml(val) + '</p></div>';
-        });
+        var html = renderJobInfoHtml(result.job_info);
         if (html) {
           jobBody.innerHTML = html;
           jobPanel.hidden = false;
@@ -1959,6 +2073,12 @@
       cameraRetryBtn.onclick = function() {
         ensureCameraPreview();
       };
+    }
+    if (railTabChat) {
+      railTabChat.onclick = function() { showRailTab('chat'); };
+    }
+    if (railTabJob) {
+      railTabJob.onclick = function() { showRailTab('job'); };
     }
 
     document.querySelectorAll('[data-sat-rating]').forEach(function(btn) {

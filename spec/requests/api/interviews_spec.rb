@@ -64,6 +64,19 @@ RSpec.describe 'Api::Interviews', type: :request do
       expect(body['remaining_seconds']).to be_present
     end
 
+    it 'returns job_info and faqs for the interview room' do
+      situation.update!(job_summary: 'Web開発', location: '東京')
+      client.update!(company: '株式会社ノース')
+      create(:situation_faq, situation: situation, question: 'リモートは？', answer: '可です')
+
+      post '/api/interviews/start', params: start_payload, as: :json
+
+      body = JSON.parse(response.body)
+      expect(body['job_info']).to include('location' => '東京', 'job_summary' => 'Web開発')
+      expect(body['faqs'].map { |f| f['question'] }).to include('リモートは？')
+      expect(body['company_name']).to eq('株式会社ノース')
+    end
+
     it 'returns existing in_progress interview on duplicate start' do
       post '/api/interviews/start', params: start_payload, as: :json
       first_id = JSON.parse(response.body)['interview_id']
