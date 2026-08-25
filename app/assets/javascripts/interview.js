@@ -188,6 +188,7 @@
     }
 
     var jobInfoLabels = {
+      company_name: '企業名',
       job_title: '職種',
       employment_type: '雇用形態',
       location: '勤務地',
@@ -246,11 +247,12 @@
       if (interviewJobPanel) interviewJobPanel.hidden = !isJob;
     }
 
-    function renderJobInfoHtml(jobInfo) {
-      if (!jobInfo) return '';
+    function renderJobInfoHtml(jobInfo, companyName) {
+      var info = jobInfo || {};
+      if (companyName && !info.company_name) info = Object.assign({ company_name: companyName }, info);
       var html = '';
       Object.keys(jobInfoLabels).forEach(function(key) {
-        var val = jobInfo[key];
+        var val = info[key];
         if (!val) return;
         html += '<div class="interview-job-info-row"><span class="interview-job-info-label">' +
           escapeHtml(jobInfoLabels[key]) + '</span><p class="interview-job-info-value">' +
@@ -270,8 +272,9 @@
         if (chipParts.length) interviewJobChip.textContent = chipParts.join(' / ');
       }
 
-      if (interviewJobBody && data.job_info) {
-        var jobHtml = renderJobInfoHtml(data.job_info);
+      if (interviewJobBody) {
+        var companyName = data.company_name || root.getAttribute('data-company-name') || '';
+        var jobHtml = renderJobInfoHtml(data.job_info, companyName);
         if (jobHtml) {
           interviewJobBody.innerHTML = jobHtml;
           if (railTabJob) railTabJob.hidden = false;
@@ -1998,8 +2001,8 @@
     function renderPostResultExtras(result) {
       var jobPanel = byId('result_job_info');
       var jobBody = byId('result_job_info_body');
-      if (jobPanel && jobBody && result.job_info) {
-        var html = renderJobInfoHtml(result.job_info);
+      if (jobPanel && jobBody) {
+        var html = renderJobInfoHtml(result.job_info, result.company_name || root.getAttribute('data-company-name'));
         if (html) {
           jobBody.innerHTML = html;
           jobPanel.hidden = false;

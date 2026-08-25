@@ -556,13 +556,15 @@ body.interview-room-body {
   min-height: 0;
 }
 
-/* ── ステージ本体：position: relative で子を絶対配置 ── */
+/* ── ステージ：アバター領域と下部ドックを縦に分離 ── */
 .interview-cinema__stage {
   flex: 1;
   position: relative;
   min-height: 0;
   overflow: hidden;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── ステータスバッジ（左上） ── */
@@ -605,7 +607,7 @@ body.interview-room-body {
 .interview-cinema__halo {
   position: absolute;
   left: 50%;
-  top: 38%;
+  top: 52%;
   width: min(520px, 72%);
   aspect-ratio: 1;
   border-radius: 50%;
@@ -622,7 +624,7 @@ body.interview-room-body {
 .interview-cinema__ring {
   position: absolute;
   left: 50%;
-  top: 38%;
+  top: 52%;
   width: min(430px, 60%);
   aspect-ratio: 1;
   border-radius: 50%;
@@ -662,29 +664,39 @@ body.interview-room-body {
   .interview-cinema__ring { animation: none; }
 }
 
-/* ── アバター画像：大きく、キャプション上まで ── */
+.interview-cinema__portrait-slot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── アバター画像：下部ドックと重ならない枠内に収める ── */
 .interview-cinema__portrait {
   position: absolute;
   z-index: 2;
   left: 50%;
   top: 0;
+  bottom: 0;
   transform: translateX(-50%);
-  height: calc(100% - 168px);
+  height: 100%;
   width: auto;
   max-width: 100%;
   object-fit: contain;
-  object-position: top center;
+  object-position: bottom center;
   display: block;
   pointer-events: none;
 }
 
-/* ── 下部バー：カメラ(左25%) ＋ キャプション(右75%) ── */
-.interview-cinema__bottom-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.interview-cinema__dock {
+  flex: 0 0 auto;
   z-index: 5;
+  width: 100%;
+}
+
+/* ── 下部バー：カメラ(左25%) ＋ 文枠・操作列(右75%) ── */
+.interview-cinema__bottom-bar {
+  position: relative;
   display: flex;
   align-items: stretch;
   gap: 0;
@@ -720,17 +732,21 @@ body.interview-room-body {
   border-radius: 16px 16px 0 0;
 }
 
-/* ── キャプション：下部バー内、右75% ── */
+.interview-cinema__dock-main {
+  display: contents;
+}
+
+/* ── キャプション：背景を透かしてステージが見える ── */
 .interview-cinema__caption {
   position: relative;
   flex: 0 0 75%;
   width: 75%;
   z-index: 5;
-  background: rgba(3, 7, 24, 0.62);
+  background: rgba(8, 16, 36, 0.22);
   border-top: 1px solid rgba(125, 211, 252, 0.14);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  padding: 20px 24px 22px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 16px 22px 14px;
   overflow: hidden;
   border-radius: 0 16px 0 0;
 }
@@ -740,7 +756,11 @@ body.interview-room-body {
   font-size: clamp(0.95rem, 1.5vw, 1.15rem);
   line-height: 1.5;
   font-weight: 600;
-  color: rgba(248, 250, 252, 0.82);
+  color: rgba(248, 250, 252, 0.92);
+}
+
+.interview-cinema__controls {
+  display: contents;
 }
 
 .interview-cinema__answer-stage {
@@ -1175,6 +1195,10 @@ body.interview-room-body {
     max-width: none;
     width: 100%;
     min-width: 0;
+  }
+
+  .interview-cinema__portrait-slot {
+    min-height: 200px;
   }
 
   .interview-cinema__side {
