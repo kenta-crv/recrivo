@@ -1,6 +1,6 @@
 - if client_signed_in?
   nav.db-v2-onboarding-nav aria-label=t("recrivo.dashboard.nav.onboarding")
-    = link_to root_path, class: "db-v2-onboarding-nav__link" do
+    = link_to locale_root_href, class: "db-v2-onboarding-nav__link" do
       i.fa-solid.fa-house aria-hidden="true"
       span = t("recrivo.dashboard.nav.top")
     = link_to plans_path_for_locale, class: "db-v2-onboarding-nav__link" do

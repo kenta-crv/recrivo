@@ -53,8 +53,8 @@ header.custom-navbar.py-2
           - elsif user_signed_in?
             = render "shared/sign_out_button", path: destroy_user_session_path
           - else
-            = link_to "ログイン", new_client_session_path, class: "btn login-btn"
-            = link_to "無料トライアル", new_client_registration_path, class: "btn login-btn"
+            = link_to "ログイン", client_sign_in_path_for_locale, class: "btn login-btn"
+            = link_to "無料トライアル", client_sign_up_path_for_locale, class: "btn login-btn"
 
     .d-flex.align-items-center.gap-3.d-none.d-lg-flex
       - if client_signed_in?
@@ -71,5 +71,5 @@ header.custom-navbar.py-2
           = current_user.name || current_user.email
         = render "shared/sign_out_button", path: destroy_user_session_path
       - else
-        = link_to "ログイン", new_client_session_path, class: "btn login-btn"
-        = link_to "無料トライアル", new_client_registration_path, class: "btn login-btn", style: "margin-left:8px;"
+        = link_to "ログイン", client_sign_in_path_for_locale, class: "btn login-btn"
+        = link_to "無料トライアル", client_sign_up_path_for_locale, class: "btn login-btn", style: "margin-left:8px;"

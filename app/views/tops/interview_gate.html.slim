@@ -8,9 +8,9 @@
       p 公開一覧からシナリオを選ぶ導線はありません。招待リンク（ /i/トークン ）のみが受験入口です。
 
       .interview-actions style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;"
-        = link_to "トップへ戻る", root_path, class: "btn-start"
+        = link_to "トップへ戻る", locale_root_href, class: "btn-start"
         - if client_signed_in?
           = link_to "シナリオ管理へ", situations_path, class: "btn-resume"
         - else
-          = link_to "企業ログイン", new_client_session_path, class: "btn-resume"
-          = link_to "無料トライアル", new_client_registration_path, class: "btn-resume"
+          = link_to "企業ログイン", client_sign_in_path_for_locale, class: "btn-resume"
+          = link_to "無料トライアル", client_sign_up_path_for_locale, class: "btn-resume"
