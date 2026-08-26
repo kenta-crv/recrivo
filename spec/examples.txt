@@ -186,7 +186,9 @@ example_id                                                                | stat
 ./spec/requests/api/interviews_spec.rb[1:1:2]                             | passed  | 0.02996 seconds |
 ./spec/requests/api/interviews_spec.rb[1:1:3]                             | passed  | 0.06743 seconds |
 ./spec/requests/api/interviews_spec.rb[1:1:4]                             | passed  | 0.37677 seconds |
-./spec/requests/api/interviews_spec.rb[1:1:5]                             | passed  | 0.91418 seconds |
+./spec/requests/api/interviews_spec.rb[1:1:5]                             | passed  | 6.3 seconds     |
+./spec/requests/api/interviews_spec.rb[1:1:6]                             | unknown |                 |
+./spec/requests/api/interviews_spec.rb[1:1:7]                             | unknown |                 |
 ./spec/requests/api/interviews_spec.rb[1:2:1]                             | passed  | 0.04854 seconds |
 ./spec/requests/api/interviews_spec.rb[1:2:2]                             | passed  | 0.01084 seconds |
 ./spec/requests/api/interviews_spec.rb[1:2:3]                             | passed  | 0.01115 seconds |
@@ -200,6 +202,7 @@ example_id                                                                | stat
 ./spec/requests/api/interviews_spec.rb[1:4:3]                             | passed  | 0.04159 seconds |
 ./spec/requests/api/interviews_spec.rb[1:4:4]                             | passed  | 0.0272 seconds  |
 ./spec/requests/api/interviews_spec.rb[1:4:5]                             | passed  | 0.03957 seconds |
+./spec/requests/api/interviews_spec.rb[1:4:6]                             | unknown |                 |
 ./spec/requests/api/interviews_spec.rb[1:5:1]                             | passed  | 0.03165 seconds |
 ./spec/requests/api/interviews_spec.rb[1:5:2]                             | passed  | 6.5 seconds     |
 ./spec/requests/api/interviews_spec.rb[1:5:3]                             | passed  | 0.03582 seconds |

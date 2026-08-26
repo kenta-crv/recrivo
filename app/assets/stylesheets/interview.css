@@ -267,17 +267,11 @@ body.interview-room-body {
 }
 
 .interview-cinema__qcount {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  z-index: 2;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: rgba(226, 232, 240, 0.85);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
-  pointer-events: none;
-  user-select: none;
+  white-space: nowrap;
 }
 
 .interview-room__question {
@@ -451,10 +445,44 @@ body.interview-room-body {
 
 .interview-cinema__top {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
-  padding: 12px 18px 4px;
+  padding: 12px 18px 8px;
   align-items: center;
+}
+
+.interview-cinema__brand {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.94);
+}
+
+.interview-cinema__logo {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+}
+
+.interview-cinema__jobchip {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .interview-cinema__meta {
@@ -463,6 +491,13 @@ body.interview-room-body {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.interview-cinema__timer {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
 }
 
 .interview-job-info-card {
@@ -503,8 +538,8 @@ body.interview-room-body {
 
 .interview-cinema__main {
   position: relative;
-  flex: 0 0 80%;
-  max-width: 80%;
+  flex: 1 1 68%;
+  max-width: none;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -512,136 +547,296 @@ body.interview-room-body {
 }
 
 .interview-cinema__side {
-  flex: 0 0 20%;
-  max-width: 20%;
-  min-width: 0;
+  flex: 0 0 32%;
+  max-width: 380px;
+  min-width: 260px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
   min-height: 0;
 }
 
+/* ── ステージ：アバター領域と下部ドックを縦に分離 ── */
 .interview-cinema__stage {
   flex: 1;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 52px 0 0;
-  text-align: center;
-  min-height: 0;
-  width: 100%;
-  position: relative;
 }
 
-.interview-cinema__avatar {
-  position: relative;
-  width: min(280px, 68vw);
-  margin: 0 auto 22px;
+/* ── ステータスバッジ（左上） ── */
+.interview-cinema__status-badge {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: rgba(2, 6, 23, 0.68);
+  border: 1px solid rgba(125, 211, 252, 0.32);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+  white-space: nowrap;
+}
+
+.interview-cinema__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
   flex-shrink: 0;
 }
 
+/* ── アバターラッパー（ハロー・リング専用、絶対配置で全面） ── */
+.interview-cinema__avatar {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── ハロー：ふわっと漂うグロー ── */
 .interview-cinema__halo {
   position: absolute;
-  inset: -18%;
+  left: 50%;
+  top: 52%;
+  width: min(520px, 72%);
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.28), transparent 68%);
-  opacity: 0.55;
-  transition: opacity 0.3s ease;
+  background: radial-gradient(circle,
+    rgba(56, 189, 248, 0.38) 0%,
+    rgba(56, 189, 248, 0.10) 48%,
+    transparent 70%);
+  filter: blur(2px);
+  animation: interviewHaloDrift 5.8s ease-in-out infinite;
+  pointer-events: none;
 }
 
+/* ── リング：光る円形アウトライン ── */
 .interview-cinema__ring {
   position: absolute;
-  inset: -8%;
-  border-radius: 50%;
-  border: 2px solid rgba(125, 211, 252, 0.28);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.interview-cinema__portrait {
-  position: relative;
-  z-index: 1;
-  width: 100%;
+  left: 50%;
+  top: 52%;
+  width: min(430px, 60%);
   aspect-ratio: 1;
-  object-fit: cover;
   border-radius: 50%;
-  display: block;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
-  background: #0f172a;
+  border: 2px solid rgba(125, 211, 252, 0.58);
+  animation: interviewRingPulse 4.4s ease-in-out infinite;
+  pointer-events: none;
 }
 
-.interview-cinema__wave {
-  display: none !important;
+@keyframes interviewHaloDrift {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);     opacity: 0.60; }
+  30%       { transform: translate(-50%, -54%) scale(1.06);  opacity: 0.90; }
+  65%       { transform: translate(-50%, -46%) scale(0.95);  opacity: 0.50; }
 }
 
-.interview-cinema__avatar-label {
-  margin: 14px 0 0;
-  font-size: 13px;
-  color: #cbd5e1;
-  font-weight: 600;
-  visibility: hidden;
+@keyframes interviewRingPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    border-color: rgba(125, 211, 252, 0.45); opacity: 0.7; }
+  50%       { transform: translate(-50%, -50%) scale(1.05); border-color: rgba(103, 232, 249, 0.85); opacity: 1.0; }
 }
 
+/* 発言中：速く、明るく */
 .interview-cinema__avatar.is-speaking .interview-cinema__halo {
-  opacity: 0.7;
+  animation-duration: 2.2s;
+  opacity: 0.95;
 }
-
 .interview-cinema__avatar.is-speaking .interview-cinema__ring {
-  border-color: rgba(103, 232, 249, 0.55);
+  animation-duration: 1.6s;
+  border-color: rgba(103, 232, 249, 0.75);
 }
 
+/* 聞き中：緑リング */
 .interview-cinema__avatar.is-listening .interview-cinema__ring {
-  border-color: rgba(74, 222, 128, 0.55);
+  border-color: rgba(74, 222, 128, 0.60);
 }
 
-.interview-cinema__caption {
+@media (prefers-reduced-motion: reduce) {
+  .interview-cinema__halo,
+  .interview-cinema__ring { animation: none; }
+}
+
+.interview-cinema__portrait-slot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── アバター画像：下部ドックと重ならない枠内に収める ── */
+.interview-cinema__portrait {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+  pointer-events: none;
+}
+
+.interview-cinema__dock {
+  flex: 0 0 auto;
+  z-index: 5;
   width: 100%;
-  max-width: none;
-  margin-top: auto;
-  flex-shrink: 0;
-  max-height: min(38vh, 320px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  background: rgba(2, 6, 23, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 18px;
-  padding: 16px 18px;
-  backdrop-filter: blur(10px);
+}
+
+/* ── 下部バー：カメラ(左25%) ＋ 文枠・操作列(右75%) ── */
+.interview-cinema__bottom-bar {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+/* ── PIP：下部バー内、左25%（詳細度を2クラスにして後続の .camera ルールに勝つ） ── */
+.interview-cinema__camera.interview-cinema__camera--pip {
+  position: relative;
+  flex: 0 0 25%;
+  width: 25%;
+  max-width: 25%;
+  z-index: 6;
+  border-radius: 16px 0 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.40);
+  border-right: none;
+  background: rgba(2, 6, 23, 0.85);
+  display: flex;
+  flex-direction: column;
+}
+
+.interview-cinema__camera.interview-cinema__camera--pip .interview-cinema__camera-video {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+/* カメラが非表示のときはキャプションを全幅に */
+.interview-cinema__camera.interview-cinema__camera--pip[hidden] + .interview-cinema__caption {
+  flex: 0 0 100%;
+  width: 100%;
+  border-radius: 16px 16px 0 0;
+}
+
+.interview-cinema__dock-main {
+  display: contents;
+}
+
+/* ── キャプション：背景を透かしてステージが見える ── */
+.interview-cinema__caption {
+  position: relative;
+  flex: 0 0 75%;
+  width: 75%;
+  z-index: 5;
+  background: rgba(8, 16, 36, 0.22);
+  border-top: 1px solid rgba(125, 211, 252, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 16px 22px 14px;
+  overflow: hidden;
+  border-radius: 0 16px 0 0;
+}
+
+.interview-room__question {
+  margin: 0 0 14px;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  line-height: 1.5;
+  font-weight: 600;
+  color: rgba(248, 250, 252, 0.92);
+}
+
+.interview-cinema__controls {
+  display: contents;
 }
 
 .interview-cinema__answer-stage {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(148, 163, 184, 0.18);
-  animation: interviewAnswerIn 0.28s ease both;
+  animation: interviewAnswerIn 0.25s ease both;
 }
 
 @keyframes interviewAnswerIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.interview-cinema__answer-text .interview-room__textarea {
-  resize: vertical;
-  margin-bottom: 8px;
+/* ── モードピッカー：横並びに ── */
+.interview-cinema__caption .interview-room__mcq {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+/* ── 回答欄：テキストエリア＋送信ボタン横並び ── */
+.interview-cinema__answer-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.interview-cinema__answer-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.interview-cinema__answer-grow .interview-room__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  min-height: 46px;
+  max-height: 90px;
+  margin: 0;
+  overflow-y: auto;
+}
+
+/* 音声ブロックも横で伸びるように */
+.interview-cinema__answer-row .interview-room__voice-tools {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.interview-cinema__send-btn {
+  flex: 0 0 auto;
+  width: auto !important;
+  align-self: stretch;
+  padding: 0 22px;
+  min-width: 110px;
+  white-space: nowrap;
 }
 
 .interview-cinema__answer-voice {
-  margin: 0 0 10px;
-  justify-content: center;
+  margin: 0 0 8px;
 }
 
-.interview-cinema__answer-actions {
-  margin-top: 4px;
-  justify-content: center;
+/* アクセシビリティ：非表示ラベル */
+.interview-cinema__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.interview-cinema__answer-actions .interview-room__primary {
-  width: auto;
-  min-width: 160px;
-}
-
-.interview-cinema__chat {
+.interview-cinema__rail {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
@@ -651,19 +846,82 @@ body.interview-room-body {
   border-radius: 16px;
   overflow: hidden;
   backdrop-filter: blur(10px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
 }
 
-.interview-cinema__chat-head {
+.interview-cinema__tabs {
+  display: flex;
   flex: 0 0 auto;
-  padding: 10px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #7dd3fc;
   border-bottom: 1px solid rgba(148, 163, 184, 0.18);
   background: rgba(15, 23, 42, 0.55);
+}
+
+.interview-cinema__tab {
+  flex: 1 1 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 10px 8px;
+  cursor: pointer;
+}
+
+.interview-cinema__tab.is-active {
+  color: #7dd3fc;
+  box-shadow: inset 0 -2px 0 #38bdf8;
+}
+
+.interview-cinema__chat {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.interview-cinema__jobpanel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.interview-cinema__faqs {
+  flex: 0 0 auto;
+  padding: 10px 10px 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.interview-cinema__faqs-label {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #7dd3fc;
+}
+
+.interview-cinema__faq-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.interview-cinema__faq-chip {
+  appearance: none;
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  background: rgba(14, 165, 233, 0.12);
+  color: #e0f2fe;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.interview-cinema__faq-chip:hover {
+  background: rgba(14, 165, 233, 0.24);
 }
 
 .interview-cinema__chat-log {
@@ -715,24 +973,22 @@ body.interview-room-body {
 
 .interview-cinema__chat-msg--user {
   align-self: flex-end;
-  background: rgba(34, 197, 94, 0.16);
-  border: 1px solid rgba(74, 222, 128, 0.28);
-  color: #ecfdf5;
+  max-width: 84%;
+  background: #1d4ed8;
+  border: none;
+  color: #ffffff;
 }
 
 .interview-cinema__chat-msg--user .interview-cinema__chat-msg-role {
-  color: #86efac;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .interview-cinema__camera {
   position: relative;
-  flex: 0 0 auto;
-  width: 100%;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(2, 6, 23, 0.75);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  background: rgba(2, 6, 23, 0.80);
 }
 
 .interview-cinema__camera-video {
@@ -941,18 +1197,12 @@ body.interview-room-body {
     min-width: 0;
   }
 
+  .interview-cinema__portrait-slot {
+    min-height: 200px;
+  }
+
   .interview-cinema__side {
-    flex-direction: row;
-    align-items: stretch;
-  }
-
-  .interview-cinema__chat {
-    flex: 1 1 58%;
-  }
-
-  .interview-cinema__camera {
-    flex: 0 0 38%;
-    max-width: 180px;
+    max-height: 38vh;
   }
 }
 
@@ -974,27 +1224,13 @@ body.interview-room-body {
     gap: 10px;
   }
 
-  .interview-cinema__stage {
-    padding-top: 8px;
-  }
-
-  .interview-cinema__avatar {
-    width: min(220px, 72vw);
-  }
-
   .interview-cinema__side {
     flex-direction: column;
-    max-height: none;
+    max-height: 34vh;
   }
 
   .interview-cinema__chat {
-    min-height: 140px;
-  }
-
-  .interview-cinema__camera {
-    max-width: none;
-    width: min(220px, 70vw);
-    margin-left: auto;
+    min-height: 120px;
   }
 
   .interview-room__scoreboard {
@@ -1002,7 +1238,14 @@ body.interview-room-body {
   }
 
   .interview-cinema__top {
-    justify-content: flex-end;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .interview-cinema__jobchip {
+    order: 3;
+    flex: 1 1 100%;
+    text-align: left;
   }
 
   .interview-cinema__meta {

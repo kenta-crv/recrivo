@@ -89,6 +89,7 @@ module Api
           { id: f.id, question: f.question, answer: f.answer, category: f.category }
         },
         materials_url: situation.recruitment_material.attached? ? rails_blob_path(situation.recruitment_material, only_path: true) : nil,
+        company_name: situation.client&.company.to_s.presence,
         job_info: situation.candidate_job_info(detail: true)
       }, status: :created
     rescue InterviewEngine::SessionManager::AlreadyCompletedError => e

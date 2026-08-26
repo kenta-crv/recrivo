@@ -5,7 +5,75 @@
 javascript:
   var accessToken = null;
 
-.interview-room data-situation-id=@situation.id data-invite-token=@invite_token data-language=(@situation.language.presence || "ja") data-situation-title=@situation.title data-allow-text=(@situation.allow_text_answer? ? "1" : "0") data-allow-voice=(@situation.allow_voice_answer? ? "1" : "0") data-record-camera=(@situation.record_camera? ? "1" : "0") data-preview=(preview_mode ? "1" : "0") data-skip-registration=(@situation.skip_candidate_registration? ? "1" : "0") data-enable-satisfaction=(@situation.enable_satisfaction_survey? ? "1" : "0")
+style
+  |
+    .interview-cinema--split .interview-cinema__stage{
+      display:grid !important;
+      grid-template-rows:minmax(0,1fr) auto !important;
+      height:100% !important;
+      min-height:0 !important;
+    }
+    .interview-cinema--split .interview-cinema__status-badge{
+      position:absolute !important;
+      top:16px !important;
+      left:18px !important;
+      z-index:8 !important;
+    }
+    .interview-cinema--split .interview-cinema__portrait-slot{
+      grid-row:1 !important;
+      position:relative !important;
+      min-height:0 !important;
+      overflow:hidden !important;
+      padding-bottom:16px !important;
+    }
+    .interview-cinema--split .interview-cinema__portrait{
+      position:absolute !important;
+      left:50% !important;
+      top:4% !important;
+      bottom:auto !important;
+      transform:translateX(-50%) !important;
+      height:88% !important;
+      width:auto !important;
+      max-width:92% !important;
+      object-fit:contain !important;
+      object-position:center bottom !important;
+    }
+    .interview-cinema--split .interview-cinema__vignette{
+      background:
+        radial-gradient(ellipse at 50% 28%, rgba(56,189,248,0.18), transparent 42%),
+        linear-gradient(180deg, rgba(2,6,23,0.18) 0%, rgba(2,6,23,0.28) 62%, rgba(2,6,23,0.36) 100%) !important;
+    }
+    .interview-cinema--split .interview-cinema__caption{
+      background:rgba(186,230,253,0.14) !important;
+      backdrop-filter:blur(4px) !important;
+      -webkit-backdrop-filter:blur(4px) !important;
+      border-top:1px solid rgba(186,230,253,0.28) !important;
+      flex:1 1 auto !important;
+      width:auto !important;
+      max-width:100% !important;
+    }
+    .interview-cinema--split .interview-cinema__dock{
+      grid-row:2 !important;
+      position:relative !important;
+      z-index:6 !important;
+    }
+    .interview-cinema--split .interview-cinema__bottom-bar{
+      position:relative !important;
+      bottom:auto !important;
+      left:auto !important;
+      right:auto !important;
+    }
+    .interview-cinema--split,
+    .interview-cinema--split .interview-cinema__body,
+    .interview-cinema--split .interview-cinema__main{
+      min-height:0 !important;
+    }
+    .interview-room__phase--cinema.is-active .interview-cinema--split .interview-cinema__body,
+    .interview-room__phase--cinema.is-active .interview-cinema--split .interview-cinema__main{
+      height:100% !important;
+    }
+
+.interview-room data-situation-id=@situation.id data-invite-token=@invite_token data-language=(@situation.language.presence || "ja") data-situation-title=@situation.title data-company-name=(@situation.client&.company.to_s.strip.presence) data-allow-text=(@situation.allow_text_answer? ? "1" : "0") data-allow-voice=(@situation.allow_voice_answer? ? "1" : "0") data-record-camera=(@situation.record_camera? ? "1" : "0") data-preview=(preview_mode ? "1" : "0") data-skip-registration=(@situation.skip_candidate_registration? ? "1" : "0") data-enable-satisfaction=(@situation.enable_satisfaction_survey? ? "1" : "0")
   #interview-error.interview-room__error role="alert" hidden=true
 
   /! ===== 身元入力 =====
@@ -63,67 +131,89 @@ javascript:
       p#start-overlay-title.interview-room__start-title 面接を開始
       p.interview-room__start-desc タップしてAIインタビュアーとの面接を始めます
 
-  /! ===== 面接ルーム（アバター中心） =====
+  /! ===== 面接ルーム（ステージ＋右レール＋PIP） =====
+  - room_company = @situation.client&.company.to_s.strip
+  - room_role = @situation.job_title.presence || @situation.title
+  - room_job_chip = [room_company.presence, room_role].compact.join(" / ")
   #phase-room.interview-room__phase.interview-room__phase--cinema hidden=true
-    .interview-cinema
+    .interview-cinema.interview-cinema--split
       .interview-cinema__bg aria-hidden="true"
         = image_tag "presentation_room_bg.png", alt: ""
         .interview-cinema__vignette
       .interview-cinema__top
+        .interview-cinema__brand
+          = image_tag "recrivo-db.png", class: "interview-cinema__logo", alt: "Recrivo"
+        p#interview_job_chip.interview-cinema__jobchip = room_job_chip
         .interview-cinema__meta
+          span#question_count.interview-cinema__qcount 0 / 0問
+          span#interview_timer.interview-cinema__timer hidden=true
           span#interview_status.interview-room__status hidden=true
 
       .interview-cinema__body
         .interview-cinema__main
-          span#question_count.interview-cinema__qcount 0/0
           .interview-cinema__stage
-            #avatar_stage.interview-cinema__avatar.is-idle
-              .interview-cinema__halo aria-hidden="true"
-              .interview-cinema__ring aria-hidden="true"
+            /! ── ステータスバッジ（左上） ──
+            .interview-cinema__status-badge
+              span.interview-cinema__status-dot aria-hidden="true"
+              | AIインタビュアー ·
+              span#avatar_state_label 待機中
+
+            /! ── アバター領域（文枠と重ねない） ──
+            .interview-cinema__portrait-slot
+              #avatar_stage.interview-cinema__avatar.is-idle aria-hidden="true"
+                .interview-cinema__halo
+                .interview-cinema__ring
               = image_tag "avatar_3.png", class: "interview-cinema__portrait", alt: "AIインタビュアー"
-              .interview-cinema__wave aria-hidden="true"
-                span
-                span
-                span
-                span
-                span
-              p.interview-cinema__avatar-label aria-hidden="true"
-                span#avatar_state_label 待機中
-                |  · AIインタビュアー
 
-            .interview-cinema__caption
-              p#question_text.interview-room__question 面接を開始すると質問が表示されます。
-              .interview-cinema__audio-row hidden=true
-                audio#question_audio.interview-room__audio hidden=true preload="auto"
-                = render "tops/shared/presentation_play_btn", btn_id: "replay_question", grad_id: "interviewPlayGrad", hero_play: false
+            /! ── 下部：文枠＋操作（アバターの下、重ねない） ──
+            .interview-cinema__dock
+              .interview-cinema__bottom-bar
+                #candidate_camera.interview-cinema__camera.interview-cinema__camera--pip hidden=true
+                  video#candidate_camera_preview.interview-cinema__camera-video autoplay=true playsinline=true muted=true
+                  span#candidate_camera_rec.interview-cinema__camera-rec hidden=true REC
+                  p.interview-cinema__camera-label あなたの映像
+                  button#camera_retry_btn.interview-cinema__camera-retry type="button" hidden=true カメラを再試行
 
-              #answer_stage.interview-cinema__answer-stage hidden=true
-                #mcq_options.interview-room__mcq
-                #answer_mode_picker.interview-room__mcq hidden=true
-                  button#answer_mode_text.interview-room__mcq-option type="button" テキストで回答
-                  button#answer_mode_voice.interview-room__mcq-option type="button" 音声で回答
-                #text_answer_block.interview-cinema__answer-text hidden=true
-                  label#text_answer_label.interview-room__label for="text_answer" あなたの回答
-                  textarea#text_answer.interview-room__textarea rows="2" placeholder=""
-                #voice_answer_block.interview-room__voice-tools.interview-cinema__answer-voice hidden=true
-                  button#voice_answer_start.interview-room__secondary type="button" hidden=true 🎤 録音開始
-                  button#voice_answer_stop.interview-room__secondary type="button" hidden=true 録音を止める
-                  span#voice_answer_status.interview-room__hint
-                .interview-room__actions.interview-cinema__answer-actions
-                  button#submit_answer.interview-room__primary type="button" hidden=true 回答を送信
-                p#answer_action_hint.interview-room__hint hidden=true
+                .interview-cinema__caption
+                  p#question_text.interview-room__question 面接を開始すると質問が表示されます。
+                  .interview-cinema__audio-row hidden=true
+                    audio#question_audio.interview-room__audio hidden=true preload="auto"
+                    = render "tops/shared/presentation_play_btn", btn_id: "replay_question", grad_id: "interviewPlayGrad", hero_play: false
+                  #answer_stage.interview-cinema__answer-stage hidden=true
+                    #mcq_options.interview-room__mcq
+                    #answer_mode_picker.interview-room__mcq hidden=true
+                      button#answer_mode_text.interview-room__mcq-option type="button" テキストで回答
+                      button#answer_mode_voice.interview-room__mcq-option type="button" 音声で回答
+                    .interview-cinema__answer-row
+                      #text_answer_block.interview-cinema__answer-grow hidden=true
+                        label.interview-cinema__sr-only for="text_answer" あなたの回答
+                        textarea#text_answer.interview-room__textarea rows="1" placeholder="回答を入力"
+                      #voice_answer_block.interview-room__voice-tools hidden=true
+                        button#voice_answer_start.interview-room__secondary type="button" hidden=true 録音開始
+                        button#voice_answer_stop.interview-room__secondary type="button" hidden=true 録音を止める
+                        span#voice_answer_status.interview-room__hint
+                      button#submit_answer.interview-room__primary.interview-cinema__send-btn type="button" hidden=true 回答を送信
+                    p#answer_action_hint.interview-room__hint hidden=true
 
         .interview-cinema__side
-          .interview-cinema__chat role="log" aria-live="polite" aria-label="面接チャット"
-            .interview-cinema__chat-head チャット
-            #interview_chat.interview-cinema__chat-log
-              p.interview-cinema__chat-empty 面接を開始すると、やりとりが表示されます。
-
-          #candidate_camera.interview-cinema__camera hidden=true
-            video#candidate_camera_preview.interview-cinema__camera-video autoplay=true playsinline=true muted=true
-            p.interview-cinema__camera-label あなたの映像
-            span#candidate_camera_rec.interview-cinema__camera-rec hidden=true REC
-            button#camera_retry_btn.interview-cinema__camera-retry type="button" hidden=true カメラを再試行
+          .interview-cinema__rail
+            .interview-cinema__tabs role="tablist" aria-label="面接情報"
+              button#rail_tab_chat.interview-cinema__tab.is-active type="button" role="tab" aria-selected="true" aria-controls="rail_chat_panel" チャット
+              button#rail_tab_job.interview-cinema__tab type="button" role="tab" aria-selected="false" aria-controls="interview_job_panel" 企業情報
+            #rail_chat_panel.interview-cinema__chat role="log" aria-live="polite" aria-label="面接チャット"
+              #interview_chat.interview-cinema__chat-log
+                p.interview-cinema__chat-empty 面接を開始すると、やりとりが表示されます。
+            #interview_job_panel.interview-cinema__jobpanel hidden=true role="tabpanel"
+              #interview_job_body
+                - if room_company.present?
+                  .interview-job-info-row
+                    span.interview-job-info-label 企業名
+                    p.interview-job-info-value = room_company
+                - else
+                  p.interview-cinema__chat-empty 企業情報はまだ登録されていません。
+            #faq_chips.interview-cinema__faqs hidden=true
+              p.interview-cinema__faqs-label よくある質問を聞く
+              #faq_chips_list.interview-cinema__faq-list
 
   /! ===== 面接情報送信モーダル =====
   #phase-complete-modal.interview-room__overlay hidden=true role="dialog" aria-modal="true" aria-labelledby="complete-modal-title"
