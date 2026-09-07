@@ -47,7 +47,6 @@ RSpec.describe Subscription, type: :model do
       expect(config[:situation_limit]).to eq(10)
       expect(config[:monthly_interview_limit]).to eq(500)
       expect(config[:follow_up_automation]).to be true
-      expect(config[:priority_support]).to be true
       expect(config[:featured]).to be true
     end
 

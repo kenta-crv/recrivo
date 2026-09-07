@@ -30,7 +30,6 @@ class Subscription < ApplicationRecord
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: false,
-      priority_support: false,
       description: "#{TRIAL_DAYS}日間。カード不要。終了後はスタンダードへ誘導",
       description_en: "#{TRIAL_DAYS} days, no card. Then guided to Standard",
       purchasable: false,
@@ -53,7 +52,6 @@ class Subscription < ApplicationRecord
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: false,
-      priority_support: false,
       description: "（新規販売停止）",
       description_en: "(Not available for new purchases)",
       purchasable: false,
@@ -77,7 +75,6 @@ class Subscription < ApplicationRecord
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: true,
-      priority_support: false,
       description: "成長中の採用チーム向け。シナリオ3・月60面接。",
       description_en: "For growing recruiting teams. 3 scenarios and 60 interviews/month.",
       purchasable: true,
@@ -104,7 +101,6 @@ class Subscription < ApplicationRecord
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: true,
-      priority_support: true,
       description: "本格運用向け。シナリオ10・月500面接。",
       description_en: "For full-scale operations. 10 scenarios and 500 interviews/month.",
       purchasable: true,
@@ -129,7 +125,6 @@ class Subscription < ApplicationRecord
       guest_invite: true,
       result_dashboard: true,
       follow_up_automation: true,
-      priority_support: true,
       description: "大規模運用向け。シナリオ・面接数ともに無制限。",
       description_en: "For large-scale operations. Unlimited scenarios and interviews.",
       purchasable: true,
@@ -151,8 +146,7 @@ class Subscription < ApplicationRecord
     { key: :auto_scoring, label: "合否・スコア自動評価", label_en: "Auto scoring & pass/fail" },
     { key: :guest_invite, label: "招待リンク（ログイン不要）", label_en: "Invite links (no login)" },
     { key: :result_dashboard, label: "結果ダッシュボード", label_en: "Results dashboard" },
-    { key: :follow_up_automation, label: "フォロー自動化", label_en: "Follow-up automation" },
-    { key: :priority_support, label: "優先サポート", label_en: "Priority support" }
+    { key: :follow_up_automation, label: "フォロー自動化", label_en: "Follow-up automation" }
   ].freeze
 
   class << self
@@ -231,7 +225,7 @@ class Subscription < ApplicationRecord
       case feature_key
       when :situation_limit, :monthly_interview_limit
         format_limit(config[feature_key])
-      when :voice_ai_interview, :auto_scoring, :guest_invite, :result_dashboard, :follow_up_automation, :priority_support
+      when :voice_ai_interview, :auto_scoring, :guest_invite, :result_dashboard, :follow_up_automation
         config[feature_key] ? "✔︎" : "✕"
       else
         config[feature_key].present? ? "✔︎" : "✕"
