@@ -6,6 +6,24 @@ class TopsController < ApplicationController
   def index
   end
 
+  def security
+  end
+
+  def privacy
+    @legal_page = :privacy
+    render :legal
+  end
+
+  def tos
+    @legal_page = :tos
+    render :legal
+  end
+
+  def specific
+    @legal_page = :specific
+    render :legal
+  end
+
   # situation_id 直打ちは受験入口にしない（招待リンクのみ）
   def interview
     current_client&.check_and_upgrade_expired_trial

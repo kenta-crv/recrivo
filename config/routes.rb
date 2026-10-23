@@ -29,6 +29,10 @@ Rails.application.routes.draw do
     get "reviews", to: redirect { |path_params, _req| "/#{path_params[:locale]}#reviews" }
     get "faq", to: redirect { |path_params, _req| "/#{path_params[:locale]}#faq" }
     get "company", to: redirect { |path_params, _req| "/#{path_params[:locale]}#company" }
+    get "security", to: "tops#security", as: :localized_security
+    get "privacy", to: "tops#privacy", as: :localized_privacy
+    get "tos", to: "tops#tos", as: :localized_tos
+    get "specific", to: "tops#specific", as: :localized_specific
 
     devise_scope :client do
       get "clients/sign_in", to: "clients/sessions#new", as: :new_client_session_en
@@ -53,6 +57,10 @@ Rails.application.routes.draw do
   get 'reviews', to: redirect('/#reviews')
   get 'faq', to: redirect('/#faq')
   get 'company', to: redirect('/#company')
+  get "security", to: "tops#security", as: :security
+  get "privacy", to: "tops#privacy"
+  get "tos", to: "tops#tos"
+  get "specific", to: "tops#specific"
 
   # 受験者向け面接ポータル
   get 'interview', to: 'tops#interview'

@@ -2554,3 +2554,38 @@ html.meetia-lp-html,
 .meetia-columns-seo__more {
   margin: 0;
 }
+
+.meetia-compare-table__note {
+  margin: 18px 0 0;
+  text-align: center;
+}
+
+.meetia-security__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 860px;
+  margin: 8px auto 0;
+}
+
+.meetia-security__item {
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid var(--lp-card-border);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.meetia-security__item h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--lp-heading);
+}
+
+.meetia-security__item p {
+  margin: 0;
+  line-height: 1.8;
+  color: var(--lp-text, #0a1e3f);
+}

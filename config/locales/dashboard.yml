@@ -1,7 +1,7 @@
 ja:
   recrivo:
     dashboard:
-      layout_title: AI Interview ダッシュボード
+      layout_title: Recrivo ダッシュボード
       common:
         close: 閉じる
         save: 保存
@@ -686,7 +686,7 @@ ja:
 en:
   recrivo:
     dashboard:
-      layout_title: AI Interview dashboard
+      layout_title: Recrivo dashboard
       common:
         close: Close
         save: Save

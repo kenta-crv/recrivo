@@ -16,7 +16,7 @@ module TopsHelper
   ].freeze
 
   LP_NAV_ITEMS = [
-    { key: "whats", label: "AI Interviewとは", href: "#whats" },
+    { key: "whats", label: "Recrivoとは", href: "#whats" },
     { key: "service", label: "サービス", href: "#service" },
     { key: "features", label: "機能", href: "#features" },
     { key: "pricing", label: "料金", href: "#pricing" },
@@ -72,12 +72,15 @@ module TopsHelper
   ].freeze
 
   FAQ_ITEMS = [
-    { category: "service", q: "AI Interviewで何ができますか？", a: "採用の一次面接を自動化できます。招待リンクを送るだけで、AIが音声面接を進め、スコア・合否・回答ログをダッシュボードに残します。" },
+    { category: "service", q: "合否はAIが自動で決めますか？人は確認できますか？", a: "Recrivoの初期設定では、企業が設定した合格ライン（平均点）と必須項目で合否を自動判定します。採用担当が最終判定するモードに切り替えると、Recrivoは点数と回答ログだけを残し、合否は人が確定します。点数と回答ログはダッシュボードに残るので、採用担当は判定の根拠を確認できます。", link: :security },
+    { category: "service", q: "Recrivoで何ができますか？", a: "採用の一次面接を自動化できます。招待リンクを送るだけで、AIが音声面接を進め、スコア・合否・回答ログをダッシュボードに残します。" },
     { category: "service", q: "候補者にアカウントは必要ですか？", a: "不要です。発行した招待リンクからゲストとして参加できます。ログインやインストールは不要です。" },
     { category: "service", q: "途中で離脱した場合、再開できますか？", a: "シナリオ設定で再開可能にできます。再開回数の上限やリンクの有効期限も設定できます。" },
-    { category: "service", q: "合否はどう決まりますか？", a: "回答内容をAIが評価し、シナリオに設定した合格点・必須項目をもとに自動判定します。基準はシナリオごとに変更できます。" },
+    { category: "service", q: "不合格の通知は、候補者へ自動で送られますか？", a: "Recrivoの初期設定では、候補者の画面に合否を出さず、候補者へ不合格メールも送りません。通知は企業の管理画面だけです。候補者へのメール、面接途中の打ち切り、面接直後の結果表示は、企業がシナリオでオンにしたときだけ動きます。途中不合格の初期設定はオフです。採用担当は、管理画面から合格・不合格の確定と連絡もできます。", link: :security },
+    { category: "service", q: "候補者の個人情報と回答は、誰が見られますか？", a: "Recrivoは、回答・文字起こし・スコア・面接ログを、契約企業のアカウントに保存します。閲覧できるのは、その企業の管理画面にログインできるユーザーです。候補者は招待リンクから参加し、Recrivoのアカウントは作りません。カメラ映像を残すかは、企業がシナリオごとに選べます。通信はHTTPSです。", link: :security },
+    { category: "service", q: "「公平」と書く根拠は何ですか？", a: "Recrivoが公平と書く根拠は、同じシナリオの質問・合格ライン・必須項目を、候補者全員に同じ条件で適用することです。面接官ごとに質問や採点が変わる状態を避けるための仕組みです。Recrivoは、AIが偏りを持たないことまでは証明しません。根拠はスコアと回答ログに残り、最終判定を人に戻すこともできます。", link: :security },
     { category: "service", q: "日本語と英語に対応していますか？", a: "はい。シナリオ単位で言語を指定でき、評価もその言語に合わせて動作します。" },
-    { category: "pricing", q: "無料トライアルの条件は？", a: "#{Subscription::TRIAL_DAYS}日間・0円・カード不要です。上限はシナリオ1本・月間面接5件。終了後は自動課金せず、スタンダード（月額59,800円・初回3ヶ月15%OFF）へ誘導します。" },
+    { category: "pricing", q: "無料トライアルの条件は？", a: "#{Subscription::TRIAL_DAYS}日間・0円・カード不要です。上限はシナリオ1本・月間面接5件。終了後の自動課金はありません。継続される場合は、スタンダード（月額59,800円・初回3ヶ月15%OFF）をご案内します。" },
     { category: "pricing", q: "料金プランと上限を教えてください。", a: "スタンダード月額59,800円（シナリオ3・月60面接、フォロー自動化あり）／Business 98,000円（10・500）／エンタープライズ198,000円（シナリオ・面接とも無制限）。詳細は料金表をご確認ください。" },
     { category: "pricing", q: "トライアル中に解約したら課金されますか？", a: "トライアルはカード不要で、期間終了時も自動課金しません。有料プランは管理画面から手動でご契約ください。" },
     { category: "pricing", q: "プラン変更や請求書払いはできますか？", a: "プラン変更は管理画面からいつでも可能です。請求書払いは契約内容により対応できる場合があります。法人でご希望の場合はお問い合わせください。" },
@@ -92,12 +95,15 @@ module TopsHelper
   ].freeze
 
   FAQ_ITEMS_EN = [
-    { category: "service", q: "What can AI Interview do?", a: "Automate first-round recruiting interviews. Send an invite link and AI runs the voice interview, then stores scores, pass/fail, and response logs on the dashboard." },
+    { category: "service", q: "Does AI decide pass/fail automatically? Can a person review it?", a: "By default, Recrivo decides pass/fail from the passing score (average) and required items the company sets. If you switch to recruiter review, Recrivo keeps the scores and answer logs, and a person confirms the decision. Those scores and logs stay on the dashboard so the recruiter can check the basis.", link: :security },
+    { category: "service", q: "What can Recrivo do?", a: "Automate first-round recruiting interviews. Send an invite link and AI runs the voice interview, then stores scores, pass/fail, and response logs on the dashboard." },
     { category: "service", q: "Do candidates need an account?", a: "No. They join as guests from the invite link — no login or install required." },
     { category: "service", q: "Can candidates resume if they leave midway?", a: "Yes, if you enable resume in the scenario settings. You can also set resume limits and link expiry." },
-    { category: "service", q: "How is pass/fail decided?", a: "AI scores answers against your scenario’s passing score and required items. Criteria can differ per scenario." },
+    { category: "service", q: "Are rejection notices sent to candidates automatically?", a: "By default, Recrivo does not show pass/fail on the candidate’s screen and does not email a rejection. The notice stays in the company dashboard. Candidate email, stopping the interview early, and showing the result right after the interview run only when the company turns them on in the scenario. Early rejection is off by default. Recruiters can also confirm pass/fail and send the notice from the dashboard.", link: :security },
+    { category: "service", q: "Who can see a candidate’s personal data and answers?", a: "Recrivo stores answers, transcripts, scores, and interview logs on the contracting company’s account. Only users who can sign in to that company’s dashboard can view them. Candidates join from an invite link and do not create a Recrivo account. Whether camera video is kept is a per-scenario setting. Traffic uses HTTPS.", link: :security },
+    { category: "service", q: "What is the basis for calling this fair?", a: "Recrivo calls the interview fair because every candidate on a scenario gets the same questions, passing score, and required items. That removes differences in what each interviewer asks and how they score. Recrivo does not claim the AI itself is free of bias. The basis stays in the scores and answer logs, and final confirmation can be returned to a person.", link: :security },
     { category: "service", q: "Do you support Japanese and English?", a: "Yes. Set language per scenario; scoring follows that language." },
-    { category: "pricing", q: "What are the free trial terms?", a: "#{Subscription::TRIAL_DAYS} days at ¥0, no credit card required. Up to 1 scenario and 5 interviews/month. When the trial ends there is no auto-charge — you are guided to Standard (¥59,800/month, 15% off for the first 3 months)." },
+    { category: "pricing", q: "What are the free trial terms?", a: "#{Subscription::TRIAL_DAYS} days at ¥0, no credit card required. Up to 1 scenario and 5 interviews/month. There is no automatic charge when the trial ends. If you want to continue, we will offer Standard (¥59,800/month, 15% off for the first 3 months)." },
     { category: "pricing", q: "What are the plans and limits?", a: "Standard ¥59,800/mo (3 scenarios, 60 interviews, follow-up automation) / Business ¥98,000 (10, 500) / Enterprise ¥198,000 (unlimited scenarios & interviews). See the pricing table for details." },
     { category: "pricing", q: "If I cancel during the trial, am I charged?", a: "The trial needs no card and does not auto-charge when it ends. Start a paid plan anytime from the dashboard." },
     { category: "pricing", q: "Can we change plans or pay by invoice?", a: "Yes — change plans anytime from the dashboard. Invoice payment may be available depending on contract; contact us for corporate needs." },
@@ -112,7 +118,7 @@ module TopsHelper
   ].freeze
 
   REVIEW_CARDS = [
-    { meta: "IT企業（人事責任者）", title: "一次面接の工数が大幅に減りました", quote: "「毎週の一次面接対応に追われていましたが、AI Interview導入後は招待リンクを送るだけでスクリーニングが進みます。」", metric: "一次対応工数 -45%" },
+    { meta: "IT企業（人事責任者）", title: "一次面接の工数が大幅に減りました", quote: "「毎週の一次面接対応に追われていましたが、Recrivo導入後は招待リンクを送るだけでスクリーニングが進みます。」", metric: "一次対応工数 -45%" },
     { meta: "人材紹介（採用コンサル）", title: "夜間・休日の受験にも対応できました", quote: "「候補者の都合に合わせた面接枠がボトルネックでした。今はリンク送付後に好きな時間で受験できます。」", metric: "24h 受験対応" },
     { meta: "メーカー（採用担当）", title: "評価基準が揃い、判断が安定しました", quote: "「面接官ごとの評価差が課題でしたが、同じシナリオで同じ基準の採点になるため判断が安定しました。」", metric: "評価ばらつき改善" },
     { meta: "スタートアップ（CEO）", title: "少人数でも選考を止めずに回せます", quote: "「採用専任が薄い体制でも、AIが一次面接を担い、人間は見極めに集中できています。」", metric: "選考スピード向上" },
@@ -120,7 +126,7 @@ module TopsHelper
   ].freeze
 
   REVIEW_CARDS_EN = [
-    { meta: "IT company (HR lead)", title: "First-round effort dropped sharply", quote: "“We were buried in weekly first-round interviews. After AI Interview, screening moves forward just by sending invite links.”", metric: "-45% first-line effort" },
+    { meta: "IT company (HR lead)", title: "First-round effort dropped sharply", quote: "“We were buried in weekly first-round interviews. After Recrivo, screening moves forward just by sending invite links.”", metric: "-45% first-line effort" },
     { meta: "Recruiting firm (consultant)", title: "Nights and weekends are covered", quote: "“Candidate availability used to bottleneck us. Now they take interviews whenever they want after getting the link.”", metric: "24h coverage" },
     { meta: "Manufacturer (recruiter)", title: "Consistent criteria, steadier decisions", quote: "“Interviewer variance was a problem. Shared scenarios and scoring made decisions more stable.”", metric: "Less score drift" },
     { meta: "Startup (CEO)", title: "A small team keeps hiring moving", quote: "“Even without a full recruiting team, AI handles first rounds so people focus on final judgment.”", metric: "Faster pipeline" },
@@ -160,7 +166,7 @@ module TopsHelper
   COMPANY_PROFILE = [
     ["会社名", "株式会社J Work"],
     ["代表取締役", "奥山　健太"],
-    ["設立", "2023年8月22日"],
+    ["設立", "2023年8月18日"],
     ["資本金", "5,000,000円"],
     ["所在地", "東京都港区浜松町２丁目２番１５号２Ｆ"],
     ["事業内容", "AI面接サービス「Recrivo」の開発・提供"]
@@ -169,21 +175,17 @@ module TopsHelper
   COMPANY_PROFILE_EN = [
     ["Company", "J Work Inc."],
     ["CEO", "Kenta Okuyama"],
-    ["Founded", "August 22, 2023"],
+    ["Founded", "August 18, 2023"],
     ["Capital", "JPY 5,000,000"],
     ["Address", "2F, 2-2-15 Hamamatsucho, Minato-ku, Tokyo"],
     ["Business", "Development and delivery of Recrivo, an AI interview service"]
   ].freeze
 
   COMPANY_STATS = [
-    { icon: "fa-face-smile", label: "顧客満足度", num: "97.5", unit: "%" },
-    { icon: "fa-building", label: "累計導入社数", num: "500", unit: "+社" },
     { icon: "fa-clock", label: "対応体制", num: "24", unit: "時間" }
   ].freeze
 
   COMPANY_STATS_EN = [
-    { icon: "fa-face-smile", label: "Satisfaction", num: "97.5", unit: "%" },
-    { icon: "fa-building", label: "Adopting companies", num: "500", unit: "+" },
     { icon: "fa-clock", label: "Coverage", num: "24", unit: "h" }
   ].freeze
 
@@ -191,7 +193,7 @@ module TopsHelper
     { label: "初回対応", icon: "fa-bolt", legacy: "日程調整後に人が実施", meetia: "招待リンクですぐAI面接を開始" },
     { label: "対応時間", icon: "fa-clock", legacy: "担当者の稼働時間に依存", meetia: "24時間365日受験可能" },
     { label: "評価・記録", icon: "fa-chart-line", legacy: "メモが属人化", meetia: "スコア・合否・ログを自動保存" },
-    { label: "評価の公平性", icon: "fa-scale-balanced", legacy: "面接官ごとに判定がばらつく", meetia: "同一シナリオで合否・スコアを統一" },
+    { label: "評価の公平性", icon: "fa-scale-balanced", legacy: "面接官ごとに判定がばらつく", meetia: "同じ質問・同じ合格ラインで採点し、根拠をログに残す" },
     { label: "運用工数", icon: "fa-users", legacy: "一次面接に人が張り付く", meetia: "AIが一次対応し、人は見極めに集中" }
   ].freeze
 
@@ -199,7 +201,7 @@ module TopsHelper
     { label: "First response", icon: "fa-bolt", legacy: "People run it after scheduling", meetia: "AI interview starts from an invite link" },
     { label: "Availability", icon: "fa-clock", legacy: "Limited to staff hours", meetia: "Candidates can join 24/7/365" },
     { label: "Scoring & records", icon: "fa-chart-line", legacy: "Notes stay personal", meetia: "Scores, decisions, and logs auto-saved" },
-    { label: "Fairness", icon: "fa-scale-balanced", legacy: "Outcomes vary by interviewer", meetia: "Same scenario, unified scores" },
+    { label: "Fairness", icon: "fa-scale-balanced", legacy: "Outcomes vary by interviewer", meetia: "Same questions and passing score, with the basis kept in the log" },
     { label: "Ops effort", icon: "fa-users", legacy: "People stuck on first rounds", meetia: "AI handles first line; humans decide" }
   ].freeze
 
@@ -215,6 +217,52 @@ module TopsHelper
     ["pricing", "Pricing & trial", "fa-yen-sign"],
     ["setup", "Signup & launch", "fa-rocket"],
     ["usage", "Usage", "fa-chart-line"]
+  ].freeze
+
+  SECURITY_SECTIONS = [
+    {
+      title: "候補者の個人情報",
+      body: "Recrivoは、候補者の回答、文字起こし、スコア、面接ログを、契約企業のアカウントに保存します。閲覧できるのは、その企業の管理画面にログインできるユーザーです。候補者は招待リンクから参加し、Recrivoのアカウントは作りません。カメラ映像を残すかどうかは、企業がシナリオごとに選べます。通信はHTTPSです。"
+    },
+    {
+      title: "評価の透明性",
+      body: "Recrivoは、各回答の点数、合格ライン、回答ログをダッシュボードに残します。採用担当は、なぜその合否になったかを後から確認できます。候補者の画面に合否を出すかどうかは、企業が選びます。初期設定では、候補者の画面には合否を出しません。"
+    },
+    {
+      title: "人による最終確認",
+      body: "Recrivoの初期設定では、企業が設定した合格ライン（平均点）と必須項目で合否を自動判定します。採用担当が最終判定するモードに切り替えると、Recrivoは点数とログだけを残し、合否は人が確定します。管理画面から、合格・不合格の確定と候補者への連絡も人が行えます。"
+    },
+    {
+      title: "不合格通知が自動になる条件",
+      body: "Recrivoは、初期設定では候補者へ不合格メールを送りません。通知先は企業の管理画面だけです。候補者へのメール、面接の途中での打ち切り、面接直後の結果表示は、企業がシナリオでオンにしたときだけ動きます。途中不合格の初期設定はオフです。"
+    },
+    {
+      title: "「公平」と書く根拠",
+      body: "Recrivoが公平と書く根拠は、同じシナリオの質問・合格ライン・必須項目を、候補者全員に同じ条件で適用することです。面接官ごとに質問や採点が変わる状態を避けるための仕組みです。Recrivoは、AIが偏りを持たないことまでは証明しません。根拠はスコアと回答ログに残り、最終判定を人に戻すこともできます。"
+    }
+  ].freeze
+
+  SECURITY_SECTIONS_EN = [
+    {
+      title: "Candidate personal data",
+      body: "Recrivo stores a candidate’s answers, transcripts, scores, and interview logs on the contracting company’s account. Only users who can sign in to that company’s dashboard can view them. Candidates join from an invite link and do not create a Recrivo account. Whether camera video is kept is chosen per scenario. Traffic uses HTTPS."
+    },
+    {
+      title: "Scoring transparency",
+      body: "Recrivo keeps each answer’s score, the passing line, and the answer log on the dashboard. A recruiter can later check why that pass/fail result was reached. The company chooses whether the candidate’s screen shows the result. By default, Recrivo does not show pass/fail to the candidate."
+    },
+    {
+      title: "Final confirmation by a person",
+      body: "By default, Recrivo decides pass/fail from the passing score (average) and required items the company sets. If the company switches to recruiter review, Recrivo keeps the scores and logs, and a person confirms the decision. From the dashboard, a person can also confirm pass or fail and contact the candidate."
+    },
+    {
+      title: "When a rejection notice is sent automatically",
+      body: "By default, Recrivo does not email a rejection to the candidate. The notice goes only to the company dashboard. Candidate email, stopping the interview early, and showing the result right after the interview run only when the company turns them on in the scenario. Early rejection is off by default."
+    },
+    {
+      title: "The basis for calling this fair",
+      body: "Recrivo calls the interview fair because every candidate on a scenario gets the same questions, passing score, and required items. That avoids a different interviewer asking different questions or scoring differently. Recrivo does not claim the AI itself is free of bias. The basis stays in the scores and answer logs, and final confirmation can be returned to a person."
+    }
   ].freeze
 
   TRIAL_FEATURES = [
@@ -238,6 +286,11 @@ module TopsHelper
     { key: :result_dashboard, label: "Results dashboard" },
     { key: :follow_up_automation, label: "Follow-up automation" }
   ].freeze
+
+  def public_legal_href(page)
+    prefix = lp_english? ? "/en" : ""
+    "#{prefix}/#{page}"
+  end
 
   def lp_english?
     I18n.locale.to_s == "en"
@@ -264,6 +317,14 @@ module TopsHelper
 
   def faq_items
     lp_english? ? FAQ_ITEMS_EN : FAQ_ITEMS
+  end
+
+  def security_sections
+    lp_english? ? SECURITY_SECTIONS_EN : SECURITY_SECTIONS
+  end
+
+  def security_page_path
+    lp_english? ? localized_security_path(locale: :en) : security_path
   end
 
   def review_cards

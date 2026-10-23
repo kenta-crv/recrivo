@@ -153,13 +153,19 @@ class ApplicationController < ActionController::Base
 
   def public_switchable_path?(path)
     path == "/" ||
+      path == "/security" ||
       path == "/plans" ||
       path.start_with?("/plans") ||
       path.start_with?("/clients/sign_in") ||
       path.start_with?("/clients/sign_up") ||
       path.start_with?("/clients/password") ||
       path.start_with?("/clients/auth") ||
-      (path == "/clients" && !client_signed_in?)
+      (path == "/clients" && !client_signed_in?) ||
+      legal_public_path?(path)
+  end
+
+  def legal_public_path?(path)
+    %w[/privacy /tos /specific].include?(path.to_s.split("?", 2).first)
   end
 
   # 127.0.0.1 で開いているのに ActiveStorage が localhost へリダイレクトすると音声再生が壊れる

@@ -36,9 +36,11 @@ class LocalesController < ApplicationController
 
   def public_locale_path?(path)
     path == "/plans" ||
+      path == "/security" ||
       path.start_with?("/plans") ||
       path.start_with?("/clients/sign_in") ||
       path.start_with?("/clients/sign_up") ||
-      path.start_with?("/clients/password")
+      path.start_with?("/clients/password") ||
+      legal_public_path?(path)
   end
 end

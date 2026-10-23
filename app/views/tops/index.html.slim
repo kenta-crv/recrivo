@@ -1,13 +1,13 @@
 - set_meta_tags \
     title: t("recrivo.lp.meta_title"), \
-    description: t("recrivo.lp.meta_description"), \
+    description: site_meta_description, \
     og: { title: t("recrivo.lp.meta_og_title"), type: "website" }
 
 .meetia-modern-lp.meetia-modern-lp--drafty
   header.meetia-nav
     .meetia-nav__inner
       = link_to locale_root_href, class: "meetia-nav__logo" do
-        = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-nav__logo-image"
+        = image_tag "recrivo_logo.png", alt: "Recrivo", class: "meetia-nav__logo-image"
       button.meetia-nav__toggle type="button" aria-label=t("recrivo.lp.aria_menu") data-lp-nav-toggle=""
         span
         span
@@ -97,7 +97,7 @@
   section#whats.meetia-section.meetia-whats-light
     .meetia-section__inner
       .meetia-section__head
-        span.meetia-section__eyebrow What's AI Interview?
+        span.meetia-section__eyebrow What's Recrivo?
         h2.meetia-section__title
           = t("recrivo.lp.whats_title_1")
           br
@@ -219,7 +219,7 @@
   section#compare.meetia-section
     .meetia-section__inner
       .meetia-section__head
-        span.meetia-section__eyebrow WHY AI INTERVIEW?
+        span.meetia-section__eyebrow WHY RECRIVO?
         h2.meetia-section__title
           = t("recrivo.lp.compare_title_1")
           span.meetia-text-accent = t("recrivo.lp.compare_title_accent")
@@ -230,7 +230,7 @@
           span.meetia-compare-table__col.meetia-compare-table__col--meetia
             span.meetia-compare-table__brand
               i.fa-solid.fa-sparkles aria-hidden="true"
-              | AI Interview
+              | Recrivo
           span.meetia-compare-table__col = t("recrivo.lp.compare_legacy")
         - compare_rows.each do |row|
           .meetia-compare-table__row
@@ -246,6 +246,10 @@
               span.meetia-compare-table__mark.meetia-compare-table__mark--ng aria-hidden="true"
                 i.fa-solid.fa-xmark
               span = row[:legacy]
+      p.meetia-section__lead.meetia-compare-table__note
+        = t("recrivo.lp.compare_security_note")
+        = " "
+        = link_to t("recrivo.lp.security_nav"), security_page_path
 
   section#reviews.meetia-section.meetia-section--strip
     .meetia-section__inner
@@ -253,22 +257,6 @@
         span.meetia-section__eyebrow REVIEWS
         h2.meetia-section__title = t("recrivo.lp.reviews_title")
         p.meetia-section__lead = t("recrivo.lp.reviews_lead")
-      .meetia-reviews-summary
-        .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__icon aria-hidden="true"
-            i.fa-solid.fa-star
-          span.meetia-reviews-summary__value.meetia-text-gradient 4.8/5.0
-          p.meetia-reviews-summary__label = t("recrivo.lp.reviews_rating_label")
-        .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__icon aria-hidden="true"
-            i.fa-solid.fa-building
-          span.meetia-reviews-summary__value.meetia-text-gradient 500+
-          p.meetia-reviews-summary__label = t("recrivo.lp.reviews_deals_label")
-        .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__icon aria-hidden="true"
-            i.fa-solid.fa-rotate
-          span.meetia-reviews-summary__value.meetia-text-gradient 98%
-          p.meetia-reviews-summary__label = t("recrivo.lp.reviews_retention_label")
       .meetia-reviews-slider data-reviews-slider=""
         button.meetia-reviews-slider__btn.meetia-reviews-slider__btn--prev type="button" aria-label=t("recrivo.lp.reviews_prev") data-reviews-prev=""
           i.fa-solid.fa-chevron-left aria-hidden="true"
@@ -306,7 +294,11 @@
             - default_faq_opened = true if open_default
             details.meetia-faq-panel__item class=[("is-open-default" if open_default), ("is-hidden" unless is_default_category)].compact data-faq-item=item[:category] open=(open_default || nil) style=("display: none;" unless is_default_category)
               summary.meetia-faq-panel__q = item[:q]
-              p.meetia-faq-panel__a = item[:a]
+              p.meetia-faq-panel__a
+                = item[:a]
+                - if item[:link] == :security
+                  = " "
+                  = link_to t("recrivo.lp.security_more"), security_page_path
 
   section#company.meetia-section.meetia-section--strip
     .meetia-section__inner.meetia-section__inner--wide
@@ -379,7 +371,7 @@
     .meetia-footer__inner
       .meetia-footer__brand
         = link_to locale_root_href, class: "meetia-footer__logo-link" do
-          = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
+          = image_tag "recrivo_logo.png", alt: "Recrivo", class: "meetia-footer__logo-image"
         p.meetia-footer__tagline = t("recrivo.lp.footer_tagline")
         p.meetia-footer__desc = t("recrivo.lp.footer_desc")
       nav.meetia-footer__nav aria-label=t("recrivo.lp.footer_product")
@@ -403,5 +395,10 @@
       .meetia-footer__bottom-links
         = link_to "#faq", class: "meetia-footer__bottom-link" do
           | FAQ
+        = link_to security_page_path, class: "meetia-footer__bottom-link" do
+          = t("recrivo.lp.security_nav")
         = link_to "#company", class: "meetia-footer__bottom-link" do
           = t("recrivo.lp.footer_company")
+        = link_to (lp_english? ? "Privacy Policy" : "プライバシーポリシー"), public_legal_href("privacy"), class: "meetia-footer__bottom-link"
+        = link_to (lp_english? ? "Terms of Service" : "利用規約"), public_legal_href("tos"), class: "meetia-footer__bottom-link"
+        = link_to (lp_english? ? "Legal notice" : "特定商取引法に基づく表記"), public_legal_href("specific"), class: "meetia-footer__bottom-link"

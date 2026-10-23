@@ -1,26 +1,9 @@
 .meetia-modern-lp
   = render "tops/shared/nav"
-  = render "tops/shared/page_hero", eyebrow: "REVIEWS", title: "導入企業の声", lead: "AI Interviewをご利用いただいている企業様からのフィードバックです。"
+  = render "tops/shared/page_hero", eyebrow: "REVIEWS", title: "導入企業の声", lead: "Recrivoをご利用いただいている企業様からのフィードバックです。"
 
   section.meetia-section
     .meetia-section__inner
-      .meetia-reviews-summary
-        .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__icon aria-hidden="true"
-            i.fa-solid.fa-star
-          span.meetia-reviews-summary__value 4.8/5.0
-          span.meetia-reviews-summary__label 平均評価
-        .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__icon aria-hidden="true"
-            i.fa-solid.fa-building
-          span.meetia-reviews-summary__value 500+
-          span.meetia-reviews-summary__label 累計導入社数
-        .meetia-reviews-summary__stat
-          span.meetia-reviews-summary__icon aria-hidden="true"
-            i.fa-solid.fa-rotate
-          span.meetia-reviews-summary__value 98%
-          span.meetia-reviews-summary__label 継続率
-
       .meetia-cases__grid
         - TopsHelper::REVIEW_CARDS.first(2).each do |card|
           .meetia-cases__card

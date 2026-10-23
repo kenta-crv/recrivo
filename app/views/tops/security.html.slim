@@ -1,0 +1,22 @@
+- set_meta_tags \
+    title: t("recrivo.lp.security_meta_title"), \
+    description: t("recrivo.lp.security_meta_description"), \
+    og: { title: t("recrivo.lp.security_meta_title"), type: "website" }
+
+.meetia-modern-lp
+  = render "tops/shared/nav"
+
+  section.meetia-section.meetia-security
+    .meetia-section__inner
+      .meetia-section__head
+        span.meetia-section__eyebrow SECURITY
+        h1.meetia-section__title = t("recrivo.lp.security_title")
+        p.meetia-section__lead = t("recrivo.lp.security_lead")
+      .meetia-security__list
+        - security_sections.each do |section|
+          article.meetia-security__item
+            h2 = section[:title]
+            p = section[:body]
+
+  = render "tops/shared/cta_band"
+  = render "tops/shared/footer"

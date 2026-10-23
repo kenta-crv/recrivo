@@ -3,7 +3,7 @@ footer.meetia-footer
   .meetia-footer__inner
     .meetia-footer__brand
       = link_to locale_root_href, class: "meetia-footer__logo-link" do
-        = image_tag "recrivo_logo.png", alt: "AI Interview", class: "meetia-footer__logo-image"
+        = image_tag "recrivo_logo.png", alt: "Recrivo", class: "meetia-footer__logo-image"
       p.meetia-footer__tagline = t("recrivo.lp.footer_tagline")
       p.meetia-footer__desc = t("recrivo.lp.footer_desc")
     nav.meetia-footer__nav aria-label=t("recrivo.lp.footer_product")
@@ -27,5 +27,10 @@ footer.meetia-footer
     .meetia-footer__bottom-links
       = link_to "#faq", class: "meetia-footer__bottom-link" do
         | FAQ
+      = link_to security_page_path, class: "meetia-footer__bottom-link" do
+        = t("recrivo.lp.security_nav")
       = link_to "#company", class: "meetia-footer__bottom-link" do
         = t("recrivo.lp.footer_company")
+      = link_to (lp_english? ? "Privacy Policy" : "プライバシーポリシー"), public_legal_href("privacy"), class: "meetia-footer__bottom-link"
+      = link_to (lp_english? ? "Terms of Service" : "利用規約"), public_legal_href("tos"), class: "meetia-footer__bottom-link"
+      = link_to (lp_english? ? "Legal notice" : "特定商取引法に基づく表記"), public_legal_href("specific"), class: "meetia-footer__bottom-link"

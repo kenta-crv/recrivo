@@ -17,9 +17,12 @@ script
     gtag('js', new Date());
     gtag('config', 'G-YZVT6M6CNF');
 - if respond_to?(:href_for_locale)
-  link rel="alternate" hreflang="ja" href="#{request.base_url}#{href_for_locale(:ja)}"
-  link rel="alternate" hreflang="en" href="#{request.base_url}#{href_for_locale(:en)}"
-  link rel="alternate" hreflang="x-default" href="#{request.base_url}#{href_for_locale(:ja)}"
+  - ja_alt = href_for_locale(:ja).to_s
+  - en_alt = href_for_locale(:en).to_s
+  - if !ja_alt.include?("/locale/") && !en_alt.include?("/locale/")
+    link rel="alternate" hreflang="ja" href="#{request.base_url}#{ja_alt}"
+    link rel="alternate" hreflang="en" href="#{request.base_url}#{en_alt}"
+    link rel="alternate" hreflang="x-default" href="#{request.base_url}#{ja_alt}"
 / LP 以外用。LP は layouts/lp.html.slim 側で Drafty フォントを読み込む
 - unless controller_name == "tops"
   link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet"

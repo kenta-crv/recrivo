@@ -6,6 +6,8 @@ SitemapGenerator::Sitemap.default_host = "https://recrivo.pro"
 SitemapGenerator::Sitemap.create do
   add root_path, changefreq: 'weekly', priority: 1.0
   add '/en', changefreq: 'weekly', priority: 0.9
+  add '/security', changefreq: 'monthly', priority: 0.6
+  add '/en/security', changefreq: 'monthly', priority: 0.5
 
   add '/columns', changefreq: 'daily', priority: 0.6
 

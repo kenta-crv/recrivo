@@ -1,7 +1,6 @@
 module ApplicationHelper
   SITE_NAME = "Recrivo".freeze
   DEFAULT_TITLE = "AI面接サービス｜人とAIの力で、より良い出会いを".freeze
-  DEFAULT_DESCRIPTION = "Recrivoは、AIが面接をサポートすることで、企業と候補者の可能性を最大限に引き出します。".freeze
 
   def admin_auth_screen?
     controller_path.to_s.start_with?("admins/")
@@ -19,7 +18,7 @@ module ApplicationHelper
     {
       site: SITE_NAME,
       title: DEFAULT_TITLE,
-      description: DEFAULT_DESCRIPTION,
+      description: site_meta_description,
       canonical: site_canonical_url,
       charset: "UTF-8",
       reverse: true,
@@ -44,6 +43,15 @@ module ApplicationHelper
         image: site_og_image_url,
       },
     }
+  end
+
+  def site_meta_description
+    currency = I18n.locale.to_s == "en" ? :usd : :jpy
+    I18n.t(
+      "recrivo.lp.meta_description",
+      days: Subscription::TRIAL_DAYS,
+      price: Subscription.format_price(:standard, currency: currency)
+    )
   end
 
   def site_canonical_url
@@ -112,7 +120,7 @@ module ApplicationHelper
           "legalName" => "株式会社J Work",
           "url" => host,
           "logo" => image_url("favicon.ico"),
-          "description" => DEFAULT_DESCRIPTION,
+          "description" => site_meta_description,
           "address" => {
             "@type" => "PostalAddress",
             "streetAddress" => "浜松町２丁目２番１５号２Ｆ",
@@ -133,7 +141,7 @@ module ApplicationHelper
           "name" => SITE_NAME,
           "applicationCategory" => "BusinessApplication",
           "operatingSystem" => "Web",
-          "description" => DEFAULT_DESCRIPTION,
+          "description" => site_meta_description,
           "offers" => {
             "@type" => "Offer",
             "price" => "0",
